@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "Getting started example",
+  "description": "This extension does things.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "img/dummy_icon.png",
+    "default_popup": "html/popup.html"
+  },
+  "permissions": [
+    "tabs",
+    "webNavigation"
+  ],
+  "background": {
+    "scripts": ["js/jquery-3.2.1.min.js", "js/script.js"]
+  }
+}
