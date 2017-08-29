@@ -1,6 +1,10 @@
+SERVER_BASE_URL = "http://127.0.0.1:5000"
+
 console.log("Started background script for Mew.");
 
 var currentPage = null;
+
+// TODO: Generate a token and tell the server who we are. (use crypto.js)
 
 function processNew(url) {
   var newHostname = url ? new URL(url).hostname : null;
@@ -16,27 +20,31 @@ function processNew(url) {
     if (currentPage != null) {
         var timeElapsed = currentTime - currentPage.time;
         var timeSec = timeElapsed / 1000;
-        console.log("\tSpent " + timeSec + " seconds on " + currentPage.hostname);
+        console.log("Spent " + timeSec + " seconds on " + currentPage.hostname);
     }
 
     currentPage = newPage;
 
-    // TODO: send POST request to server.
     var postData = {
       token: "TODO",
       hostname: newHostname,
       time: currentTime
     }
-    /*
-    jQuery.post(
-      "0.0.0.0", // TODO url
-      postData,
-      function(data, textStatus, jqXHR)
-      {
-        console.log("POST response status: " + textStatus);
-      }
-    );
-    */
+
+    $.post
+    ({
+        url: SERVER_BASE_URL + "/addevent",
+        contentType: "application/json;",
+        dataType: 'text',
+        data: JSON.stringify(postData),
+        success: function () {
+          // POST succeeded!
+        },
+        fail: function () {
+          // POST failed!
+          // TODO: is `fail` correct? And we need to queue this.
+        }
+    });
   }
 }
 

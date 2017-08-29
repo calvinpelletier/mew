@@ -10,8 +10,10 @@
     "default_popup": "html/popup.html"
   },
   "permissions": [
+    "storage",
     "tabs",
-    "webNavigation"
+    "webNavigation",
+    "http://*/"
   ],
   "background": {
     "scripts": ["js/jquery-3.2.1.min.js", "js/script.js"]
