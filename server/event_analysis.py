@@ -18,7 +18,7 @@ def get_last_x_min_summary(db, uid, x_min):
                 # or someone removed ORDER BY from select statement
                 raise Exception('events not in order')
             if hostname in summary:
-                summary[hostname] += (ts - prev_ts) / (1000. * 60.)
+                summary[hostname] += (ts - prev_ts) / (1000. * 60.) # ms to min
             else:
                 summary[hostname] = (ts - prev_ts) / (1000. * 60.)
         prev_ts = ts

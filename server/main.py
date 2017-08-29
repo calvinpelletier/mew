@@ -1,10 +1,11 @@
 import os
 import sqlite3
 from collections import namedtuple
+
+from flask import Flask, render_template, g, request, make_response, jsonify, session
+
 import event_storage
-
-from flask import Flask, render_template, g, request, make_response, jsonify
-
+import event_analysis
 import authentication
 
 DATABASE = None
@@ -22,7 +23,8 @@ app = Flask(__name__, static_url_path="/static")
 def get_landing_page():
     return render_template('index.html')
 
-@app.route('/gentoken')
+
+@app.route('/api/gentoken', methods=['POST'])
 def gen_token():
     token = authentication.gen_token()
     response = {
@@ -31,7 +33,8 @@ def gen_token():
     }
     return jsonify(response)
 
-@app.route('/addevent', methods=['POST'])
+
+@app.route('/api/addevent', methods=['POST'])
 def add_event():
     req_data = request.get_json()
 
@@ -46,18 +49,36 @@ def add_event():
         print "Failed to add an event: %s" % str(req_data)
         return "Failed to add an event", 400
 
+
 @app.route('/api/graph', methods=['POST'])
 def get_graph_data():
     req_data = request.get_json()
-    user_token = req_data['token']
     num_minutes = req_data['minutes']
 
-    # TODO: return {'labels': [...], 'values': [...]} using jsonify
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        # not logged in
+        gen_resp(False)
+
+    summary = event_analysis.get_last_x_min_summary(get_db(), uid, num_minutes)
+    data = {'labels': summary.keys(), 'values': summary.values()}
+
+    return gen_resp(True, data)
 
 
 #########################################
 # HELPER METHODS
 #########################################
+
+def gen_resp(success, data=None):
+    resp = {'success': success}
+    if data is not None:
+        for key, value in data.iteritems():
+            if key == 'success':
+                raise Exception('redundant success in resp')
+            resp[key] = value
+    return jsonify(resp)
 
 def get_db():
     db = getattr(g, '_database', None)
