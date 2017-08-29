@@ -7,7 +7,7 @@ from flask import Flask, render_template, g, request, make_response, jsonify
 
 import authentication
 
-DATABASE = '/home/calvin/projects/mew/db/main.db'  # TODO: make this dynamic
+DATABASE = None
 
 WebEvent = namedtuple("WebEvent", "token hostname time")
 
@@ -69,8 +69,8 @@ def close_connection(exception):
 #########################################
 
 if __name__ == "__main__":
-    database_env_var = os.environ.get('MEW_DB_PATH')
-    if not database_env_var:
+    DATABASE = os.environ.get('MEW_DB_PATH')
+    if not DATABASE:
         print "You need to set $MEW_DB_PATH!"
         exit(1)
     app.run(host='127.0.0.1', debug=True)
