@@ -3,7 +3,9 @@ import sqlite3
 from collections import namedtuple
 import event_storage
 
-from flask import Flask, render_template, g, request
+from flask import Flask, render_template, g, request, make_response, jsonify
+
+import authentication
 
 DATABASE = '/home/calvin/projects/mew/db/main.db'  # TODO: make this dynamic
 
@@ -20,6 +22,14 @@ app = Flask(__name__, static_url_path="/static")
 def get_landing_page():
     return render_template('index.html')
 
+@app.route('/gentoken')
+def gen_token():
+    token = authentication.gen_token()
+    response = {
+        'success': True,
+        'token': token
+    }
+    return jsonify(response)
 
 @app.route('/addevent', methods=['POST'])
 def add_event():
@@ -31,9 +41,10 @@ def add_event():
     try:
         event = WebEvent(**req_data)
         event_storage.insert(get_db(), event)
-        return "success"
+        return 'Successfully added an event.', 200
     except:
-        return "fail"
+        print "Failed to add an event: %s" % str(req_data)
+        return "Failed to add an event", 400
 
 
 #########################################
