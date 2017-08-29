@@ -46,6 +46,14 @@ def add_event():
         print "Failed to add an event: %s" % str(req_data)
         return "Failed to add an event", 400
 
+@app.route('/api/graph', methods=['POST'])
+def get_graph_data():
+    req_data = request.get_json()
+    user_token = req_data['token']
+    num_minutes = req_data['minutes']
+
+    # TODO: return {'labels': [...], 'values': [...]} using jsonify
+
 
 #########################################
 # HELPER METHODS
