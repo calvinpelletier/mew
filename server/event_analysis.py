@@ -3,7 +3,7 @@ import time
 
 
 def get_last_x_min_summary(db, uid, x_min):
-    start_time = (time.time() - (x_min /  60.)) * 1000 # sec to ms
+    start_time = (time.time() - (x_min * 60.)) * 1000 # sec to ms
     events = event_storage.select(db, uid, start_time)
 
     prev_ts = None
