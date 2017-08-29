@@ -1,0 +1,15 @@
+<html>
+
+<head>
+  <title>Horizontal Bar Chart</title>
+  <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/Chart.bundle.min.js') }}"></script>
+</head>
+
+<body>
+  <div id="container" style="width: 75%;">
+    <canvas id="canvas"></canvas>
+  </div>
+  <script src="{{ url_for('static', filename='js/gen_graph.js') }}"></script>
+</body>
+</html>
