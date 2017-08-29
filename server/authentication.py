@@ -14,6 +14,16 @@ def add_user(db, email, password):
     db.commit()
     c.close()
 
+def add_guest(db, token):
+    c = db.cursor()
+    c.execute('INSERT INTO users VALUES (NULL, NULL, NULL, NULL)')
+    uid = c.lastrowid
+    c.execute('INSERT INTO tokens VALUES (?, ?)', (token, uid))
+    db.commit()
+    c.close()
+
+    return uid
+
 # return boolean for success/fail
 def authenticate(db, email, password):
     c = db.cursor()
@@ -32,3 +42,14 @@ def authenticate(db, email, password):
         return False # incorrect password
 
     return True
+
+def token_to_uid(db, token):
+    c = db.cursor()
+    c.execute('SELECT uid FROM tokens WHERE token=?', (token,))
+    uid = c.fetchone()
+    c.close()
+
+    if uid is None:
+        return None
+    else:
+        return uid[0]

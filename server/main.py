@@ -1,5 +1,6 @@
 import sqlite3
 from collections import namedtuple
+import event_storage
 
 from flask import Flask, render_template, g, request
 
@@ -26,9 +27,9 @@ def add_event():
     # TODO:
     #   log failures
     #   return an actual response, not strings
-    #   call Calvin's methods to update DB tables
     try:
         event = WebEvent(**req_data)
+        event_storage.insert(get_db(), event)
         return "success"
     except:
         return "fail"
@@ -50,7 +51,6 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-
 
 #########################################
 # MAIN ENTRY POINT OF FLASK APP
