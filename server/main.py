@@ -2,8 +2,7 @@ import os
 import sqlite3
 from collections import namedtuple
 
-from flask import Flask, render_template, g, request, make_response, jsonify, session
-
+from flask import Flask, render_template, g, request, make_response, jsonify, redirect, session
 import event_storage
 import event_analysis
 import authentication
@@ -23,6 +22,23 @@ app = Flask(__name__, static_url_path="/static")
 def get_landing_page():
     return render_template('index.html')
 
+@app.route('/guest/<token>')
+def redirect_guest(token):
+    redirect_to_index = redirect('/graph/60')
+    response = make_response(redirect_to_index)
+    uid = authentication.token_to_uid(get_db(), token)
+    if uid:
+        response.set_cookie('uid', value=uid)
+    else:
+        print "Error: couldn't find uid for token %s" % token
+        # return error?
+    return response
+
+@app.route('/graph/<num_minutes>')
+def graph(num_minutes):
+    fake_labels = ['reddit.com', 'facebook.com', 'youtube.com', 'OTHER']
+    fake_values = [45, 28, 27, 36]
+    return render_template('graph.html', labels=fake_labels, values=fake_values)
 
 @app.route('/api/gentoken', methods=['POST'])
 def gen_token():
@@ -45,7 +61,7 @@ def add_event():
         event = WebEvent(**req_data)
         event_storage.insert(get_db(), event)
         return 'Successfully added an event.', 200
-    except:
+    except Exception as ex:
         print "Failed to add an event: %s" % str(req_data)
         return "Failed to add an event", 400
 

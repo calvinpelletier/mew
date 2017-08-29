@@ -2,6 +2,7 @@ SERVER_BASE_URL = "http://127.0.0.1:5000"
 
 console.log("Started background script for Mew.");
 
+
 var token = null;
 var currentPage = null;
 
@@ -13,10 +14,11 @@ function setup() {
       console.log("Found existing token: " + result.token);
       token = result.token;
       setup_chrome_events();
+      setup_browser_action();
     } else {
       // There (hopefully...) isn't a token, so we need to generate one.
-      $.get({
-        url: SERVER_BASE_URL + "/gentoken",
+      $.post({
+        url: SERVER_BASE_URL + "/api/gentoken",
         dataType: 'json',
         success: function(response) {
           chrome.storage.sync.set({'token': response.token}, function() {
@@ -24,6 +26,7 @@ function setup() {
           });
           token = response.token;
           setup_chrome_events();
+          setup_browser_action();
         },
         fail: function() {
           // TODO: what happens here?
@@ -59,7 +62,7 @@ function processNew(url) {
     }
 
     $.post({
-      url: SERVER_BASE_URL + "/addevent",
+      url: SERVER_BASE_URL + "/api/addevent",
       contentType: "application/json;",
       dataType: 'text',
       data: JSON.stringify(postData),
@@ -116,4 +119,17 @@ function setup_chrome_events() {
   }
 }
 
+function setup_browser_action() {
+  // When a user clicks the browser action icon in the upper right, it will open
+  // the graph UI.
+  chrome.browserAction.onClicked.addListener(function(activeTab)
+  {
+    console.log("Opening Graph UI.");
+
+      var newURL = SERVER_BASE_URL + "/guest/" + token;
+      chrome.tabs.create({ url: newURL });
+  });
+}
+
 setup();
+
