@@ -1,6 +1,7 @@
 from flask import Flask, render_template, g
 import sqlite3
 import sys
+import authentication
 
 DATABASE = '/home/calvin/projects/mew/db/main.db' # TODO: make this dynamic
 
@@ -30,7 +31,6 @@ def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
-        db =
     return db
 
 @app.teardown_appcontext
