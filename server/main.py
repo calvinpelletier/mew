@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from collections import namedtuple
 
@@ -57,4 +58,8 @@ def close_connection(exception):
 #########################################
 
 if __name__ == "__main__":
+    database_env_var = os.environ.get('MEW_DB_PATH')
+    if not database_env_var:
+        print "You need to set $MEW_DB_PATH!"
+        exit(1)
     app.run(host='127.0.0.1', debug=True)
