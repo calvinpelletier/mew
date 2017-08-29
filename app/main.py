@@ -1,5 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, g
+import sqlite3
 import sys
+
+DATABASE = '/home/calvin/projects/mew/db/main.db' # TODO: make this dynamic
 
 app = Flask(__name__, static_url_path="/static")
 
@@ -22,6 +25,19 @@ def get_landing_page():
 #########################################
 # HELPER METHODS
 #########################################
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+        db =
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 #########################################
 # MAIN ENTRY POINT OF FLASK APP

@@ -1,0 +1,10 @@
+# TODO: make these dynamic
+DBPATH="/home/calvin/projects/mew/db/main.db"
+INITPATH="/home/calvin/projects/mew/db/init.sql"
+
+if [ -f $DBPATH ]; then
+	echo "Database already exists."
+	exit
+fi
+
+sqlite3 $DBPATH -init $INITPATH
