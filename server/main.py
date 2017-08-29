@@ -1,11 +1,14 @@
-from flask import Flask, render_template, g
 import sqlite3
-import sys
-import authentication
+from collections import namedtuple
 
-DATABASE = '/home/calvin/projects/mew/db/main.db' # TODO: make this dynamic
+from flask import Flask, render_template, g, request
+
+DATABASE = '/home/calvin/projects/mew/db/main.db'  # TODO: make this dynamic
+
+WebEvent = namedtuple("WebEvent", "token hostname time")
 
 app = Flask(__name__, static_url_path="/static")
+
 
 #########################################
 # ENDPOINTS
@@ -15,13 +18,21 @@ app = Flask(__name__, static_url_path="/static")
 def get_landing_page():
     return render_template('index.html')
 
-#########################################
-# HANDLERS FOR SOCKET MESSAGES FROM CLIENTS
-#########################################
 
-#########################################
-# METHODS FOR EMITTING MESSAGES TO CLIENTS
-#########################################
+@app.route('/addevent', methods=['POST'])
+def add_event():
+    req_data = request.get_json()
+
+    # TODO:
+    #   log failures
+    #   return an actual response, not strings
+    #   call Calvin's methods to update DB tables
+    try:
+        event = WebEvent(**req_data)
+        return "success"
+    except:
+        return "fail"
+
 
 #########################################
 # HELPER METHODS
@@ -33,11 +44,13 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
     return db
 
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+
 
 #########################################
 # MAIN ENTRY POINT OF FLASK APP
