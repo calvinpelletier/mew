@@ -24,18 +24,19 @@ def get_landing_page():
 
 @app.route('/guest/<token>')
 def redirect_guest(token):
-    redirect_to_index = redirect('/graph/60')
+    redirect_to_index = redirect('/graph')
     response = make_response(redirect_to_index)
     uid = authentication.token_to_uid(get_db(), token)
+    print "Redirecting (and setting uid cookie for token %s to %d)" % (token, uid)
     if uid:
-        response.set_cookie('uid', value=uid)
+        session['uid'] = uid
     else:
         print "Error: couldn't find uid for token %s" % token
         # return error?
     return response
 
-@app.route('/graph/<num_minutes>')
-def graph(num_minutes):
+@app.route('/graph/')
+def graph():
     fake_labels = ['reddit.com', 'facebook.com', 'youtube.com', 'OTHER']
     fake_values = [45, 28, 27, 36]
     return render_template('graph.html', labels=fake_labels, values=fake_values)
@@ -75,7 +76,7 @@ def get_graph_data():
         uid = session['uid']
     else:
         # not logged in
-        gen_resp(False)
+        return gen_resp(False)
 
     summary = event_analysis.get_last_x_min_summary(get_db(), uid, num_minutes)
     data = {'labels': summary.keys(), 'values': summary.values()}
@@ -118,4 +119,7 @@ if __name__ == "__main__":
     if not DATABASE:
         print "You need to set $MEW_DB_PATH!"
         exit(1)
+    # Read secret key
+    with open("secret_key") as secret_key_file:
+        app.secret_key = secret_key_file.readline()
     app.run(host='127.0.0.1', debug=True)
