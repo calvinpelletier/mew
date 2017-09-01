@@ -83,6 +83,22 @@ def get_graph_data():
 
     return gen_resp(True, data)
 
+@app.route('/api/debug/data')
+def get_user_website_data():
+    db = get_db()
+    uid = int(request.args.get('uid'))
+    mins = float(request.args.get('minutes'))
+    events = event_analysis.get_last_x_min(db, uid, mins)
+
+    result = []
+    for e in events:
+        result.append({
+            'hostname': e[0],
+            'time': e[1],
+        })
+
+    return jsonify(result)
+
 
 #########################################
 # HELPER METHODS
