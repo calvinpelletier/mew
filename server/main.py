@@ -1,13 +1,15 @@
 import os
-import sqlite3
 from collections import namedtuple
+from datetime import datetime
 
-from flask import Flask, render_template, g, request, make_response, jsonify, redirect, session
-import event_storage
-import event_analysis
+from flask import Flask, render_template, request, make_response, redirect, session
+
 import authentication
+import event_analysis
+import event_storage
+from util import *
 
-DATABASE = None
+DATABASE_PATH = None
 
 WebEvent = namedtuple("WebEvent", "token hostname time")
 
@@ -22,11 +24,12 @@ app = Flask(__name__, static_url_path="/static")
 def get_landing_page():
     return render_template('index.html')
 
+
 @app.route('/guest/<token>')
 def redirect_guest(token):
     redirect_to_index = redirect('/graph')
     response = make_response(redirect_to_index)
-    uid = authentication.token_to_uid(get_db(), token)
+    uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
     print "Redirecting (and setting uid cookie for token %s to %d)" % (token, uid)
     if uid:
         session['uid'] = uid
@@ -35,11 +38,13 @@ def redirect_guest(token):
         # return error?
     return response
 
+
 @app.route('/graph/')
 def graph():
     fake_labels = ['reddit.com', 'facebook.com', 'youtube.com', 'OTHER']
     fake_values = [45, 28, 27, 36]
     return render_template('graph.html', labels=fake_labels, values=fake_values)
+
 
 @app.route('/api/gentoken', methods=['POST'])
 def gen_token():
@@ -60,7 +65,7 @@ def add_event():
     #   return an actual response, not strings
     try:
         event = WebEvent(**req_data)
-        event_storage.insert(get_db(), event)
+        event_storage.insert(get_db(DATABASE_PATH), event)
         return 'Successfully added an event.', 200
     except Exception as ex:
         print "Failed to add an event: %s" % str(req_data)
@@ -78,14 +83,15 @@ def get_graph_data():
         # not logged in
         return gen_resp(False)
 
-    summary = event_analysis.get_last_x_min_summary(get_db(), uid, num_minutes)
+    summary = event_analysis.get_last_x_min_summary(get_db(DATABASE_PATH), uid, num_minutes)
     data = {'labels': summary.keys(), 'values': summary.values()}
 
     return gen_resp(True, data)
 
+
 @app.route('/api/debug/data')
 def get_user_website_data():
-    db = get_db()
+    db = get_db(DATABASE_PATH)
     uid = int(request.args.get('uid'))
     mins = float(request.args.get('minutes'))
     events = event_analysis.get_last_x_min(db, uid, mins)
@@ -95,30 +101,16 @@ def get_user_website_data():
         result.append({
             'hostname': e[0],
             'time': e[1],
+            'utc_str': datetime.utcfromtimestamp(e[1] / 1000).strftime('%Y-%m-%dT%H:%M:%SZ')
+
         })
 
-    return jsonify(result)
+    return gen_resp(True, {'data': result})
 
 
 #########################################
 # HELPER METHODS
 #########################################
-
-def gen_resp(success, data=None):
-    resp = {'success': success}
-    if data is not None:
-        for key, value in data.iteritems():
-            if key == 'success':
-                raise Exception('redundant success in resp')
-            resp[key] = value
-    return jsonify(resp)
-
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
-
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -126,13 +118,14 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+
 #########################################
 # MAIN ENTRY POINT OF FLASK APP
 #########################################
 
 if __name__ == "__main__":
-    DATABASE = os.environ.get('MEW_DB_PATH')
-    if not DATABASE:
+    DATABASE_PATH = os.environ.get('MEW_DB_PATH')
+    if not DATABASE_PATH:
         print "You need to set $MEW_DB_PATH!"
         exit(1)
     # Read secret key
