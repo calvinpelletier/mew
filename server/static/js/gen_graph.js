@@ -79,7 +79,8 @@ var drawGraph = function(labels, values) {
 window.onload = function() {
 
 	var postData = {
-		"minutes": 60
+		"minutes": 60,
+        "max_sites": 5
 	};
 
 	// Get graph data from server.

@@ -76,6 +76,7 @@ def add_event():
 def get_graph_data():
     req_data = request.get_json()
     num_minutes = req_data['minutes']
+    max_sites = req_data['max_sites']
 
     if 'uid' in session:
         uid = session['uid']
@@ -83,10 +84,9 @@ def get_graph_data():
         # not logged in
         return gen_resp(False)
 
-    summary = event_analysis.get_last_x_min_summary(get_db(DATABASE_PATH), uid, num_minutes)
-    data = {'labels': summary.keys(), 'values': summary.values()}
-
-    return gen_resp(True, data)
+    summary = event_analysis.get_last_x_min_summary(get_db(DATABASE_PATH), uid, num_minutes, max_sites)
+    print 'check0'
+    return gen_resp(True, summary)
 
 
 @app.route('/api/debug/data')
