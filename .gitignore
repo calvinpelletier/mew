@@ -1,4 +1,4 @@
 **/.idea
 *.pyc
-*.db
+**/main.db
 server/secret_key
