@@ -1,15 +1,4 @@
-var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var color = Chart.helpers.color;
-
-var chartColors = {
-  red: 'rgb(255, 99, 132)',
-  orange: 'rgb(255, 159, 64)',
-  yellow: 'rgb(255, 205, 86)',
-  green: 'rgb(75, 192, 192)',
-  blue: 'rgb(54, 162, 235)',
-  purple: 'rgb(153, 102, 255)',
-  grey: 'rgb(201, 203, 207)'
-};
 
 // From https://stackoverflow.com/a/25683102
 var randomColorGenerator = function () {
@@ -60,15 +49,18 @@ var drawGraph = function(labels, values) {
 					display: true,
 					ticks: {
 						suggestedMin: 0, // minimum will be 0, unless there is a lower value.
-						// OR //
-						// beginAtZero: true // minimum value will be 0.
 					}
 				}]
 			},
 			tooltips: {
 						callbacks: {
 							label: function(tooltipItem, chart) {
-									return tooltipItem.xLabel + " minutes"
+									var value = parseFloat(tooltipItem.xLabel);
+									if (value < 1) {
+										return Math.round(value * 60) + " seconds";
+									} else {
+										return Math.round(value) + " minutes";
+									}
 							}
 						}
 				}
@@ -77,9 +69,10 @@ var drawGraph = function(labels, values) {
 }
 
 window.onload = function() {
-
+	// TODO: customize these requests
 	var postData = {
-		"minutes": 60
+		"minutes": 60,
+		"max_sites": 5
 	};
 
 	// Get graph data from server.
@@ -96,7 +89,18 @@ window.onload = function() {
 		}
 	});
 };
+
 /*
+var chartColors = {
+  red: 'rgb(255, 99, 132)',
+  orange: 'rgb(255, 159, 64)',
+  yellow: 'rgb(255, 205, 86)',
+  green: 'rgb(75, 192, 192)',
+  blue: 'rgb(54, 162, 235)',
+  purple: 'rgb(153, 102, 255)',
+  grey: 'rgb(201, 203, 207)'
+};
+
 document.getElementById('randomizeData').addEventListener('click', function() {
     var zero = Math.random() < 0.2 ? true : false;
     horizontalBarChartData.datasets.forEach(function(dataset) {
