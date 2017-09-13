@@ -6,7 +6,7 @@ var randomColorGenerator = function () {
 };
 
 
-var drawGraph = function(labels, values) {
+var drawBarGraph = function(labels, values, canvas, title) {
 	var num_bars = labels.length;
 
 	var bar_colors = []
@@ -24,7 +24,7 @@ var drawGraph = function(labels, values) {
 	};
 
 
-	var ctx = document.getElementById("canvas").getContext("2d");
+	var ctx = document.getElementById(canvas).getContext("2d");
 	window.myHorizontalBar = new Chart(ctx, {
 		type: 'horizontalBar',
 		data: horizontalBarChartData,
@@ -42,7 +42,7 @@ var drawGraph = function(labels, values) {
 			responsive: true,
 			title: {
 				display: true,
-				text: 'Time Spent - Last <COOL_TIMESPAN_STRING>'
+				text: title
 			},
 			scales: {
 				xAxes: [{
@@ -68,27 +68,6 @@ var drawGraph = function(labels, values) {
 	});
 }
 
-window.onload = function() {
-	// TODO: customize these requests
-	var postData = {
-		"minutes": 60,
-		"max_sites": 5
-	};
-
-	// Get graph data from server.
-	$.post({
-		url: '/api/graph',
-		contentType: 'application/json',
-		dataType: 'json',
-		data: JSON.stringify(postData),
-		success: function(response) {
-			drawGraph(response.labels, response.values);
-		},
-		fail: function() {
-			// TODO: what happens here?
-		}
-	});
-};
 
 /*
 var chartColors = {
