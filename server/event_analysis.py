@@ -8,6 +8,7 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
     prev_ts = None
     prev_hostname = None
     summary = {}
+    total = 0.
     for event in events:
         hostname = event[0]
         ts = event[1]
@@ -16,10 +17,12 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
                 # something went horribly wrong in our database
                 # or someone removed ORDER BY from select statement
                 raise Exception('events not in order')
+            time = (ts - prev_ts) / (1000. * 60.) # ms to min
             if hostname in summary:
-                summary[hostname] += (ts - prev_ts) / (1000. * 60.) # ms to min
+                summary[hostname] += time
             else:
-                summary[hostname] = (ts - prev_ts) / (1000. * 60.)
+                summary[hostname] = time
+            total += time
         prev_ts = ts
         prev_hostname = hostname
 
@@ -27,7 +30,8 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
     other = sum(value for _, value in sorted_summary[max_sites:])
     ret = {
         'labels': [label for label, _ in sorted_summary[:max_sites]] + ['other'],
-        'values': [value for _, value in sorted_summary[:max_sites]] + [other]
+        'values': [value for _, value in sorted_summary[:max_sites]] + [other],
+        'total': total
     }
     return ret
 

@@ -13,7 +13,7 @@ window.onload = function() {
 		data: JSON.stringify(postData),
 		success: function(response) {
             console.log(response);
-            title = "Last 24 Hours - Total Time: " + response.total;
+            title = "Last 24 Hours - Total Time: " + formatTime(response.total);
 			drawBarGraph(response.labels, response.values, "chart0", title);
 		},
 		fail: function() {

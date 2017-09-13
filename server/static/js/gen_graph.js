@@ -5,6 +5,13 @@ var randomColorGenerator = function () {
     return color('#' + (Math.random().toString(16) + '0000000').slice(2, 8)).alpha(0.5);
 };
 
+function formatTime(value) {
+    if (value < 1) {
+        return Math.round(value * 60) + " seconds";
+    } else {
+        return Math.round(value) + " minutes";
+    }
+}
 
 var drawBarGraph = function(labels, values, canvas, title) {
 	var num_bars = labels.length;
@@ -55,12 +62,7 @@ var drawBarGraph = function(labels, values, canvas, title) {
 			tooltips: {
 						callbacks: {
 							label: function(tooltipItem, chart) {
-									var value = parseFloat(tooltipItem.xLabel);
-									if (value < 1) {
-										return Math.round(value * 60) + " seconds";
-									} else {
-										return Math.round(value) + " minutes";
-									}
+									return formatTime(parseFloat(tooltipItem.xLabel));
 							}
 						}
 				}
