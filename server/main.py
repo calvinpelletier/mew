@@ -72,8 +72,8 @@ def add_event():
         return "Failed to add an event", 400
 
 
-@app.route('/api/graph', methods=['POST'])
-def get_graph_data():
+@app.route('/api/bargraph', methods=['POST'])
+def get_bar_graph_data():
     req_data = request.get_json()
     num_minutes = req_data['minutes']
     max_sites = req_data['max_sites']
@@ -85,7 +85,21 @@ def get_graph_data():
         return gen_resp(False)
 
     summary = event_analysis.get_last_x_min_summary(get_db(DATABASE_PATH), uid, num_minutes, max_sites)
-    print 'check0'
+    return gen_resp(True, summary)
+
+
+@app.route('/api/stackedgraph', methods=['POST'])
+def get_stacked_graph_data():
+    req_data = request.get_json()
+    num_days = req_data['days']
+
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        # not logged in
+        return gen_resp(False)
+
+    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, num_days)
     return gen_resp(True, summary)
 
 
