@@ -30,9 +30,9 @@ def redirect_guest(token):
     redirect_to_index = redirect('/graph')
     response = make_response(redirect_to_index)
     uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
-    print "Redirecting (and setting uid cookie for token %s to %d)" % (token, uid)
     if uid:
         session['uid'] = uid
+        print "Redirecting (and setting uid cookie for token %s to %d)" % (token, uid)
     else:
         print "Error: couldn't find uid for token %s" % token
         # return error?
@@ -103,7 +103,7 @@ def get_stacked_graph_data():
     return gen_resp(True, summary)
 
 
-@app.route('/api/debug/data')
+@app.route('/api/debug/data', methods=['POST'])
 def get_user_website_data():
     db = get_db(DATABASE_PATH)
     uid = int(request.args.get('uid'))

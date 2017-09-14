@@ -7,7 +7,7 @@ window.onload = function() {
 
 	// Get graph data from server.
 	$.post({
-		url: '/api/graph',
+		url: '/api/bargraph',
 		contentType: 'application/json',
 		dataType: 'json',
 		data: JSON.stringify(postData),
