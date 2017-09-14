@@ -30,6 +30,10 @@ var drawBarGraph = function(labels, values, canvas, title) {
 		}]
 	};
 
+  if (window.myHorizontalBar) {
+    window.myHorizontalBar.destroy();
+  }
+
 
 	var ctx = document.getElementById(canvas).getContext("2d");
 	window.myHorizontalBar = new Chart(ctx, {
