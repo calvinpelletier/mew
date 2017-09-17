@@ -1,3 +1,4 @@
+import logging.config
 from os import environ, path, getcwd
 from collections import namedtuple
 from datetime import datetime
@@ -8,6 +9,9 @@ from util import *
 import authentication
 import event_storage
 from mew_server import event_analysis
+
+logging.config.fileConfig("config/logging.conf")
+lg = logging.getLogger("main")
 
 DATABASE_PATH = None
 
@@ -31,9 +35,9 @@ def redirect_guest(token):
     uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
     if uid:
         session['uid'] = uid
-        print "Redirecting (and setting uid cookie for token %s to %d)" % (token, uid)
+        lg.info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
     else:
-        print "Error: couldn't find uid for token %s" % token
+        lg.error("Couldn't find uid for token %s" % token)
         # return error?
     return response
 
@@ -67,8 +71,7 @@ def add_event():
         event_storage.insert(get_db(DATABASE_PATH), event)
         return 'Successfully added an event.', 200
     except Exception as ex:
-        print "Failed to add an event: %s" % str(req_data)
-        print ex
+        lg.error("Failed to add an event '%s': %s", str(req_data), ex.message)
         return "Failed to add an event", 400
 
 
@@ -141,7 +144,7 @@ def setup():
     global DATABASE_PATH
     DATABASE_PATH = environ.get('MEW_DB_PATH')
     if not DATABASE_PATH:
-        print "You need to set $MEW_DB_PATH!"
+        lg.error("You need to set $MEW_DB_PATH!")
         exit(1)
     # Read secret key
     with open("secret_key") as secret_key_file:
