@@ -1,0 +1,82 @@
+#!/usr/bin/python
+
+import datetime
+import os
+import sqlite3
+import subprocess
+import time
+from random import randint, choice
+
+fmt = '%Y-%m-%d %H:%M:%S %Z'
+
+raw_input('WARNING: will overrite all data stored at $MEW_DB_PATH (press enter)')
+
+DB_PATH = os.environ.get('MEW_DB_PATH')
+if not DB_PATH:
+    print "You need to set $MEW_DB_PATH!"
+    exit(1)
+try:
+    os.remove(DB_PATH)
+except OSError:
+    pass
+
+INIT_PATH = '/'.join(DB_PATH.split('/')[:-1] + ['init.sql'])
+if not os.path.exists(INIT_PATH):
+    print 'init.sql needs to be in the same directory as $MEW_DB_PATH'
+
+# init db
+subprocess.call('echo ".exit" | sqlite3 {} -init {}'.format(DB_PATH, INIT_PATH), shell=True)
+db = sqlite3.connect(DB_PATH)
+
+# create user
+c = db.cursor()
+c.execute('INSERT INTO users VALUES (NULL, NULL, NULL, NULL)')
+c.execute('INSERT INTO tokens VALUES (\'11111111111111111111111111111111\', 1)')
+db.commit()
+c.close()
+
+
+today_date = datetime.datetime.now().date()
+
+today = time.mktime(datetime.datetime(today_date.year, today_date.month, today_date.day).timetuple()) * 1000
+now = time.mktime(datetime.datetime.now().timetuple()) * 1000
+
+# days that will be populated
+days = []
+days.append(now - (1000 * 60 * 60 * 1)) # one hour ago
+days.append(today)
+days.append(today - (1000 * 60 * 60 * 24)) # one day ago
+days.append(today - (1000 * 60 * 60 * 48)) # two days ago
+days.append(today - (1000 * 60 * 60 * 24 * 7)) # one week ago
+days.append(today - (1000 * 60 * 60 * 24 * 14)) # two weeks ago
+days.append(today - (1000 * 60 * 60 * 24 * 31)) # one month ago
+days.append(today - (1000 * 60 * 60 * 24 * 62)) # two months ago
+
+days.append(today - (1000 * 60 * 60 * 24 * 31 * 18)) # ~18 months ago
+
+# valid hostnames
+hostnames = ['google.com', 'facebook.com', 'reddit.com', 'stackoverflow.com', 'breitbart.com', 'xxxmidgetporn.com', 'glutenfreesingles.com']
+
+def insert(hostname, timestamp):
+    global db
+    c = db.cursor()
+    print "Adding event at %s" % (datetime.datetime.utcfromtimestamp(timestamp / 1000)).strftime(fmt)
+    c.execute('INSERT INTO events VALUES (?, ?, ?)', (1, hostname, timestamp))
+    db.commit()
+    c.close()
+
+for timestamp in days:
+    print "Adding events from timestamp: %s" % (datetime.datetime.utcfromtimestamp(timestamp / 1000)).strftime(fmt)
+
+    prev_hostname = ''
+    for _ in range(randint(5, 20)): # num site changes
+        duration = randint(1000, 1000 * 60 * 20)
+        timestamp += duration
+        if timestamp > now:
+            break
+        hostname = prev_hostname
+        while hostname == prev_hostname:
+            hostname = choice(hostnames)
+        insert(hostname, timestamp)
+
+print 'Login url: 127.0.0.1:5000/guest/11111111111111111111111111111111'

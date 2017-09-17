@@ -2,14 +2,38 @@
 
 <head>
   <title>Horizontal Bar Chart</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
   <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/Chart.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 </head>
 
 <body>
   <div id="container" style="width: 75%;">
-    <canvas id="canvas"></canvas>
+    <canvas id="chart0"></canvas>
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-primary">
+        <input type="radio" name="options" id="last-hour" class="timeframe-choice" autocomplete="off">Last Hour
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="options" id="today" class="timeframe-choice" autocomplete="off">Today
+      </label>
+      <label class="btn btn-primary active">
+        <input type="radio" name="options" id="last-24" class="timeframe-choice" autocomplete="off" checked>Last 24 Hours
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off">Last Week
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
+      </label>
+    </div>
   </div>
   <script src="{{ url_for('static', filename='js/gen_graph.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
+
 </html>

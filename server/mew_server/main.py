@@ -1,20 +1,33 @@
-import os
+import argparse
+import logging.config
+from os import environ, getcwd
 from collections import namedtuple
 from datetime import datetime
 
 from flask import Flask, render_template, request, make_response, redirect, session
+from util import *
 
 import authentication
-import event_analysis
 import event_storage
-from util import *
+import event_analysis
+
+# Set up CLI args
+parser = argparse.ArgumentParser(description='Mew Server')
+parser.add_argument('-v', '--verbose', action='store_true', help="Verbose logging")
+cli_args = parser.parse_args()
+
+logging.config.fileConfig("config/logging.conf")
+lg = logging.getLogger("main")
+
+if cli_args.verbose:
+    lg.info("Using verbose logging.")
+    lg.level = logging.DEBUG
 
 DATABASE_PATH = None
 
 WebEvent = namedtuple("WebEvent", "token hostname time")
 
-app = Flask(__name__, static_url_path="/static")
-
+app = Flask(__name__, root_path=getcwd(), static_url_path="/static")
 
 #########################################
 # ENDPOINTS
@@ -30,11 +43,11 @@ def redirect_guest(token):
     redirect_to_index = redirect('/graph')
     response = make_response(redirect_to_index)
     uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
-    print "Redirecting (and setting uid cookie for token %s to %d)" % (token, uid)
     if uid:
         session['uid'] = uid
+        lg.info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
     else:
-        print "Error: couldn't find uid for token %s" % token
+        lg.error("Couldn't find uid for token %s" % token)
         # return error?
     return response
 
@@ -68,12 +81,12 @@ def add_event():
         event_storage.insert(get_db(DATABASE_PATH), event)
         return 'Successfully added an event.', 200
     except Exception as ex:
-        print "Failed to add an event: %s" % str(req_data)
+        lg.error("Failed to add an event '%s': %s", str(req_data), ex.message)
         return "Failed to add an event", 400
 
 
-@app.route('/api/graph', methods=['POST'])
-def get_graph_data():
+@app.route('/api/bargraph', methods=['POST'])
+def get_bar_graph_data():
     req_data = request.get_json()
     num_minutes = req_data['minutes']
     max_sites = req_data['max_sites']
@@ -85,11 +98,25 @@ def get_graph_data():
         return gen_resp(False)
 
     summary = event_analysis.get_last_x_min_summary(get_db(DATABASE_PATH), uid, num_minutes, max_sites)
-    print 'check0'
     return gen_resp(True, summary)
 
 
-@app.route('/api/debug/data')
+@app.route('/api/stackedgraph', methods=['POST'])
+def get_stacked_graph_data():
+    req_data = request.get_json()
+    num_days = req_data['days']
+
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        # not logged in
+        return gen_resp(False)
+
+    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, num_days)
+    return gen_resp(True, summary)
+
+
+@app.route('/api/debug/data', methods=['POST'])
 def get_user_website_data():
     db = get_db(DATABASE_PATH)
     uid = int(request.args.get('uid'))
@@ -123,12 +150,17 @@ def close_connection(exception):
 # MAIN ENTRY POINT OF FLASK APP
 #########################################
 
-if __name__ == "__main__":
-    DATABASE_PATH = os.environ.get('MEW_DB_PATH')
+def setup():
+    global DATABASE_PATH
+    DATABASE_PATH = environ.get('MEW_DB_PATH')
     if not DATABASE_PATH:
-        print "You need to set $MEW_DB_PATH!"
+        lg.error("You need to set $MEW_DB_PATH!")
         exit(1)
     # Read secret key
     with open("secret_key") as secret_key_file:
         app.secret_key = secret_key_file.readline()
+
+
+if __name__ == "__main__":
+    setup()
     app.run(host='127.0.0.1', debug=True)
