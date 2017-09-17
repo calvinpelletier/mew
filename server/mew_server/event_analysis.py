@@ -1,6 +1,8 @@
-import event_storage
-import time
 import datetime
+import time
+
+import event_storage
+
 
 def get_last_x_min_summary(db, uid, x_min, max_sites):
     events = get_last_x_min(db, uid, x_min)

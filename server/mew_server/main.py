@@ -1,20 +1,19 @@
-import os
+from os import environ, path, getcwd
 from collections import namedtuple
 from datetime import datetime
 
 from flask import Flask, render_template, request, make_response, redirect, session
+from util import *
 
 import authentication
-import event_analysis
 import event_storage
-from util import *
+from mew_server import event_analysis
 
 DATABASE_PATH = None
 
 WebEvent = namedtuple("WebEvent", "token hostname time")
 
-app = Flask(__name__, static_url_path="/static")
-
+app = Flask(__name__, root_path=getcwd(), static_url_path="/static")
 
 #########################################
 # ENDPOINTS
@@ -69,6 +68,7 @@ def add_event():
         return 'Successfully added an event.', 200
     except Exception as ex:
         print "Failed to add an event: %s" % str(req_data)
+        print ex
         return "Failed to add an event", 400
 
 
@@ -137,12 +137,17 @@ def close_connection(exception):
 # MAIN ENTRY POINT OF FLASK APP
 #########################################
 
-if __name__ == "__main__":
-    DATABASE_PATH = os.environ.get('MEW_DB_PATH')
+def setup():
+    global DATABASE_PATH
+    DATABASE_PATH = environ.get('MEW_DB_PATH')
     if not DATABASE_PATH:
         print "You need to set $MEW_DB_PATH!"
         exit(1)
     # Read secret key
     with open("secret_key") as secret_key_file:
         app.secret_key = secret_key_file.readline()
+
+
+if __name__ == "__main__":
+    setup()
     app.run(host='127.0.0.1', debug=True)
