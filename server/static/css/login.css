@@ -1,0 +1,134 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    background-color: #87848C; /* if gradient is not supported */
+    background: linear-gradient(#87848C, #A6938F);
+}
+
+h1 {
+    font-family: Sinkin-Sans100Thin;
+    color: #fff;
+    font-size: 50px;
+    margin-bottom: 10%;
+}
+
+h2 {
+    font-family: Sinkin-Sans200XLight;
+    font-size: 25px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+h2 .selected {
+    color: #fff;
+}
+
+h2:hover {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 2px solid white;
+}
+
+p {
+    font-family: Sinkin-Sans300Light;
+    color: #fff;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid white;
+    color: #fff;
+    font-family: Sinkin-Sans300Light;
+    font-size: 20px;
+    margin: 20px 0px;
+}
+
+input::placeholder {
+    color: #fff;
+    font-family: Sinkin-Sans300Light;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: none;
+}
+
+input[type=submit] {
+    font-family: Sinkin-Sans200XLight;
+    background-color: #87848C;
+    border: none;
+    font-size: 25px;
+}
+
+input[type=submit]:hover {
+    background-color: #26262E;
+}
+
+#login-card-wrapper {
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding: 5% 10%;
+}
+
+#login-card {
+    height: 100%;
+    width: 100%;
+}
+
+#login-card-left {
+    padding: 2% 5%;
+    background-color: #26262E;
+    height: 100%;
+}
+
+#login-card-right {
+    padding: 1% 5%;
+    background-color: #303038;
+    height: 100%;
+    /*padding-right: 10px;*/
+}
+
+#signup {
+    margin-top: 10%;
+}
+
+#login {
+    margin-top: 10%;
+}
+
+#or {
+    margin: 110px 0px 0px 0px;
+    padding-left: 25px;
+}
+
+.selected {
+    color: #fff;
+    border-bottom: 2px solid white;
+}
+
+.inline {
+    display: inline-block;
+}
+
+.center-vertically {
+    /*position: absolute;
+    top: 50%;
+    transform: translateY(-50%);*/
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hidden {
+    display: none;
+}
