@@ -30,11 +30,15 @@ function requestBarGraphData(minutes, max_sites)
 
 function get_minutes(chosenTimeframe) {
 	if (chosenTimeframe == "today") {
-		// TODO
+	    var now = new Date();
+      var beginningOfDay = new Date(now).setHours(0,0,0,0);
+      var mins = (now - beginningOfDay) / (1000 * 60);
+      return mins;
 	} else if (chosenTimeframe == "all") {
-		// TODO
+		return null;
 	} else {
 		console.log("Unknown timeframe ID: " + chosenTimeframe);
+		return 1440; // Just default to last 24 hours, I guess
 	}
 }
 
@@ -50,7 +54,6 @@ window.onload = function() {
 		} else {
 			minutes = get_minutes(chosenTimeframe);
 		}
-
 		requestBarGraphData(minutes, 5);
 });
 

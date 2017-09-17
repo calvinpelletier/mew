@@ -77,6 +77,9 @@ def get_last_x_days_summary(db, uid, x_days):
 
 
 def get_last_x_min(db, uid, x_min):
-    start_time = (time.time() - (x_min * 60.)) * 1000  # sec to ms
+    if x_min:
+        start_time = (time.time() - (x_min * 60.)) * 1000  # sec to ms
+    else:
+        start_time = None
     events = event_storage.select(db, uid, start_time)
     return events

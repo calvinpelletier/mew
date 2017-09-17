@@ -13,12 +13,19 @@ def insert(db, web_event):
 
 
 # start_time/end_time in unixtime (ms)
-def select(db, uid, start_time, end_time=None):
+def select(db, uid, start_time=None, end_time=None):
     c = db.cursor()
-    if end_time is None:
+
+    if start_time and end_time:
+        c.execute('SELECT hostname, ts FROM events WHERE uid = ? AND ts > ? AND ts < ? ORDER BY ts ASC',
+                  (uid, start_time, end_time))
+    elif start_time and not end_time:
         c.execute('SELECT hostname, ts FROM events WHERE uid = ? AND ts > ? ORDER BY ts ASC', (uid, start_time))
+    elif not start_time and end_time:
+        c.execute('SELECT hostname, ts FROM events WHERE uid = ? AND ts < ? ORDER BY ts ASC', (uid, end_time))
     else:
-        c.execute('SELECT hostname, ts FROM events WHERE uid = ? AND ts > ? AND ts < ? ORDER BY ts ASC', (uid, start_time, end_time))
+        c.execute('SELECT hostname, ts FROM events WHERE uid = ? ORDER BY ts ASC', (uid,))
+
     events = c.fetchall()
     c.close()
 
