@@ -10,6 +10,9 @@ from random import randint, choice
 _ = raw_input('WARNING: will overrite all data stored at $MEW_DB_PATH (press enter)')
 
 DB_PATH = os.environ.get('MEW_DB_PATH')
+if not DB_PATH:
+    print "You need to set $MEW_DB_PATH!"
+    exit(1)
 try:
     os.remove(DB_PATH)
 except OSError:
@@ -32,7 +35,9 @@ c.close()
 
 # days that will be populated
 today = calendar.timegm(datetime.date.today().timetuple()) * 1000
+now = calendar.timegm(datetime.datetime.now().timetuple()) * 1000
 days = [today]
+days.append(now - (1000 * 60 * 60)) # one hour ago
 days.append(today - (1000 * 60 * 60 * 24)) # one day ago
 days.append(today - (1000 * 60 * 60 * 48)) # two days ago
 days.append(today - (1000 * 60 * 60 * 24 * 7)) # one week ago
@@ -55,6 +60,8 @@ for timestamp in days:
     for _ in range(randint(5, 20)): # num site changes
         duration = randint(1000, 1000 * 60 * 60)
         timestamp += duration
+        if timestamp > now:
+            break
         hostname = prev_hostname
         while hostname == prev_hostname:
             hostname = choice(hostnames)
