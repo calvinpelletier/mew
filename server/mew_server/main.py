@@ -1,5 +1,6 @@
+import argparse
 import logging.config
-from os import environ, path, getcwd
+from os import environ, getcwd
 from collections import namedtuple
 from datetime import datetime
 
@@ -8,10 +9,19 @@ from util import *
 
 import authentication
 import event_storage
-from mew_server import event_analysis
+import event_analysis
+
+# Set up CLI args
+parser = argparse.ArgumentParser(description='Mew Server')
+parser.add_argument('-v', '--verbose', action='store_true', help="Verbose logging")
+cli_args = parser.parse_args()
 
 logging.config.fileConfig("config/logging.conf")
 lg = logging.getLogger("main")
+
+if cli_args.verbose:
+    lg.info("Using verbose logging.")
+    lg.level = logging.DEBUG
 
 DATABASE_PATH = None
 
