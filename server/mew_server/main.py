@@ -64,14 +64,15 @@ def graph():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    email = request.form['email']
-    password = request.form['password']
+    req_data = request.get_json()
+    email = req_data['email']
+    password = req_data['password']
     uid = authentication.authenticate(get_db(DATABASE_PATH), email, password)
     if uid is None:
         return gen_resp(False)
     else:
         session['uid'] = uid
-        return make_response(redirect('/graph'))
+        return gen_resp(True)
 
 
 @app.route('/api/logout')

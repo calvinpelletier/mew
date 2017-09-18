@@ -110,7 +110,7 @@ input[type=submit]:hover {
     padding-left: 25px;
 }
 
-#signup-error {
+.auth-error {
     color: red;
 }
 

@@ -37,7 +37,7 @@
                             <br>
                             <input type="submit" value="sign up">
                             <br>
-                            <div id="signup-error" class="hidden">Passwords do not match.</div>
+                            <div id="signup-error" class="auth-error hidden">Passwords do not match.</div>
                         </form>
                     </div>
                     <div id="or" class="col-sm-1">
@@ -55,12 +55,14 @@
                 </div>
                 <div id="login" class="row hidden">
                     <div class="col-sm-6">
-                        <form name="signin-form">
+                        <form name="login-form" onsubmit="login(); return false;">
                             <input type="text" name="email" placeholder="email">
                             <br>
-                            <input type="password" name="password" placeholder="password">
+                            <input id="login-password" type="password" name="password" placeholder="password">
                             <br>
-                            <input type="submit" value="login">
+                            <input id="login-submit" type="submit" value="login">
+                            <br>
+                            <div id="login-error" class="auth-error hidden">Incorrect password.</div>
                         </form>
                     </div>
                     <div id="or" class="col-sm-1">
