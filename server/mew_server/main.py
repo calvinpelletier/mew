@@ -26,7 +26,10 @@ DATABASE_PATH = None
 
 @app.route('/')
 def get_landing_page():
-    return render_template('index.html')
+    if 'uid' in session:
+        return make_response(redirect('/graph'))
+    else:
+        return render_template('login.html')
 
 
 @app.route('/guest/<token>')
@@ -48,6 +51,38 @@ def graph():
     fake_labels = ['reddit.com', 'facebook.com', 'youtube.com', 'OTHER']
     fake_values = [45, 28, 27, 36]
     return render_template('graph.html', labels=fake_labels, values=fake_values)
+
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    req_data = request.get_json()
+    email = req_data['email']
+    password = req_data['password']
+    uid = authentication.authenticate(get_db(DATABASE_PATH), email, password)
+    if uid is None:
+        return gen_resp(False)
+    else:
+        session['uid'] = uid
+        return gen_resp(True)
+
+
+@app.route('/api/logout')
+def logout():
+    session.pop('uid', None)
+    return redirect('/')
+
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    email = request.form['email']
+    password = request.form['password']
+    uid = authentication.add_user(get_db(DATABASE_PATH), email, password)
+    if uid is None:
+        # TODO: unique response for each error
+        pass
+    else:
+        session['uid'] = uid
+        return make_response(redirect('/graph'))
 
 
 @app.route('/api/gentoken', methods=['POST'])

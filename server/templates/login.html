@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>mew login</title>
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/login.css">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+</head>
+
+<body>
+    <div id="login-card-wrapper">
+        <div id="login-card" class="row">
+            <div id="login-card-left" class="col-sm-4">
+                <h1 class="text-center">mew</h1>
+                <br>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ac aliquet nibh, eget fringilla erat. Pellentesque varius consequat nibh eu varius. Nunc magna leo, imperdiet a nisi eget, venenatis dignissim nunc. Pellentesque a augue sed tortor mollis mollis quis eget lectus. Aenean quis egestas metus. Pellentesque a orci ante. Donec porta dignissim ligula non faucibus. Aliquam augue felis, mattis vel orci at, rutrum interdum nulla. Proin accumsan eu lectus a ullamcorper. Duis neque quam, posuere ac tellus vel, volutpat euismod ligula. Proin euismod, odio a finibus consequat, nisl justo mollis odio, quis gravida ligula purus id massa. Nam tincidunt pulvinar tellus, vel blandit tortor egestas id.</p>
+            </div>
+            <div id="login-card-right" class="col-sm-8">
+                <div class="row">
+                    <div class="inline" style="margin-right: 40px;">
+                        <h2 id="signup-link" class="selected" onclick="selectTab(event, 'signup')">sign up</h2>
+                    </div>
+                    <div class="inline">
+                        <h2 id="login-link" onclick="selectTab(event, 'login')">login</h2>
+                    </div>
+                </div>
+                <div id="signup" class="row">
+                    <div class="col-sm-6">
+                        <form name="signup-form" action="/api/signup" onsubmit="return validateSignUp()" method="post">
+                            <input type="text" name="email" placeholder="email">
+                            <br>
+                            <input type="password" name="password" placeholder="password">
+                            <br>
+                            <input type="password" name="password-re" placeholder="password again">
+                            <br>
+                            <input type="submit" value="sign up">
+                            <br>
+                            <div id="signup-error" class="auth-error hidden">Passwords do not match.</div>
+                        </form>
+                    </div>
+                    <div id="or" class="col-sm-1">
+                        <p>or</p>
+                    </div>
+                    <div class="col-sm-5">
+                        <form>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <input type="submit" value="sign up with google">
+                        </form>
+                    </div>
+                </div>
+                <div id="login" class="row hidden">
+                    <div class="col-sm-6">
+                        <form name="login-form" onsubmit="login(); return false;">
+                            <input type="text" name="email" placeholder="email">
+                            <br>
+                            <input id="login-password" type="password" name="password" placeholder="password">
+                            <br>
+                            <input id="login-submit" type="submit" value="login">
+                            <br>
+                            <div id="login-error" class="auth-error hidden">Incorrect password.</div>
+                        </form>
+                    </div>
+                    <div id="or" class="col-sm-1">
+                        <p>or</p>
+                    </div>
+                    <div class="col-sm-5">
+                        <form>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <input type="submit" value="login with google">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<script src="static/js/jquery-3.2.1.min.js"></script>
+	<script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/login.js"></script>
+</body>
