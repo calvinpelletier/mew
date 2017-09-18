@@ -5,11 +5,15 @@ from __future__ import absolute_import
 import os
 import shutil
 import sqlite3
+import logging.config
 import tempfile
 import unittest
 from json import loads, dumps
 
 from mew_server import main
+
+logging.config.fileConfig("config/logging.conf")
+lg = logging.getLogger("test")
 
 
 class TestMain(unittest.TestCase):
@@ -18,7 +22,7 @@ class TestMain(unittest.TestCase):
     def setUp(self):
         # self.db_fd, main.app.config['DATABASE'] = tempfile.mkstemp()
         self.tmp_dir = tempfile.mkdtemp(prefix="mewtest_")
-        print "Created testing directory in %s" % self.tmp_dir
+        lg.info("Created testing directory in %s" % self.tmp_dir)
         self.db_path = os.path.join(self.tmp_dir, "test.db")
         os.environ["MEW_DB_PATH"] = self.db_path
 
@@ -30,7 +34,7 @@ class TestMain(unittest.TestCase):
         conn.commit()
         c.close()
 
-        print "Initialized DB at %s" % self.db_path
+        lg.info("Initialized DB at %s" % self.db_path)
         conn.close()
 
         main.app.testing = True

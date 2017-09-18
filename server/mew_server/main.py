@@ -11,23 +11,14 @@ import authentication
 import event_storage
 import event_analysis
 
-# Set up CLI args
-parser = argparse.ArgumentParser(description='Mew Server')
-parser.add_argument('-v', '--verbose', action='store_true', help="Verbose logging")
-cli_args = parser.parse_args()
+WebEvent = namedtuple("WebEvent", "token hostname time")
+
+app = Flask(__name__, root_path=getcwd(), static_url_path="/static")
 
 logging.config.fileConfig("config/logging.conf")
 lg = logging.getLogger("main")
 
-if cli_args.verbose:
-    lg.info("Using verbose logging.")
-    lg.level = logging.DEBUG
-
 DATABASE_PATH = None
-
-WebEvent = namedtuple("WebEvent", "token hostname time")
-
-app = Flask(__name__, root_path=getcwd(), static_url_path="/static")
 
 #########################################
 # ENDPOINTS
@@ -162,5 +153,14 @@ def setup():
 
 
 if __name__ == "__main__":
+    # Set up CLI args
+    parser = argparse.ArgumentParser(description='Mew Server')
+    parser.add_argument('-v', '--verbose', action='store_true', help="Verbose logging")
+    cli_args = parser.parse_args()
+
+    if cli_args.verbose:
+        lg.info("Using verbose logging.")
+        lg.level = logging.DEBUG
+
     setup()
     app.run(host='127.0.0.1', debug=True)
