@@ -110,6 +110,10 @@ input[type=submit]:hover {
     padding-left: 25px;
 }
 
+#signup-error {
+    color: red;
+}
+
 .selected {
     color: #fff;
     border-bottom: 2px solid white;

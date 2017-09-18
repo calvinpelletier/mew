@@ -28,7 +28,7 @@
                 </div>
                 <div id="signup" class="row">
                     <div class="col-sm-6">
-                        <form>
+                        <form name="signup-form" action="/api/signup" onsubmit="return validateSignUp()" method="post">
                             <input type="text" name="email" placeholder="email">
                             <br>
                             <input type="password" name="password" placeholder="password">
@@ -36,6 +36,8 @@
                             <input type="password" name="password-re" placeholder="password again">
                             <br>
                             <input type="submit" value="sign up">
+                            <br>
+                            <div id="signup-error" class="hidden">Passwords do not match.</div>
                         </form>
                     </div>
                     <div id="or" class="col-sm-1">
@@ -53,7 +55,7 @@
                 </div>
                 <div id="login" class="row hidden">
                     <div class="col-sm-6">
-                        <form>
+                        <form name="signin-form">
                             <input type="text" name="email" placeholder="email">
                             <br>
                             <input type="password" name="password" placeholder="password">

@@ -12,9 +12,11 @@ def add_user(db, email, password):
 
     c = db.cursor()
     c.execute('INSERT INTO users VALUES (NULL, ?, ?, ?)', (email, password_hash, password_salt))
+    uid = c.lastrowid
     db.commit()
     c.close()
 
+    return uid
 
 def add_guest(db, token):
     c = db.cursor()
@@ -27,7 +29,7 @@ def add_guest(db, token):
     return uid
 
 
-# return boolean for success/fail
+# return uid for success and None for fail
 def authenticate(db, email, password):
     c = db.cursor()
     c.execute('SELECT * FROM users WHERE email=?', (email,))
@@ -35,16 +37,17 @@ def authenticate(db, email, password):
     c.close()
 
     if user is None:
-        return False  # incorrect username
+        return None  # incorrect username
 
     # TODO: find a way to access columns by name so we dont have to update this every time we change the table schema
+    uid = user[1]
     password_hash = user[2]
     password_salt = user[3]
 
     if hashlib.sha512(password + password_salt).hexdigest() != password_hash:
-        return False  # incorrect password
+        return None  # incorrect password
 
-    return True
+    return uid
 
 
 def token_to_uid(db, token):
