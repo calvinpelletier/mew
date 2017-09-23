@@ -146,15 +146,21 @@ def get_bar_graph_data():
 @app.route('/api/stackedgraph', methods=['POST'])
 def get_stacked_graph_data():
     req_data = request.get_json()
+
+    if not req_data:
+        return gen_resp("False")
+
     num_days = req_data['days']
+    timezone_offset = req_data['timezone_offset']
 
     if 'uid' in session:
         uid = session['uid']
     else:
         # not logged in
-        return gen_resp(False)
+        return gen_resp(False, {"reason": "No uid found."})
 
-    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, num_days)
+    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, timezone_offset, num_days)
+    lg.debug(summary)
     return gen_resp(True, summary)
 
 
