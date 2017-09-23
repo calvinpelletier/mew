@@ -14,11 +14,16 @@ from core import authentication
 from core import event_storage
 from core import event_analysis
 
+MEW_PATH = environ.get('MEW_PATH')
+if not MEW_PATH:
+    print 'You need to set $MEW_PATH.'
+    exit(1)
+
 WebEvent = namedtuple("WebEvent", "token hostname time")
 
 app = Flask(__name__, root_path=getcwd(), static_url_path="/static")
 
-logging.config.fileConfig("config/logging.conf")
+logging.config.fileConfig(os.path.join(MEW_PATH, "server/config/logging.conf"))
 lg = logging.getLogger("main")
 
 DATABASE_PATH = None

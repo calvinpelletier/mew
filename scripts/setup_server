@@ -3,6 +3,8 @@ sudo apt upgrade
 sudo apt install python-pip
 sudo apt install apache2
 sudo apt install libapache2-mod-wsgi
+sudo pip install --upgrade requests
 sudo pip install --upgrade google-auth
+sudo pip install --upgrade google-api-python-client
 sudo pip install --upgrade flask
 sudo pip install --upgrade virtualenv
