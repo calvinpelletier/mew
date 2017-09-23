@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="static/css/style.css">
     <link rel="stylesheet" href="static/css/login.css">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="385569473349-1192ich7o73apbpmu48c4lc32soqgqjk.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 
 <body>
@@ -27,7 +30,7 @@
                     </div>
                 </div>
                 <div id="signup" class="row">
-                    <div class="col-sm-6">
+                    <div class="col-md-6">
                         <form name="signup-form" action="/api/signup" onsubmit="return validateSignUp()" method="post">
                             <input type="text" name="email" placeholder="email">
                             <br>
@@ -40,17 +43,11 @@
                             <div id="signup-error" class="auth-error hidden">Passwords do not match.</div>
                         </form>
                     </div>
-                    <div id="or" class="col-sm-1">
+                    <div id="or" class="col-md-1">
                         <p>or</p>
                     </div>
-                    <div class="col-sm-5">
-                        <form>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <input type="submit" value="sign up with google">
-                        </form>
+                    <div class="col-md-5">
+                        <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
                     </div>
                 </div>
                 <div id="login" class="row hidden">
@@ -69,13 +66,7 @@
                         <p>or</p>
                     </div>
                     <div class="col-sm-5">
-                        <form>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <input type="submit" value="login with google">
-                        </form>
+                        <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
                     </div>
                 </div>
             </div>

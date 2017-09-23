@@ -79,6 +79,14 @@ input[type=submit]:hover {
     padding: 5% 10%;
 }
 
+/* Smartphones (portrait) ----------- */
+@media only screen
+and (max-width : 320px) {
+    #login-card-wrapper {
+        padding: 0px;
+    }
+}
+
 #login-card {
     height: 100%;
     width: 100%;

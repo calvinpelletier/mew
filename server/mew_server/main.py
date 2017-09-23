@@ -7,6 +7,9 @@ from datetime import datetime
 from flask import Flask, render_template, request, make_response, redirect, session
 from util import *
 
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
 import authentication
 import event_storage
 import event_analysis
@@ -57,8 +60,21 @@ def graph():
 def login():
     req_data = request.get_json()
     email = req_data['email']
-    password = req_data['password']
-    uid = authentication.authenticate(get_db(DATABASE_PATH), email, password)
+    if 'google_token' in req_data:
+        token = req_data['google_token']
+        try:
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), '385569473349-1192ich7o73apbpmu48c4lc32soqgqjk.apps.googleusercontent.com')
+            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                # someone is trying to fuck with us
+                return gen_resp(False) # TODO: log
+            google_uid = idinfo['sub']
+        except ValueError:
+            # invalid google token
+            return gen_resp(False) # TODO: log
+        uid = authentication.google_auth(get_db(DATABASE_PATH), email, google_uid)
+    else:
+        password = req_data['password']
+        uid = authentication.authenticate(get_db(DATABASE_PATH), email, password)
     if uid is None:
         return gen_resp(False)
     else:

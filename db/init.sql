@@ -15,3 +15,8 @@ CREATE TABLE IF NOT EXISTS tokens (
     token CHAR(32),
     uid INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS google (
+    google_uid INTEGER,
+    uid INTEGER
+);

@@ -50,6 +50,26 @@ def authenticate(db, email, password):
     return uid
 
 
+def google_auth(db, email, google_uid):
+    c = db.cursor()
+    c.execute('SELECT * FROM google WHERE google_uid=?', (google_uid,))
+    user = c.fetchone()
+    c.close()
+
+    if user is None:
+        # create user
+        c = db.cursor()
+        c.execute('INSERT INTO users VALUES (NULL, email, NULL, NULL)')
+        uid = c.lastrowid
+        c.execute('INSERT INTO google VALUES (?, ?)', (google_uid, uid))
+        db.commit()
+        c.close()
+    else:
+        uid = user[2]
+
+    return uid
+
+
 def token_to_uid(db, token):
     c = db.cursor()
     c.execute('SELECT uid FROM tokens WHERE token=?', (token,))
