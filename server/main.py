@@ -5,14 +5,14 @@ from collections import namedtuple
 from datetime import datetime
 
 from flask import Flask, render_template, request, make_response, redirect, session
-from util import *
+from core.util import *
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
-import authentication
-import event_storage
-import event_analysis
+from core import authentication
+from core import event_storage
+from core import event_analysis
 
 WebEvent = namedtuple("WebEvent", "token hostname time")
 
