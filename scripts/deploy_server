@@ -1,2 +1,3 @@
 sudo cp /var/www/mew/mew.conf /etc/apache2/sites-available/
+sudo a2ensite mew
 sudo service apache2 restart
