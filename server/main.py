@@ -1,6 +1,6 @@
 import argparse
 import logging.config
-from os import environ, getcwd
+from os import environ, getcwd, path
 from collections import namedtuple
 from datetime import datetime
 
@@ -23,7 +23,7 @@ WebEvent = namedtuple("WebEvent", "token hostname time")
 
 app = Flask(__name__, root_path=getcwd(), static_url_path="/static")
 
-logging.config.fileConfig(os.path.join(MEW_PATH, "server/config/logging.conf"))
+logging.config.fileConfig(path.join(MEW_PATH, "server/config/logging.conf"))
 lg = logging.getLogger("main")
 
 DATABASE_PATH = None
