@@ -1,24 +1,49 @@
-// Map from checkbox id to duration, in minutes
-var MINUTE_DURATIONS = {
-  "last-week" : 10080,
-  "last-month" : 44640,
-  "last-3-months" : 132480,
-  "last-year": 525600,
-  "all": null
+function filterAndDrawLineGraph(minutes, domains) {
+	console.log("Drawing line graph for last " + minutes + " minutes, and for " + domains.length + " domains.")
+	data = filter(window.raw_line_graph_data.data, domains, minutes);
+	console.log(data);
+	drawLineGraph(data["x"], data["y"], "chart1");
 }
 
-var MS_PER_MINUTE = 60000;
-var MS_PER_DAY = MS_PER_MINUTE * 60 * 24;
+function requestLineGraphData() {
+	if (typeof window.raw_line_graph_data !== "undefined") {
+		filterAndDrawLineGraph(getLineGraphMinutes(), getSelectedHostnames());
+		return;
+	}
+
+	// Note: we always fetch all day, it's just filtered to a timespan later.
+	var postData = {
+		"days": null,
+		"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
+	};
+
+	// Get graph data from server.
+	$.post({
+		url: '/api/stackedgraph',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify(postData),
+		success: function(response) {
+			console.log("Success! " + response);
+			window.raw_line_graph_data = response;
+			createHostnameCheckboxes(window.raw_line_graph_data.hostnames);
+			filterAndDrawLineGraph(getLineGraphMinutes(), getSelectedHostnames());
+		},
+		fail: function() {
+			// TODO: what happens here?
+		}
+	});
+}
 
 // Returns a list of hostnames based on which checkboxes are
 // selected for the line graph
-function get_selected_hostnames() {
+function getSelectedHostnames() {
   return $('.form-check-input:checkbox:checked').map(function(i, checkbox) {
     return checkbox.value;
   }).get();
 }
 
-function get_minutes_in_timeframe() {
+function getLineGraphMinutes() {
   timeframeId = $('input.timeframe-choice:checked', '#chart1-options').attr('id');
   if (timeframeId in MINUTE_DURATIONS) {
     minutes = MINUTE_DURATIONS[timeframeId];
@@ -48,7 +73,7 @@ function createHostnameCheckbox(hostname, checked) {
   });
 
   $checkbox.change(function() {
-    requestLineGraphData(get_minutes_in_timeframe(), get_selected_hostnames());
+    requestLineGraphData(getLineGraphMinutes(), getSelectedHostnames());
   });
 
   $label.append($checkbox);
@@ -93,7 +118,7 @@ function filter(summaryData, domains, minutes) {
   if (minutes) {
     startTime = new Date(new Date().getTime() - MS_PER_MINUTE * minutes).getTime() / 1000;
     var filteredData = summaryData.filter(function(summarizedDay){
-      return summarizedDay.date >= startTime
+      return summarizedDay.date >= startTime;
     });
     // TODO: we'll need to filter domains, too
   } else {
@@ -101,7 +126,7 @@ function filter(summaryData, domains, minutes) {
   }
 
   domains.forEach(function(d) {
-    y[d] = []
+    y[d] = [];
   });
 
   filteredData.forEach(function(day) {
@@ -121,7 +146,7 @@ function drawLineGraph(timestamp_labels, data, divId) {
   chartDiv = document.getElementById(divId);
   console.log("Data for line graph, inside drawing function: "
               + JSON.stringify(data));
-  var plotData = [];
+  var chartData = [];
 
   for (var domain in data) {
     line = {
@@ -136,16 +161,13 @@ function drawLineGraph(timestamp_labels, data, divId) {
         if (duration > 0) {
           return domain + ": " + formatTime(duration);
         }
-
       })
     };
-    plotData.push(line);
+    chartData.push(line);
   }
 
-  layout = {
-        // hovermode: !1,
-  };
+  layout = {};
 
   Plotly.purge(chartDiv);
-  Plotly.plot(chartDiv, plotData, layout);
+  Plotly.plot(chartDiv, chartData, layout);
 }
