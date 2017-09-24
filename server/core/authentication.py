@@ -1,5 +1,8 @@
 import hashlib
+import logging
 import uuid
+
+lg = logging.getLogger("main")
 
 
 def add_user(db, email, password):
@@ -25,6 +28,8 @@ def add_guest(db, token):
     c.execute('INSERT INTO tokens VALUES (?, ?)', (token, uid))
     db.commit()
     c.close()
+
+    lg.info("Added new guest with uid=%d, token=%s", uid, token)
 
     return uid
 
