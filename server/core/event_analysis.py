@@ -17,7 +17,7 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
     for event in events:
         hostname = event[0]
         ts = event[1]
-        if prev_ts is not None:
+        if prev_ts is not None and prev_hostname is not None:
             if ts < prev_ts:
                 # something went horribly wrong in our database
                 # or someone removed ORDER BY from select statement
