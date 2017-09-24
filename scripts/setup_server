@@ -3,6 +3,7 @@ sudo apt upgrade
 sudo apt install python-pip
 sudo apt install apache2
 sudo apt install libapache2-mod-wsgi
+sudo apt install sqlite3
 sudo pip install --upgrade requests
 sudo pip install --upgrade google-auth
 sudo pip install --upgrade google-api-python-client
