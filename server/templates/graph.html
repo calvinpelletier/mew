@@ -12,7 +12,7 @@
 
 <body>
 <div id="container" style="width: 75%;">
-    <canvas id="chart0"></canvas>
+    <div id="chart0"></div>
     <div id="chart0-options" class="btn-group" data-toggle="buttons">
         <label class="btn btn-primary">
             <input type="radio" name="options" id="last-hour" class="timeframe-choice" autocomplete="off">Last Hour
@@ -65,7 +65,8 @@
 
 </div>
 </div>
-<script src="{{ url_for('static', filename='js/gen_graph.js') }}"></script>
+<script src="{{ url_for('static', filename='js/util.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bar_graph.js') }}"></script>
 <script src="{{ url_for('static', filename='js/line_graph.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

@@ -19,7 +19,8 @@ function requestBarGraphData(minutes, max_sites)
 		dataType: 'json',
 		data: JSON.stringify(postData),
 		success: function(response) {
-            title = "Last 24 Hours - Total Time: " + formatTime(response.total);
+      title = "Last 24 Hours - Total Time: " + formatTime(response.total);
+			console.log(JSON.stringify(response));
 			drawBarGraph(response.labels, response.values, "chart0", title);
 		},
 		fail: function() {
