@@ -62,7 +62,11 @@ function drawBarGraph(labels, values, divId, title) {
     xaxis: {title: 'Minutes Spent'},
     yaxis: {title: 'Website'},
     margin: {t: 20},
-    hovermode: 'closest'
+    hovermode: 'closest',
+    title: title,
+    margin: {
+      b: 90
+    }
   };
 
   Plotly.purge(chartDiv);

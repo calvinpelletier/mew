@@ -38,9 +38,15 @@
 div#container {
   width: 80%;
   margin-left: 10%;
+  text-align: center;
+  padding: 50px 0 100px 0;
+}
+
+div#chart1-container {
+  margin-top: 100px;
 }
 
 div#hostnameCheckboxes {
-  height: 600px;
+  height: 400px;
   overflow-y: scroll;
 }
