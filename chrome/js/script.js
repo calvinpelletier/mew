@@ -1,4 +1,4 @@
-SERVER_BASE_URL = "http://127.0.0.1:5000"
+SERVER_BASE_URL = "http://ec2-54-212-225-107.us-west-2.compute.amazonaws.com"
 
 console.log("Started background script for Mew.");
 
@@ -132,4 +132,3 @@ function setup_browser_action() {
 }
 
 setup();
-
