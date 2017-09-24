@@ -171,11 +171,18 @@ def get_stacked_graph_data():
     return gen_resp(True, summary)
 
 
-@app.route('/api/debug/data', methods=['POST'])
+@app.route('/api/debug/data', methods=['GET'])
 def get_user_website_data():
-    db = get_db(DATABASE_PATH)
-    uid = int(request.args.get('uid'))
+
     mins = float(request.args.get('minutes'))
+
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        # not logged in
+        return gen_resp(False, {"reason": "No uid found."})
+
+    db = get_db(DATABASE_PATH)
     events = event_analysis.get_last_x_min(db, uid, mins)
 
     result = []
