@@ -1,5 +1,7 @@
+import calendar
 from collections import defaultdict
 import datetime
+import pytz
 import time
 
 import event_storage
@@ -15,7 +17,7 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
     for event in events:
         hostname = event[0]
         ts = event[1]
-        if prev_ts is not None:
+        if prev_ts is not None and prev_hostname is not None:
             if ts < prev_ts:
                 # something went horribly wrong in our database
                 # or someone removed ORDER BY from select statement
@@ -39,7 +41,7 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
     return ret
 
 
-def get_last_x_days_summary(db, uid, timezone_offset, x_days=None):
+def get_last_x_days_summary(db, uid, timezone_name, x_days=None):
     if x_days:
         date = datetime.date.today() - datetime.timedelta(days=x_days)
         start_time = calendar.timegm(date.timetuple()) * 1000
@@ -47,50 +49,55 @@ def get_last_x_days_summary(db, uid, timezone_offset, x_days=None):
         start_time = None
     events = event_storage.select(db, uid, start_time)
 
+    # Initialize a list of datetimes, one for each day
+    tz_obj = pytz.timezone(timezone_name)
+    first_timestamp = datetime.datetime.utcfromtimestamp(events[0][1] / 1000).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
+    first_day = calendar.timegm(first_timestamp.date().timetuple())
+
+    # Map from unixtime -> {hostname: time spent} (which is a defaultdict(int)
+    bucketed_data = {
+        ut: defaultdict(int) for ut in range(first_day, int(time.time()), 86400)
+    }
+
     durations_per_host = defaultdict(int)
 
     prev_ts = None
     prev_hostname = None
-    ret = []
+
     total = 0.
     for event in events:
         hostname = event[0]
         ts = event[1]
         date = ts / 1000
-        user_ts = datetime.datetime.utcfromtimestamp(date) - datetime.timedelta(minutes=timezone_offset)
-        user_day = datetime.datetime(year=user_ts.year, month=user_ts.month, day=user_ts.day)
-        user_day_unixtime = time.mktime((user_day + datetime.timedelta(minutes=timezone_offset)).timetuple())
 
-        if prev_ts is not None:
-            if ts < prev_ts:
-                raise Exception('events not in order')
-            if ret[-1]['date'] != user_day_unixtime:
-                ret[-1]['summary']['total'] = total
-                total = 0.
+        # Event timestamp, in user's local timezone
+        user_ts = datetime.datetime.utcfromtimestamp(date).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
+        user_day = user_ts.date()
 
-                ret.append({
-                    'date': user_day_unixtime,
-                    'summary': {}
-                })
-            mins_elapsed = (ts - prev_ts) / (1000. * 60.) # ms to min
-            if prev_hostname in ret[-1]['summary']:
-                ret[-1]['summary'][prev_hostname] += mins_elapsed
-            else:
-                ret[-1]['summary'][prev_hostname] = mins_elapsed
+        # A unixtime for midnight (in UTC!) of the day of this timestamp,
+        # ***where the date is determined by the local time, NOT by UTC***
+        utc_day_start = calendar.timegm(user_day.timetuple())
+
+        # Ignore nulls, they mean the user wasn't even in Chrome.
+        if prev_ts is not None and prev_hostname is not None:
+            mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
+            bucketed_data[utc_day_start][prev_hostname] += mins_elapsed
             durations_per_host[prev_hostname] += mins_elapsed
-            total += mins_elapsed
-        else:
-            ret.append({
-                'date': user_day_unixtime,
-                'summary': {}
-            })
         prev_ts = ts
         prev_hostname = hostname
+
+    final_data = sorted([
+        {
+            "date" : utc_day,
+            "summary" : summary_data
+        }
+        for utc_day, summary_data in bucketed_data.items()
+    ], key=lambda o: o["date"])
 
     hostnames = map(lambda (host,_): host, sorted(durations_per_host.items(), key=lambda (_, dur): dur, reverse=True))
 
     return {
-        "data": ret,
+        "data": final_data,
         "hostnames": hostnames
     }
 

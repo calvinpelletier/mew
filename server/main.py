@@ -19,11 +19,6 @@ if not MEW_PATH:
     print 'You need to set $MEW_PATH.'
     exit(1)
 
-DATABASE_PATH = environ.get('MEW_DB_PATH')
-if not DATABASE_PATH:
-    print 'You need to set $MEW_DB_PATH.'
-    exit(1)
-
 WebEvent = namedtuple("WebEvent", "token hostname time")
 
 app = Flask(__name__, root_path=path.join(MEW_PATH, 'server/'), static_url_path="/static")
@@ -50,13 +45,14 @@ def get_landing_page():
 def redirect_guest(token):
     redirect_to_index = redirect('/graph')
     response = make_response(redirect_to_index)
+
     uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
-    if uid:
-        session['uid'] = uid
-        lg.info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
-    else:
-        lg.error("Couldn't find uid for token %s" % token)
-        # return error?
+    if uid is None:
+        uid = authentication.add_guest(get_db(DATABASE_PATH), token)
+
+    session['uid'] = uid
+    lg.info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
+
     return response
 
 
@@ -148,7 +144,7 @@ def get_bar_graph_data():
         uid = session['uid']
     else:
         # not logged in
-        return gen_resp(False)
+        return gen_resp(False, {"reason": "No uid found."})
 
     summary = event_analysis.get_last_x_min_summary(get_db(DATABASE_PATH), uid, num_minutes, max_sites)
     return gen_resp(True, summary)
@@ -162,7 +158,7 @@ def get_stacked_graph_data():
         return gen_resp("False")
 
     num_days = req_data['days']
-    timezone_offset = req_data['timezone_offset']
+    timezone = req_data['timezone']
 
     if 'uid' in session:
         uid = session['uid']
@@ -170,7 +166,7 @@ def get_stacked_graph_data():
         # not logged in
         return gen_resp(False, {"reason": "No uid found."})
 
-    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, timezone_offset, num_days)
+    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, timezone, num_days)
     lg.debug(summary)
     return gen_resp(True, summary)
 
@@ -205,6 +201,14 @@ def close_connection(exception):
         db.close()
 
 
+def setup():
+    global DATABASE_PATH
+    DATABASE_PATH = environ.get('MEW_DB_PATH')
+    if not DATABASE_PATH:
+        print 'You need to set $MEW_DB_PATH.'
+        exit(1)
+
+
 #########################################
 # MAIN ENTRY POINT OF FLASK APP
 #########################################
@@ -218,5 +222,6 @@ if __name__ == "__main__":
     if cli_args.verbose:
         lg.info("Using verbose logging.")
         lg.level = logging.DEBUG
+    setup()
 
     app.run(host='127.0.0.1', debug=True)
