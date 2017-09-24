@@ -10,8 +10,6 @@ import tempfile
 import unittest
 from json import loads, dumps
 
-from mew_server import main
-
 logging.config.fileConfig("config/logging.conf")
 lg = logging.getLogger("test")
 
@@ -20,11 +18,12 @@ class TestMain(unittest.TestCase):
     tmp_dir = None
 
     def setUp(self):
-        # self.db_fd, main.app.config['DATABASE'] = tempfile.mkstemp()
         self.tmp_dir = tempfile.mkdtemp(prefix="mewtest_")
         lg.info("Created testing directory in %s" % self.tmp_dir)
         self.db_path = os.path.join(self.tmp_dir, "test.db")
         os.environ["MEW_DB_PATH"] = self.db_path
+
+        import main
 
         # Initialize the DB
         init_qry = open('../db/init.sql', 'r').read()
@@ -38,17 +37,17 @@ class TestMain(unittest.TestCase):
         conn.close()
 
         main.app.testing = True
-        main.setup()
         self.app = main.app.test_client()
 
     def tearDown(self):
         shutil.rmtree(self.tmp_dir)
+        lg.info("Cleaned up testing directory at %s", self.tmp_dir)
 
     def test_gen_token(self):
         rv = self.app.post('/api/gentoken')
         response_data = loads(rv.data)
         self.assertTrue(response_data["success"])
-        self.assertIsNotNone(response_data["token"])
+        self.assertEqual(len(response_data["token"]), 32)
 
     def test_addevent(self):
         post_data = {
@@ -57,7 +56,7 @@ class TestMain(unittest.TestCase):
             "time": 1505682964
         }
         rv = self.app.post('/api/addevent', data=dumps(post_data), headers={"content-type": "application/json"})
-        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.status_code, 200, msg="Received %d response from /api/addevent" % rv.status_code)
 
 
 if __name__ == '__main__':
