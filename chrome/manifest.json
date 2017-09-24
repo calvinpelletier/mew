@@ -12,6 +12,7 @@
     "storage",
     "tabs",
     "webNavigation",
+    "http://ec2-54-212-225-107.us-west-2.compute.amazonaws.com/",
     "http://127.0.0.1:5000/"
   ],
   "background": {

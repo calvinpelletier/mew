@@ -1,0 +1,1 @@
+sqlite3 /var/www/mew/db/prod.db -init /var/www/mew/db/init.sql

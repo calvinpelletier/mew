@@ -1,6 +1,6 @@
 import argparse
 import logging.config
-from os import environ, getcwd
+from os import environ, getcwd, path
 from collections import namedtuple
 from datetime import datetime
 
@@ -14,14 +14,25 @@ from core import authentication
 from core import event_storage
 from core import event_analysis
 
+MEW_PATH = environ.get('MEW_PATH')
+if not MEW_PATH:
+    print 'You need to set $MEW_PATH.'
+    exit(1)
+
+DATABASE_PATH = environ.get('MEW_DB_PATH')
+if not DATABASE_PATH:
+    print 'You need to set $MEW_DB_PATH.'
+    exit(1)
+
 WebEvent = namedtuple("WebEvent", "token hostname time")
 
-app = Flask(__name__, root_path=getcwd(), static_url_path="/static")
+app = Flask(__name__, root_path=path.join(MEW_PATH, 'server/'), static_url_path="/static")
 
-logging.config.fileConfig("config/logging.conf")
+logging.config.fileConfig(path.join(MEW_PATH, "server/config/logging.conf"))
 lg = logging.getLogger("main")
 
-DATABASE_PATH = None
+with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
+    app.secret_key = secret_key_file.readline()
 
 #########################################
 # ENDPOINTS
@@ -198,17 +209,6 @@ def close_connection(exception):
 # MAIN ENTRY POINT OF FLASK APP
 #########################################
 
-def setup():
-    global DATABASE_PATH
-    DATABASE_PATH = environ.get('MEW_DB_PATH')
-    if not DATABASE_PATH:
-        lg.error("You need to set $MEW_DB_PATH!")
-        exit(1)
-    # Read secret key
-    with open("secret_key") as secret_key_file:
-        app.secret_key = secret_key_file.readline()
-
-
 if __name__ == "__main__":
     # Set up CLI args
     parser = argparse.ArgumentParser(description='Mew Server')
@@ -219,5 +219,4 @@ if __name__ == "__main__":
         lg.info("Using verbose logging.")
         lg.level = logging.DEBUG
 
-    setup()
     app.run(host='127.0.0.1', debug=True)
