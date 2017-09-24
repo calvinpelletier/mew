@@ -15,6 +15,23 @@ function selectTab(e, which) {
 }
 
 function validateSignUp() {
+    $('#signup-error').addClass('hidden');
+    $('#email-error').addClass('hidden');
+    return validateEmail() && validatePasswordMatch();
+}
+
+function validateEmail() {
+    var email = document.forms['signup-form']['email'].value;
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (re.test(email)) {
+        return true;
+    } else {
+        $('#email-error').removeClass('hidden');
+        return false;
+    }
+}
+
+function validatePasswordMatch() {
     var form = document.forms['signup-form'];
     if (form['password'].value != form['password-re'].value) {
         $('#signup-error').removeClass('hidden');
@@ -54,18 +71,8 @@ function login() {
 }
 
 function onGoogleSignIn(googleUser) {
-    // Useful data for your client-side scripts:
     var profile = googleUser.getBasicProfile();
-    console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-    console.log('Full Name: ' + profile.getName());
-    console.log('Given Name: ' + profile.getGivenName());
-    console.log('Family Name: ' + profile.getFamilyName());
-    console.log("Image URL: " + profile.getImageUrl());
-    console.log("Email: " + profile.getEmail());
-
-    // The ID token you need to pass to your backend:
     var id_token = googleUser.getAuthResponse().id_token;
-    console.log("ID Token: " + id_token);
 
     var postData = {
         'email': profile.getEmail(),
