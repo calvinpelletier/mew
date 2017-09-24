@@ -162,7 +162,7 @@ def get_stacked_graph_data():
         return gen_resp("False")
 
     num_days = req_data['days']
-    timezone_offset = req_data['timezone_offset']
+    timezone = req_data['timezone']
 
     if 'uid' in session:
         uid = session['uid']
@@ -170,7 +170,7 @@ def get_stacked_graph_data():
         # not logged in
         return gen_resp(False, {"reason": "No uid found."})
 
-    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, timezone_offset, num_days)
+    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, timezone, num_days)
     lg.debug(summary)
     return gen_resp(True, summary)
 
