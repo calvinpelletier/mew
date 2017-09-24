@@ -12,7 +12,7 @@ h1 {
     font-family: Sinkin-Sans100Thin;
     color: #fff;
     font-size: 50px;
-    margin-bottom: 10%;
+    margin-bottom: 30px;
 }
 
 h2 {
@@ -62,12 +62,14 @@ input:focus {
 
 input[type=submit] {
     font-family: Sinkin-Sans200XLight;
-    background-color: #87848C;
+    background-color: #aacfed;
+    color: #000;
     border: none;
     font-size: 25px;
 }
 
 input[type=submit]:hover {
+    color: #fff;
     background-color: #26262E;
 }
 
@@ -79,17 +81,10 @@ input[type=submit]:hover {
     padding: 5% 10%;
 }
 
-/* Smartphones (portrait) ----------- */
-@media only screen
-and (max-width : 320px) {
-    #login-card-wrapper {
-        padding: 0px;
-    }
-}
-
 #login-card {
     height: 100%;
     width: 100%;
+    margin: 0px;
 }
 
 #login-card-left {
@@ -99,23 +94,37 @@ and (max-width : 320px) {
 }
 
 #login-card-right {
-    padding: 1% 5%;
     background-color: #303038;
     height: 100%;
-    /*padding-right: 10px;*/
+    text-align: center;
 }
 
-#signup {
-    margin-top: 10%;
+.login-card-right-main {
+    margin-top: 90px;
 }
 
-#login {
-    margin-top: 10%;
+.login-card-right-header {
+    padding-top: 15px;
 }
 
-#or {
-    margin: 110px 0px 0px 0px;
-    padding-left: 25px;
+.default-signup {
+    padding: 0px 20px;
+}
+
+.or {
+    margin-top: 110px;
+}
+
+.google-signup {
+    margin-top: 95px;
+}
+
+.center-parent {
+    text-align: center;
+}
+
+.center-child {
+    display: inline-block;
 }
 
 .auth-error {
@@ -132,7 +141,6 @@ and (max-width : 320px) {
 }
 
 .center-vertically {
-    /*position: absolute;
     top: 50%;
     transform: translateY(-50%);*/
     height: 100%;
@@ -143,4 +151,52 @@ and (max-width : 320px) {
 
 .hidden {
     display: none;
+}
+
+@media only screen
+and (max-width : 1199px) {
+    .or {
+        margin-top: 10px;
+    }
+
+    .google-signup {
+        margin-top: 10px;
+    }
+
+    .default-signup {
+        padding: 0px 40px;
+    }
+}
+
+@media only screen
+and (max-width : 900px) {
+    #login-card-wrapper {
+        padding: 0px;
+    }
+}
+
+@media only screen
+and (max-width : 767px) {
+    #login-card-left {
+        height: auto;
+    }
+    .login-card-right-main {
+        margin-top: 20px;
+    }
+}
+
+@media only screen
+and (max-width : 300px) {
+    #login-card-left {
+        height: auto;
+    }
+    .login-card-right-main {
+        margin-top: 20px;
+    }
+    .default-signup {
+        padding: 0px 5px;
+    }
+    .google-signup {
+        padding: 0px 5px;
+    }
 }

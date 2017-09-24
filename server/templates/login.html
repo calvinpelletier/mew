@@ -18,10 +18,10 @@
             <div id="login-card-left" class="col-sm-4">
                 <h1 class="text-center">mew</h1>
                 <br>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ac aliquet nibh, eget fringilla erat. Pellentesque varius consequat nibh eu varius. Nunc magna leo, imperdiet a nisi eget, venenatis dignissim nunc. Pellentesque a augue sed tortor mollis mollis quis eget lectus. Aenean quis egestas metus. Pellentesque a orci ante. Donec porta dignissim ligula non faucibus. Aliquam augue felis, mattis vel orci at, rutrum interdum nulla. Proin accumsan eu lectus a ullamcorper. Duis neque quam, posuere ac tellus vel, volutpat euismod ligula. Proin euismod, odio a finibus consequat, nisl justo mollis odio, quis gravida ligula purus id massa. Nam tincidunt pulvinar tellus, vel blandit tortor egestas id.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ac aliquet nibh, eget fringilla erat. Pellentesque varius consequat nibh eu varius. Nunc magna leo, imperdiet a nisi eget, venenatis dignissim nunc. Pellentesque a augue sed tortor mollis mollis quis eget lectus. Aenean quis egestas metus. Pellentesque a orci ante. Donec porta dignissim ligula non faucibus. Aliquam augue felis, mattis vel orci at, rutrum interdum nulla. Proin accumsan eu lectus a ullamcorper. Duis neque quam, posuere ac tellus vel, volutpat euismod ligula.</p>
             </div>
             <div id="login-card-right" class="col-sm-8">
-                <div class="row">
+                <div class="login-card-right-header row">
                     <div class="inline" style="margin-right: 40px;">
                         <h2 id="signup-link" class="selected" onclick="selectTab(event, 'signup')">sign up</h2>
                     </div>
@@ -29,44 +29,44 @@
                         <h2 id="login-link" onclick="selectTab(event, 'login')">login</h2>
                     </div>
                 </div>
-                <div id="signup" class="row">
-                    <div class="col-md-6">
-                        <form name="signup-form" action="/api/signup" onsubmit="return validateSignUp()" method="post">
-                            <input type="text" name="email" placeholder="email">
-                            <br>
-                            <input type="password" name="password" placeholder="password">
-                            <br>
-                            <input type="password" name="password-re" placeholder="password again">
-                            <br>
-                            <input type="submit" value="sign up">
-                            <br>
-                            <div id="signup-error" class="auth-error hidden">Passwords do not match.</div>
-                        </form>
+                <div class="login-card-right-main row">
+                    <div class="col-lg-7 default-signup">
+                        <div id="signup">
+                            <form name="signup-form" action="/api/signup" onsubmit="return validateSignUp()" method="post">
+                                <input type="text" name="email" placeholder="email">
+                                <br>
+                                <input type="password" name="password" placeholder="password">
+                                <br>
+                                <input type="password" name="password-re" placeholder="password again">
+                                <br>
+                                <input type="submit" value="sign up">
+                                <br>
+                                <div id="password-error" class="auth-error hidden">Passwords do not match.</div>
+                                <div id="email-error" class="auth-error hidden">Email is invalid.</div>
+                                <div id="empty-error" class="auth-error hidden">A required field is empty.</div>
+                            </form>
+                        </div>
+                        <div id="login" class="hidden">
+                            <form name="login-form" onsubmit="login(); return false;">
+                                <input type="text" name="email" placeholder="email">
+                                <br>
+                                <input id="login-password" type="password" name="password" placeholder="password">
+                                <br>
+                                <input id="login-submit" type="submit" value="login">
+                                <br>
+                                <div id="login-error" class="auth-error hidden">Incorrect password.</div>
+                            </form>
+                        </div>
                     </div>
-                    <div id="or" class="col-md-1">
-                        <p>or</p>
+                    <div class="col-lg-1 or center-parent">
+                        <div class="center-child">
+                            <p>or</p>
+                        </div>
                     </div>
-                    <div class="col-md-5">
-                        <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
-                    </div>
-                </div>
-                <div id="login" class="row hidden">
-                    <div class="col-sm-6">
-                        <form name="login-form" onsubmit="login(); return false;">
-                            <input type="text" name="email" placeholder="email">
-                            <br>
-                            <input id="login-password" type="password" name="password" placeholder="password">
-                            <br>
-                            <input id="login-submit" type="submit" value="login">
-                            <br>
-                            <div id="login-error" class="auth-error hidden">Incorrect password.</div>
-                        </form>
-                    </div>
-                    <div id="or" class="col-sm-1">
-                        <p>or</p>
-                    </div>
-                    <div class="col-sm-5">
-                        <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
+                    <div class="col-lg-4 google-signup center-parent">
+                        <div class="center-child">
+                            <div id="google-widget"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,4 +76,5 @@
 	<script src="static/js/jquery-3.2.1.min.js"></script>
 	<script src="static/js/bootstrap.min.js"></script>
     <script src="static/js/login.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=renderGoogleButton" async defer></script>
 </body>

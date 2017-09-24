@@ -15,29 +15,42 @@ function selectTab(e, which) {
 }
 
 function validateSignUp() {
-    $('#signup-error').addClass('hidden');
+    $('#password-error').addClass('hidden');
     $('#email-error').addClass('hidden');
+    $('#empty-error').addClass('hidden');
     return validateEmail() && validatePasswordMatch();
 }
 
 function validateEmail() {
     var email = document.forms['signup-form']['email'].value;
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (re.test(email)) {
-        return true;
+    if (email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (re.test(email)) {
+            return true;
+        } else {
+            $('#email-error').removeClass('hidden');
+            return false;
+        }
     } else {
-        $('#email-error').removeClass('hidden');
+        $('#empty-error').removeClass('hidden');
         return false;
     }
 }
 
 function validatePasswordMatch() {
     var form = document.forms['signup-form'];
-    if (form['password'].value != form['password-re'].value) {
-        $('#signup-error').removeClass('hidden');
-        return false;
+    var password1 = form['password'].value;
+    var password2 = form['password-re'].value;
+    if (password1 && password2) {
+        if (password1 != password2) {
+            $('#password-error').removeClass('hidden');
+            return false;
+        } else {
+            return true;
+        }
     } else {
-        return true;
+        $('#empty-error').removeClass('hidden');
+        return false;
     }
 }
 
@@ -98,4 +111,46 @@ function onGoogleSignIn(googleUser) {
             console.log('fail');
         }
     });
+};
+
+function onGoogleFailure() {
+    // TODO
+}
+
+function renderGoogleButton() {
+    var section;
+    if ($('#login').hasClass('hidden')) {
+        section = '#signup';
+    } else {
+        section = '#login'
+    }
+    var longtitle;
+    var width;
+    if (window.innerWidth > 1400) {
+        longtitle = true;
+        width = 240;
+    } else if (window.innerWidth > 1199) {
+        longtitle = false;
+        width = 180;
+    } else if (window.innerWidth > 335) {
+        longtitle = true;
+        width = $(section).width();
+    } else {
+        longtitle = false;
+        width = $(section).width();
+    }
+
+    gapi.signin2.render('google-widget', {
+        'scope': 'profile email',
+        'width': width,
+        'height': 50,
+        'longtitle': longtitle,
+        'theme': 'dark',
+        'onsuccess': onGoogleSignIn,
+        'onfailure': onGoogleFailure
+    });
+}
+
+window.onresize = function() {
+    renderGoogleButton();
 };
