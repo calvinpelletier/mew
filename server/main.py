@@ -13,6 +13,7 @@ from google.auth.transport import requests
 from core import authentication
 from core import event_storage
 from core import event_analysis
+from core import ping
 
 MEW_PATH = environ.get('MEW_PATH')
 if not MEW_PATH:
@@ -106,6 +107,19 @@ def signup():
     else:
         session['uid'] = uid
         return make_response(redirect('/graph'))
+
+
+@app.route('/api/ping', methods=['POST'])
+def ping():
+    req = request.get_json()
+    try:
+        token = req['token']
+        ts = req['time']
+    except:
+        # TODO: bad request
+        pass
+
+    ping.rec(token, ts)
 
 
 @app.route('/api/gentoken', methods=['POST'])

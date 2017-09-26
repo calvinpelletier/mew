@@ -5,11 +5,14 @@ if (DEV) {
   SERVER_BASE_URL = "http://ec2-54-212-225-107.us-west-2.compute.amazonaws.com/";
 }
 
+PING_FREQ = 5000; // ms
+
 console.log("Started background script for Mew.");
 
 
 var token = null;
 var currentPage = null;
+
 
 function setup() {
   chrome.storage.sync.get('token', function(result) {
@@ -18,6 +21,7 @@ function setup() {
       // The token has already been set in our local storage.
       console.log("Found existing token: " + result.token);
       token = result.token;
+      _  = setInterval(ping, PING_FREQ);
       setup_chrome_events();
       setup_browser_action();
     } else {
@@ -30,11 +34,14 @@ function setup() {
             console.log("Saved new token: " + response.token)
           });
           token = response.token;
+          _ = setInterval(ping, PING_FREQ);
           setup_chrome_events();
           setup_browser_action();
         },
         fail: function() {
           // TODO: what happens here?
+          // keep retrying and queueing new event until it works
+          // maybe email one of us too?
         }
       });
     }
@@ -134,6 +141,26 @@ function setup_browser_action() {
       var newURL = SERVER_BASE_URL + "/guest/" + token;
       chrome.tabs.create({ url: newURL });
   });
+}
+
+function ping() {
+    currentTime = new Date().getTime();
+
+    var postData = {
+      token: token,
+      time: currentTime
+    }
+
+    $.post({
+      url: SERVER_BASE_URL + "/api/ping",
+      contentType: "application/json;",
+      dataType: 'text',
+      data: JSON.stringify(postData),
+      success: null,
+      fail: function() {
+          // TODO
+      }
+    });
 }
 
 setup();
