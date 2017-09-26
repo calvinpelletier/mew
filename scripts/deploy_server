@@ -1,4 +1,4 @@
-sudo cp /var/www/mew/mew.conf /etc/apache2/sites-available/
+sudo cp /var/www/mew/mew.conf /var/www/mew/mew-le-ssl.conf /etc/apache2/sites-available/
 sudo chmod 777 /var/www/mew/db
 sudo chmod 666 /var/www/mew/db/prod.db
 sudo a2ensite mew
