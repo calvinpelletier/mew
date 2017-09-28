@@ -1,25 +1,22 @@
-DEV = True
+DEV = true; // this must stay as the first line (see scripts/deploy_server)
 if (DEV) {
-  SERVER_BASE_URL = "127.0.0.1:5000/";
+  SERVER_BASE_URL = "http://127.0.0.1:5000";
 } else {
-  SERVER_BASE_URL = "http://ec2-54-212-225-107.us-west-2.compute.amazonaws.com/";
+  SERVER_BASE_URL = "http://ec2-54-212-225-107.us-west-2.compute.amazonaws.com";
 }
 
 PING_FREQ = 5000; // ms
 
 console.log("Started background script for Mew.");
 
-
 var token = null;
 var currentPage = null;
-
 
 function setup() {
   chrome.storage.sync.get('token', function(result) {
 
     if (result.token) {
       // The token has already been set in our local storage.
-      console.log("Found existing token: " + result.token);
       token = result.token;
       _  = setInterval(ping, PING_FREQ);
       setup_chrome_events();
@@ -30,6 +27,7 @@ function setup() {
         url: SERVER_BASE_URL + "/api/gentoken",
         dataType: 'json',
         success: function(response) {
+          console.log("check2");
           chrome.storage.sync.set({'token': response.token}, function() {
             console.log("Saved new token: " + response.token)
           });
@@ -42,6 +40,7 @@ function setup() {
           // TODO: what happens here?
           // keep retrying and queueing new event until it works
           // maybe email one of us too?
+          console.log("gentoken failed.")
         }
       });
     }
@@ -157,9 +156,7 @@ function ping() {
       dataType: 'text',
       data: JSON.stringify(postData),
       success: null,
-      fail: function() {
-          // TODO
-      }
+      fail: null
     });
 }
 

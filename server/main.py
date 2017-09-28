@@ -30,6 +30,7 @@ lg = logging.getLogger("main")
 with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
     app.secret_key = secret_key_file.readline()
 
+
 #########################################
 # ENDPOINTS
 #########################################
@@ -110,16 +111,17 @@ def signup():
 
 
 @app.route('/api/ping', methods=['POST'])
-def ping():
+def rec_ping():
     req = request.get_json()
     try:
         token = req['token']
         ts = req['time']
     except:
-        # TODO: bad request
-        pass
+        lg.warn('Possible attack from ip: %s', request.environ['REMOTE_ADDR'])
+        return gen_resp(False, {})
 
     ping.rec(token, ts)
+    return gen_resp(True, {})
 
 
 @app.route('/api/gentoken', methods=['POST'])
@@ -142,6 +144,7 @@ def add_event():
     try:
         event = WebEvent(**req_data)
         event_storage.insert(get_db(DATABASE_PATH), event)
+        ping.rec(event.token, event.time) # in case they send an event then close chrome before a ping is sent
         return 'Successfully added an event.', 200
     except Exception as ex:
         lg.error("Failed to add an event '%s': %s", str(req_data), ex.message)
@@ -229,6 +232,8 @@ def setup():
         print 'You need to set $MEW_DB_PATH.'
         exit(1)
 
+    ping.init(DATABASE_PATH, WebEvent, lg)
+
 
 #########################################
 # MAIN ENTRY POINT OF FLASK APP
@@ -245,4 +250,4 @@ if __name__ == "__main__":
         lg.level = logging.DEBUG
     setup()
 
-    app.run(host='127.0.0.1', debug=True)
+    app.run(host='127.0.0.1', debug=False)

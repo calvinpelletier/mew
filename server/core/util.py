@@ -18,3 +18,7 @@ def get_db(database_path):
     if db is None:
         db = g._database = sqlite3.connect(database_path)
     return db
+
+
+def open_db(database_path):
+    return sqlite3.connect(database_path)
