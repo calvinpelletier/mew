@@ -16,6 +16,6 @@
     "http://127.0.0.1:5000/"
   ],
   "background": {
-    "scripts": ["js/jquery-3.2.1.min.js", "js/script.js"]
+    "scripts": ["js/jquery-3.2.1.min.js", "js/constants.js", "js/script.js"]
   }
 }

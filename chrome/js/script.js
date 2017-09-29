@@ -1,8 +1,7 @@
-DEV = true; // this must stay as the first line (see scripts/deploy_server)
 if (DEV) {
   SERVER_BASE_URL = "http://127.0.0.1:5000";
 } else {
-  SERVER_BASE_URL = "http://ec2-54-212-225-107.us-west-2.compute.amazonaws.com";
+  SERVER_BASE_URL = "https://mew.pelletier.io";
 }
 
 PING_FREQ = 5000; // ms
