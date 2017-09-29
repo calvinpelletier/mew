@@ -24,7 +24,9 @@ def init(database_path, web_event, logger):
     lg = logger
     last_active_lock = Lock()
 
-    Timer(INSPECTION_INTERVAL, inspection).start()
+    t = Timer(INSPECTION_INTERVAL, inspection)
+    t.daemon = True
+    t.start()
 
 def rec(token, ts):
     last_active_lock.acquire()
@@ -57,4 +59,6 @@ def inspection():
             ))
             db.close()
 
-    Timer(INSPECTION_INTERVAL, inspection).start()
+    t = Timer(INSPECTION_INTERVAL, inspection)
+    t.daemon = True
+    t.start()
