@@ -58,8 +58,6 @@ def get_daily_summary(db, uid, timezone_name):
         ut: defaultdict(int) for ut in range(first_non_cached_day, int(time.time()), 86400)
     }
 
-    # print [ut for ut in range(first_non_cached_day, int(time.time()), 86400)]
-    # print '~~~~~~~~~~~~~~~~~~~~~~~~~'
     tz_obj = pytz.timezone(timezone_name)
 
     # summarize non cached events
@@ -70,7 +68,6 @@ def get_daily_summary(db, uid, timezone_name):
         hostname = event[0]
         ts = event[1]
         date = ts / 1000
-        # print date
 
         # Event timestamp, in user's local timezone
         user_ts = datetime.datetime.utcfromtimestamp(date).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
@@ -79,7 +76,6 @@ def get_daily_summary(db, uid, timezone_name):
         # A unixtime for midnight (in UTC!) of the day of this timestamp,
         # ***where the date is determined by the local time, NOT by UTC***
         utc_day_start = calendar.timegm(user_day.timetuple())
-        # print utc_day_start
 
         # Ignore nulls, they mean the user wasn't even in Chrome.
         if prev_ts is not None and prev_hostname is not None:
