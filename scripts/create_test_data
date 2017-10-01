@@ -7,6 +7,8 @@ import subprocess
 import time
 from random import randint, choice
 
+HEAVY = False # create a fuck ton of data
+
 fmt = '%Y-%m-%d %H:%M:%S %Z'
 
 raw_input('WARNING: will overrite all data stored at $MEW_DB_PATH (press enter)')
@@ -35,48 +37,61 @@ c.execute('INSERT INTO tokens VALUES (\'11111111111111111111111111111111\', 1)')
 db.commit()
 c.close()
 
-
 today_date = datetime.datetime.now().date()
-
 today = time.mktime(datetime.datetime(today_date.year, today_date.month, today_date.day).timetuple()) * 1000
 now = time.mktime(datetime.datetime.now().timetuple()) * 1000
-
-# days that will be populated
-days = []
-days.append(now - (1000 * 60 * 60 * 1)) # one hour ago
-days.append(today)
-days.append(today - (1000 * 60 * 60 * 24)) # one day ago
-days.append(today - (1000 * 60 * 60 * 48)) # two days ago
-days.append(today - (1000 * 60 * 60 * 24 * 7)) # one week ago
-days.append(today - (1000 * 60 * 60 * 24 * 14)) # two weeks ago
-days.append(today - (1000 * 60 * 60 * 24 * 31)) # one month ago
-days.append(today - (1000 * 60 * 60 * 24 * 62)) # two months ago
-
-days.append(today - (1000 * 60 * 60 * 24 * 31 * 18)) # ~18 months ago
 
 # valid hostnames
 hostnames = ['google.com', 'facebook.com', 'reddit.com', 'stackoverflow.com', 'breitbart.com', 'xxxmidgetporn.com', 'glutenfreesingles.com']
 
-def insert(hostname, timestamp):
-    global db
-    c = db.cursor()
-    print "Adding event at %s" % (datetime.datetime.utcfromtimestamp(timestamp / 1000)).strftime(fmt)
+def insert(c, hostname, timestamp):
+    # print "Adding event at %s" % (datetime.datetime.utcfromtimestamp(timestamp / 1000)).strftime(fmt)
     c.execute('INSERT INTO events VALUES (?, ?, ?)', (1, hostname, timestamp))
+
+if HEAVY:
+    days = 365
+    events_per_day = 100
+    ms_per_day = 86400 * 1000
+    prev_hostname = ''
+
+    c = db.cursor()
+    for day_start in range(int(today) - ms_per_day * days, int(now), ms_per_day):
+        for _ in range(events_per_day):
+            timestamp = randint(day_start, day_start + ms_per_day)
+            hostname = prev_hostname
+            while hostname == prev_hostname:
+                hostname = choice(hostnames)
+            insert(c, hostname, timestamp)
     db.commit()
     c.close()
 
-for timestamp in days:
-    print "Adding events from timestamp: %s" % (datetime.datetime.utcfromtimestamp(timestamp / 1000)).strftime(fmt)
+else:
+    # days that will be populated
+    days = []
+    days.append(now - (1000 * 60 * 60 * 1)) # one hour ago
+    days.append(today)
+    days.append(today - (1000 * 60 * 60 * 24)) # one day ago
+    days.append(today - (1000 * 60 * 60 * 48)) # two days ago
+    days.append(today - (1000 * 60 * 60 * 24 * 7)) # one week ago
+    days.append(today - (1000 * 60 * 60 * 24 * 14)) # two weeks ago
+    days.append(today - (1000 * 60 * 60 * 24 * 31)) # one month ago
+    days.append(today - (1000 * 60 * 60 * 24 * 62)) # two months ago
+    days.append(today - (1000 * 60 * 60 * 24 * 31 * 18)) # ~18 months ago
 
-    prev_hostname = ''
-    for _ in range(randint(5, 20)): # num site changes
-        duration = randint(1000, 1000 * 60 * 20)
-        timestamp += duration
-        if timestamp > now:
-            break
-        hostname = prev_hostname
-        while hostname == prev_hostname:
-            hostname = choice(hostnames)
-        insert(hostname, timestamp)
+    c = db.cursor()
+    for timestamp in days:
+        print "Adding events from timestamp: %s" % (datetime.datetime.utcfromtimestamp(timestamp / 1000)).strftime(fmt)
+        prev_hostname = ''
+        for _ in range(randint(5, 20)): # num site changes
+            duration = randint(1000, 1000 * 60 * 20)
+            timestamp += duration
+            if timestamp > now:
+                break
+            hostname = prev_hostname
+            while hostname == prev_hostname:
+                hostname = choice(hostnames)
+            insert(hostname, timestamp)
+    db.commit()
+    c.close()
 
 print 'Login url: 127.0.0.1:5000/guest/11111111111111111111111111111111'
