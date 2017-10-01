@@ -3,8 +3,10 @@ from collections import defaultdict
 import datetime
 import pytz
 import time
+import json
 
 import event_storage
+import summary_cache
 
 
 def get_last_x_min_summary(db, uid, x_min, max_sites):
@@ -41,29 +43,41 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
     return ret
 
 
-def get_last_x_days_summary(db, uid, timezone_name, x_days=None):
-    if x_days:
-        date = datetime.date.today() - datetime.timedelta(days=x_days)
-        start_time = calendar.timegm(date.timetuple()) * 1000
-    else:
-        start_time = None
-    events = event_storage.select(db, uid, start_time)
+# I removed the last_x_days param because it makes our caching logic way more complicated
+# and we probably weren't going to use it anyway
+def get_daily_summary(db, uid, timezone_name):
+    tz_obj = pytz.timezone(timezone_name)
+    cache = summary_cache.load(db, uid, timezone_name)
+    durations_per_host = defaultdict(int)
+    cache_data = {} # Map from unixtime -> {hostname: time spent}
+
+    if len(cache) > 0:
+        latest_cached = None # unixtime (utc) of last cached day
+        for utc_day, json_summary in cache:
+            cache_data[utc_day] = json.loads(json_summary)
+            if latest_cached is None or utc_day > latest_cached:
+                latest_cached = utc_day
+            # setup durations_per_host dict
+            for host, total_time in cache_data[utc_day].iteritems():
+                durations_per_host[host] += total_time
+        first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached day
+        events = event_storage.select(db, uid, first_non_cached)
+
+    else: # no cache
+        events = event_storage.select(db, uid) # get all events
+        # TODO handle no events
+        first_timestamp = datetime.datetime.utcfromtimestamp(events[0][1] / 1000).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
+        first_non_cached_day = calendar.timegm(first_timestamp.date().timetuple())
 
     # Initialize a list of datetimes, one for each day
-    tz_obj = pytz.timezone(timezone_name)
-    first_timestamp = datetime.datetime.utcfromtimestamp(events[0][1] / 1000).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
-    first_day = calendar.timegm(first_timestamp.date().timetuple())
-
     # Map from unixtime -> {hostname: time spent} (which is a defaultdict(int)
     bucketed_data = {
-        ut: defaultdict(int) for ut in range(first_day, int(time.time()), 86400)
+        ut: defaultdict(int) for ut in range(first_non_cached_day, int(time.time()), 86400)
     }
 
-    durations_per_host = defaultdict(int)
-
+    # summarize non cached events
     prev_ts = None
     prev_hostname = None
-
     total = 0.
     for event in events:
         hostname = event[0]
@@ -86,12 +100,14 @@ def get_last_x_days_summary(db, uid, timezone_name, x_days=None):
         prev_ts = ts
         prev_hostname = hostname
 
+    # cache new findings
+
     final_data = sorted([
         {
             "date" : utc_day,
             "summary" : summary_data
         }
-        for utc_day, summary_data in bucketed_data.items()
+        for utc_day, summary_data in cache_data.items() + bucketed_data.items()
     ], key=lambda o: o["date"])
 
     hostnames = map(lambda (host,_): host, sorted(durations_per_host.items(), key=lambda (_, dur): dur, reverse=True))

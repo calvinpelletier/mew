@@ -25,5 +25,5 @@ CREATE TABLE IF NOT EXISTS daily_summary_cache (
     uid INTEGER,
     tz VARCHAR(255),
     ts BIGINT, /* ts of day start */
-    json VARCHAR(MAX) /* 2147483647 */
+    json VARCHAR(2147483647)
 );

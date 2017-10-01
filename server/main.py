@@ -183,7 +183,7 @@ def get_stacked_graph_data():
         # not logged in
         return gen_resp(False, {"reason": "No uid found."})
 
-    summary = event_analysis.get_last_x_days_summary(get_db(DATABASE_PATH), uid, timezone, num_days)
+    summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     lg.debug(summary)
     return gen_resp(True, summary)
 

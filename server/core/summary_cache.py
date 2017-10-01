@@ -11,11 +11,11 @@ def update(db, uid, tz, data):
     db.commit()
     c.close()
 
-def load(db, uid, tz, earliest_day):
+def load(db, uid, tz):
     c = db.cursor()
     c.execute(
-        'SELECT * FROM daily_summary_cache WHERE uid = ? AND tz = ? AND day >= ?',
-        (uid, tz, earliest_day)
+        'SELECT ts, json FROM daily_summary_cache WHERE uid = ? AND tz = ?',
+        (uid, tz)
     )
     results = c.fetchall()
     c.close()
