@@ -3,6 +3,7 @@ import logging.config
 from os import environ, getcwd, path
 from collections import namedtuple
 from datetime import datetime
+import time
 
 from flask import Flask, render_template, request, make_response, redirect, session
 from core.util import *
@@ -184,7 +185,9 @@ def get_stacked_graph_data():
         return gen_resp(False, {"reason": "No uid found."})
 
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
-    lg.debug(summary)
+    if summary is None:
+        return gen_resp(False, {'reason', 'no events'})
+    # lg.debug(summary)
     return gen_resp(True, summary)
 
 

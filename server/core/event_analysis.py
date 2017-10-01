@@ -46,35 +46,11 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
 # I removed the last_x_days param because it makes our caching logic way more complicated
 # and we probably weren't going to use it anyway
 def get_daily_summary(db, uid, timezone_name):
-    tz_obj = pytz.timezone(timezone_name)
-    cache = summary_cache.load(db, uid, timezone_name)
-    durations_per_host = defaultdict(int)
-    cache_data = {} # Map from unixtime -> {hostname: time spent}
+    cache_data, durations_per_host, events, first_non_cached_day = summary_cache.load(db, uid, timezone_name)
 
-    if len(cache) > 0:
-        latest_cached = None # unixtime (utc) of last cached day
-        for utc_day, json_summary in cache:
-            cache_data[utc_day] = json.loads(json_summary)
-            if latest_cached is None or utc_day > latest_cached:
-                latest_cached = utc_day
-            # setup durations_per_host dict
-            for host, total_time in cache_data[utc_day].iteritems():
-                durations_per_host[host] += total_time
-
-        first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
-        utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
-        # unixtime of first non-cached LOCAL day:
-        start_time = time.mktime(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, tzinfo=tz_obj).timetuple())
-        # TODO remove when we're confident this works
-        assert first_non_cached_day == calendar.timegm(datetime.datetime.utcfromtimestamp(start_time).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date().timetuple())
-
-        events = event_storage.select(db, uid, start_time * 1000)
-
-    else: # no cache
-        events = event_storage.select(db, uid) # get all events
-        # TODO handle no events
-        first_timestamp = datetime.datetime.utcfromtimestamp(events[0][1] / 1000).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
-        first_non_cached_day = calendar.timegm(first_timestamp.date().timetuple())
+    if first_non_cached_day is None:
+        # no events
+        return None
 
     # Initialize a list of datetimes, one for each day
     # Map from unixtime -> {hostname: time spent} (which is a defaultdict(int)
@@ -84,6 +60,7 @@ def get_daily_summary(db, uid, timezone_name):
 
     # print [ut for ut in range(first_non_cached_day, int(time.time()), 86400)]
     # print '~~~~~~~~~~~~~~~~~~~~~~~~~'
+    tz_obj = pytz.timezone(timezone_name)
 
     # summarize non cached events
     prev_ts = None
