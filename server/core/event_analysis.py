@@ -60,8 +60,15 @@ def get_daily_summary(db, uid, timezone_name):
             # setup durations_per_host dict
             for host, total_time in cache_data[utc_day].iteritems():
                 durations_per_host[host] += total_time
-        first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached day
-        events = event_storage.select(db, uid, first_non_cached_day * 1000)
+
+        first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
+        utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
+        # unixtime of first non-cached LOCAL day:
+        start_time = time.mktime(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, tzinfo=tz_obj).timetuple())
+        # TODO remove when we're confident this works
+        assert first_non_cached_day == calendar.timegm(datetime.datetime.utcfromtimestamp(start_time).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date().timetuple())
+
+        events = event_storage.select(db, uid, start_time * 1000)
 
     else: # no cache
         events = event_storage.select(db, uid) # get all events
@@ -75,8 +82,8 @@ def get_daily_summary(db, uid, timezone_name):
         ut: defaultdict(int) for ut in range(first_non_cached_day, int(time.time()), 86400)
     }
 
-    print [ut for ut in range(first_non_cached_day, int(time.time()), 86400)]
-    print '~~~~~~~~~~~~~~~~~~~~~~~~~'
+    # print [ut for ut in range(first_non_cached_day, int(time.time()), 86400)]
+    # print '~~~~~~~~~~~~~~~~~~~~~~~~~'
 
     # summarize non cached events
     prev_ts = None
@@ -86,7 +93,7 @@ def get_daily_summary(db, uid, timezone_name):
         hostname = event[0]
         ts = event[1]
         date = ts / 1000
-        print date
+        # print date
 
         # Event timestamp, in user's local timezone
         user_ts = datetime.datetime.utcfromtimestamp(date).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
@@ -95,7 +102,7 @@ def get_daily_summary(db, uid, timezone_name):
         # A unixtime for midnight (in UTC!) of the day of this timestamp,
         # ***where the date is determined by the local time, NOT by UTC***
         utc_day_start = calendar.timegm(user_day.timetuple())
-        print utc_day_start
+        # print utc_day_start
 
         # Ignore nulls, they mean the user wasn't even in Chrome.
         if prev_ts is not None and prev_hostname is not None:
