@@ -61,7 +61,7 @@ def get_daily_summary(db, uid, timezone_name):
             for host, total_time in cache_data[utc_day].iteritems():
                 durations_per_host[host] += total_time
         first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached day
-        events = event_storage.select(db, uid, first_non_cached)
+        events = event_storage.select(db, uid, first_non_cached_day * 1000)
 
     else: # no cache
         events = event_storage.select(db, uid) # get all events
@@ -71,9 +71,12 @@ def get_daily_summary(db, uid, timezone_name):
 
     # Initialize a list of datetimes, one for each day
     # Map from unixtime -> {hostname: time spent} (which is a defaultdict(int)
-    bucketed_data = {
+    new_data = {
         ut: defaultdict(int) for ut in range(first_non_cached_day, int(time.time()), 86400)
     }
+
+    print [ut for ut in range(first_non_cached_day, int(time.time()), 86400)]
+    print '~~~~~~~~~~~~~~~~~~~~~~~~~'
 
     # summarize non cached events
     prev_ts = None
@@ -83,6 +86,7 @@ def get_daily_summary(db, uid, timezone_name):
         hostname = event[0]
         ts = event[1]
         date = ts / 1000
+        print date
 
         # Event timestamp, in user's local timezone
         user_ts = datetime.datetime.utcfromtimestamp(date).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
@@ -91,23 +95,27 @@ def get_daily_summary(db, uid, timezone_name):
         # A unixtime for midnight (in UTC!) of the day of this timestamp,
         # ***where the date is determined by the local time, NOT by UTC***
         utc_day_start = calendar.timegm(user_day.timetuple())
+        print utc_day_start
 
         # Ignore nulls, they mean the user wasn't even in Chrome.
         if prev_ts is not None and prev_hostname is not None:
             mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
-            bucketed_data[utc_day_start][prev_hostname] += mins_elapsed
+            new_data[utc_day_start][prev_hostname] += mins_elapsed
             durations_per_host[prev_hostname] += mins_elapsed
         prev_ts = ts
         prev_hostname = hostname
 
     # cache new findings
+    cur_day = datetime.datetime.utcfromtimestamp(time.time()).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date()
+    cur_day_utc = calendar.timegm(cur_day.timetuple())
+    summary_cache.update(db, uid, timezone_name, cur_day_utc, new_data)
 
     final_data = sorted([
         {
             "date" : utc_day,
             "summary" : summary_data
         }
-        for utc_day, summary_data in cache_data.items() + bucketed_data.items()
+        for utc_day, summary_data in cache_data.items() + new_data.items()
     ], key=lambda o: o["date"])
 
     hostnames = map(lambda (host,_): host, sorted(durations_per_host.items(), key=lambda (_, dur): dur, reverse=True))

@@ -1,13 +1,14 @@
 import json
 
-def update(db, uid, tz, data):
+def update(db, uid, tz, today, data):
     c = db.cursor()
     for day, summary in data.iteritems():
-        summary_json = json.dumps(summary, separators=(',', ':'))
-        c.execute(
-            'INSERT INTO daily_summary_cache VALUES (?, ?, ?, ?)',
-            (uid, tz, day, summary_json)
-        )
+        if day != today:
+            summary_json = json.dumps(summary, separators=(',', ':'))
+            c.execute(
+                'INSERT INTO daily_summary_cache VALUES (?, ?, ?, ?)',
+                (uid, tz, day, summary_json)
+            )
     db.commit()
     c.close()
 
