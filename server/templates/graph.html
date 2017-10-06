@@ -1,72 +1,118 @@
 <html>
 
 <head>
-  <title>Horizontal Bar Chart</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Horizontal Bar Chart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/graph.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
 <body>
-  <div id="container" style="width: 75%;">
-    <div id="chart0"></div>
-    <div id="chart0-options" class="btn-group" data-toggle="buttons">
-      <label class="btn btn-primary">
-            <input type="radio" name="options" id="last-hour" class="timeframe-choice" autocomplete="off">Last Hour
-        </label>
-      <label class="btn btn-primary">
-            <input type="radio" name="options" id="today" class="timeframe-choice" autocomplete="off">Today
-        </label>
-      <label class="btn btn-primary active">
-            <input type="radio" name="options" id="last-24" class="timeframe-choice" autocomplete="off" checked>Last 24
-            Hours
-        </label>
-      <label class="btn btn-primary">
-            <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off">Last Week
-        </label>
-      <label class="btn btn-primary">
-            <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
-        </label>
-      <label class="btn btn-primary">
-            <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
-        </label>
+    <div class="header">
+        <h1>cProgress</h1>
     </div>
 
-    <div class="row" id="chart1-container">
-      <div class="col-xs-2 form-group" id="hostnameCheckboxes">
-      </div>
-      <div class="col-xs-10 form-group">
-        <div id="chart1"></div>
-      </div>
-
+    <div class="today">
+        <div class="inline">
+            <div>
+                <h2>total time</h2>
+            </div>
+            <div>
+                <span><h3 id="total-hours">08</h3></span>
+                <span><h3 id="total-minutes">17</h3></span>
+            </div>
+            <div>
+                <span><h4>hours</h4></span>
+                <span><h4>minutes</h4></span>
+            </div>
+        </div>
+        <div class="inline">
+            <div>
+                <h2>unproductive time</h2>
+            </div>
+            <div>
+                <span><h3 id="unprod-hours">03</h3></span>
+                <span><h3 id="unprod-minutes">34</h3></span>
+            </div>
+            <div>
+                <span><h4>hours</h4></span>
+                <span><h4>minutes</h4></span>
+            </div>
+        </div>
+        <div class="inline">
+            <div>
+                <!-- how the fuck do we make this x% of a circle -->
+                <h3>63%</h3>
+            </div>
+            <h4>of quota</h4>
+        </div>
+        <div class="inline">
+            <h3>17</h3>
+            <h4>day streak</h4>
+        </div>
     </div>
-    <div id="chart1-options" class="btn-group" data-toggle="buttons">
-      <label class="btn btn-primary active">
-          <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off" checked>Last Week
-      </label>
-      <label class="btn btn-primary">
-          <input type="radio" name="options" id="last-month" class="timeframe-choice" autocomplete="off">Last Month
-      </label>
-      <label class="btn btn-primary">
-          <input type="radio" name="options" id="last-3-months" class="timeframe-choice" autocomplete="off">Last 3
-          Months
-      </label>
-      <label class="btn btn-primary">
-          <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
-      </label>
-      <label class="btn btn-primary">
-          <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
-      </label>
+
+    <div id="container" style="width: 75%;">
+        <div id="chart0"></div>
+        <div id="chart0-options" class="btn-group" data-toggle="buttons">
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="last-hour" class="timeframe-choice" autocomplete="off">Last Hour
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="today" class="timeframe-choice" autocomplete="off">Today
+            </label>
+            <label class="btn btn-primary active">
+                <input type="radio" name="options" id="last-24" class="timeframe-choice" autocomplete="off" checked>Last 24
+                Hours
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off">Last Week
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
+            </label>
+        </div>
+
+        <div class="row" id="chart1-container">
+            <div class="col-xs-2 form-group" id="hostnameCheckboxes">
+            </div>
+            <div class="col-xs-10 form-group">
+                <div id="chart1"></div>
+            </div>
+
+        </div>
+        <div id="chart1-options" class="btn-group" data-toggle="buttons">
+            <label class="btn btn-primary active">
+                <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off" checked>Last Week
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="last-month" class="timeframe-choice" autocomplete="off">Last Month
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="last-3-months" class="timeframe-choice" autocomplete="off">Last 3
+                Months
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
+            </label>
+        </div>
     </div>
 
-  </div>
-  </div>
-  <script src="{{ url_for('static', filename='js/util.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bar_graph.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/line_graph.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+
+    <script src="{{ url_for('static', filename='js/util.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bar_graph.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/line_graph.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
 </html>

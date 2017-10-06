@@ -1,0 +1,33 @@
+body {
+    background-color: #87848C;
+}
+
+h1 {
+    font-family: Sinkin-Sans100Thin;
+    color: #fff;
+    font-size: 50px;
+    margin-bottom: 30px;
+}
+
+h2 {
+    font-family: Sinkin-Sans200XLight;
+    font-size: 25px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+#container {
+  width: 80%;
+  margin-left: 10%;
+  text-align: center;
+  padding: 50px 0 100px 0;
+}
+
+#chart1-container {
+  margin-top: 100px;
+}
+
+#hostnameCheckboxes {
+  height: 400px;
+  overflow-y: scroll;
+}

@@ -253,4 +253,4 @@ if __name__ == "__main__":
         lg.level = logging.DEBUG
     setup()
 
-    app.run(host='127.0.0.1', debug=False)
+    app.run(host='127.0.0.1', debug=True)
