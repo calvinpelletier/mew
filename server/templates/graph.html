@@ -11,13 +11,27 @@
 </head>
 
 <body>
-    <div id="header" class="center-text full-width">
-        <h1>cProgress</h1>
-    </div>
-
-    <div id="today" class="full-width">
+    <div id="card1" class="full-width">
+        <div id="header">
+            <div id="title" class="inline">
+                <h1>cProgress</h1>
+            </div>
+            <div id="nav" class="inline">
+                <div class="nav-part inline">
+                    <h5>logged in as: guest<h5>
+                </div>
+                <div class="vert-divider inline"></div>
+                <div class="nav-part inline">
+                    <a href="#"><h5>create an account<h5></a>
+                </div>
+                <div class="vert-divider inline"></div>
+                <div class="nav-part inline" style="margin-right: 0px">
+                    <a href="#"><h5>log out<h5></a>
+                </div>
+            </div>
+        </div>
         <div class="sub-today inline">
-            <div class="">
+            <div class="center-text">
                 <h2>time online today</h2>
             </div>
             <div class="center-text">
@@ -33,29 +47,48 @@
                 </div>
             </div>
         </div>
-        <div class="inline sub-today">
-            <div>
-                <h2>unproductive time</h2>
+        <!-- <div class="vert-divider inline"></div> -->
+        <div class="sub-today inline">
+            <div class="center-text">
+                <h2>unproductive time today</h2>
             </div>
-            <div>
-                <div class="time-part inline"><h3 id="unprod-hours">05</h3></div>
-                <div class="time-part inline"><h3 id="unprod-minutes">54</h3></div>
+            <div class="center-text">
+                <div class="inline">
+                    <div class="time-part inline"><h3 id="total-hours">05</h3></div>
+                    <div class="time-part inline"><h3 id="total-minutes">54</h3></div>
+                </div>
             </div>
-            <div>
-                <div class="label-part inline"><h4>hours</h4></div>
-                <div class="label-part inline"><h4>minutes</h4></div>
+            <div class="center-text">
+                <div class="inline">
+                    <div class="label-part inline"><h4>hours</h4></div>
+                    <div class="label-part inline"><h4>minutes</h4></div>
+                </div>
             </div>
         </div>
-        <div class="inline sub-today">
-            <div>
-                <!-- how the fuck do we make this x% of a circle -->
-                <h3>63%</h3>
+        <!-- <div class="vert-divider inline"></div> -->
+        <div class="sub-today inline">
+            <div class="circle-container">
+                <div id="quota-percent-border" class="circle-active-border">
+                    <div class="circle">
+                        <span id="quota-percent" class="percent"></span>
+                    </div>
+                </div>
             </div>
-            <h4>of quota</h4>
+            <div class="center-text">
+                <h2>of quota</h2>
+            </div>
         </div>
-        <div class="inline sub-today">
-            <h3>17</h3>
-            <h4>day streak</h4>
+        <!-- <div class="vert-divider inline"></div> -->
+        <div class="sub-today inline">
+            <div class="center-text">
+                <h2>streak</h2>
+            </div>
+            <div class="center-text">
+                <h3>18</h3>
+            </div>
+            <div class="center-text">
+                <h4>days</h4>
+            </div>
         </div>
     </div>
 
