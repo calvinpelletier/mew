@@ -43,6 +43,7 @@ body {
     background-color: #2d333c;
     height: 350px;
     padding: 10px 20px 20px 20px;
+
 }
 
 #header {
@@ -63,16 +64,23 @@ body {
     align-items: center;
 }
 
+#today {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 50px 15% 20px;
+}
+
 .nav-part {
     margin: 0px 20px;
 }
 
 .sub-today {
-    width: 24.5%; /* for some reason 25% doesnt work -.- */
-    margin: 0px;
-    padding: 40px 20px 10px;
-    height: 270px; /* 350 - 50 - 30*/
-    vertical-align: top;
+    /*width: 24.5%; /* for some reason 25% doesnt work -.- */
+    /*margin: 0px;*/
+    /*padding: 40px 20px 10px;*/
+    /*height: 270px; /* 350 - 50 - 30*/
+    /*vertical-align: top;*/
 }
 
 .time-part {
