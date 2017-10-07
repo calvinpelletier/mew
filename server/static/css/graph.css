@@ -1,20 +1,69 @@
-body {
-    background-color: #87848C;
-}
-
 h1 {
     font-family: Sinkin-Sans100Thin;
     color: #fff;
     font-size: 50px;
-    margin-bottom: 30px;
+    margin: 0px;
 }
 
 h2 {
     font-family: Sinkin-Sans200XLight;
-    font-size: 25px;
-    color: #aaa;
-    cursor: pointer;
+    font-size: 15px;
+    color: #999;
 }
+
+h3 {
+    font-family: Sinkin-Sans300Light;
+    font-size: 40px;
+}
+
+h4 {
+    font-family: Sinkin-Sans300Light;
+    font-size: 12px;
+}
+
+body {
+    /*background-color: #ECF1F4;*/
+    background-color: #eee;
+}
+
+#header {
+    background-color: #286090;
+    height: 100px;
+    padding-top: 20px;
+}
+
+/* ~~~ FIRST CARD ~~~ */
+#today {
+    /*background-color: #EFF4F7;*/
+    background-color: #fff;
+    width: 90%;
+    margin: 40px 5%;
+    /*border-style: solid;
+    border-width: 1px;
+    border-color: #000;*/
+    box-shadow: 0px 0px 7px 1px #888888;
+    padding: 0px;
+    height: 200px;
+}
+
+.sub-today {
+    width: 24.5%; /* for some reason 25% doesnt work -.- */
+    margin: 0px;
+    padding: 10px 20px;
+    height: 100%;
+}
+
+.time-part {
+    text-align: center;
+    padding: 0px 10px;
+}
+
+.label-part {
+    text-align: center;
+    padding: 0px 10px;
+}
+
+
 
 #container {
   width: 80%;
