@@ -193,8 +193,10 @@ def get_stacked_graph_data():
 
 @app.route('/api/debug/data', methods=['GET'])
 def get_user_website_data():
-
-    mins = float(request.args.get('minutes'))
+    try:
+        mins = float(request.args.get('minutes'))
+    except:
+        return gen_fail("Couldn't parse minutes parameter '%s'" % str(request.args.get('minutes')))
 
     if 'uid' in session:
         uid = session['uid']

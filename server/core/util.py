@@ -13,6 +13,10 @@ def gen_resp(success, data=None):
     return jsonify(resp)
 
 
+def gen_fail(reason):
+    return gen_resp(False, {"reason": reason})
+
+
 def get_db(database_path):
     db = getattr(g, '_database', None)
     if db is None:
