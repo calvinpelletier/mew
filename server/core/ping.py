@@ -1,8 +1,8 @@
 import time
 from threading import Lock, Timer
 
-from core.util import open_db
-from core.event_storage import insert
+from util import open_db
+from event_storage import insert
 
 """
 possible problems:
