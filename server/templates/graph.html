@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <div id="card1" class="full-width">
+    <div id="card0" class="full-width">
         <div id="header">
             <div id="title" class="inline">
                 <h1>cProgress</h1>
@@ -94,7 +94,8 @@
         </div>
     </div>
 
-    <div id="container" style="width: 75%;">
+    <div id="card1">
+        <h2 id="card1-title"></h2>
         <div id="chart0"></div>
         <div id="chart0-options" class="btn-group" data-toggle="buttons">
             <label class="btn btn-primary">
@@ -148,6 +149,7 @@
 
 
 
+    <script src="{{ url_for('static', filename='js/highcharts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/util.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bar_graph.js') }}"></script>
     <script src="{{ url_for('static', filename='js/line_graph.js') }}"></script>
