@@ -8,6 +8,9 @@ import json
 import event_storage
 import summary_cache
 
+# None/null means the user wasn't in chrome
+IGNORED_HOSTNAMES = [None, "newtab"]
+
 
 def get_last_x_min_summary(db, uid, x_min, max_sites):
     events = get_last_x_min(db, uid, x_min)
@@ -19,7 +22,7 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
     for event in events:
         hostname = event[0]
         ts = event[1]
-        if prev_ts is not None and prev_hostname is not None:
+        if prev_ts is not None and prev_hostname not in IGNORED_HOSTNAMES:
             if ts < prev_ts:
                 # something went horribly wrong in our database
                 # or someone removed ORDER BY from select statement
@@ -78,7 +81,7 @@ def get_daily_summary(db, uid, timezone_name):
         utc_day_start = calendar.timegm(user_day.timetuple())
 
         # Ignore nulls, they mean the user wasn't even in Chrome.
-        if prev_ts is not None and prev_hostname is not None:
+        if prev_ts is not None and prev_hostname not in IGNORED_HOSTNAMES:
             mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
             new_data[utc_day_start][prev_hostname] += mins_elapsed
             durations_per_host[prev_hostname] += mins_elapsed
