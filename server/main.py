@@ -1,5 +1,5 @@
 import argparse
-import logging.config
+import logging
 from os import environ, getcwd, path
 from collections import namedtuple
 from datetime import datetime
@@ -11,10 +11,7 @@ from core.util import *
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
-from core import authentication
-from core import event_storage
-from core import event_analysis
-from core import ping
+from core import authentication, event_analysis, event_storage, log, ping
 
 MEW_PATH = environ.get('MEW_PATH')
 if not MEW_PATH:
@@ -25,7 +22,7 @@ WebEvent = namedtuple("WebEvent", "token hostname time")
 
 app = Flask(__name__, root_path=path.join(MEW_PATH, 'server/'), static_url_path="/static")
 
-logging.config.fileConfig(path.join(MEW_PATH, "server/config/logging.conf"))
+log.init_loggers(MEW_PATH)
 lg = logging.getLogger("main")
 
 with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
@@ -255,4 +252,5 @@ if __name__ == "__main__":
         lg.level = logging.DEBUG
     setup()
 
+    lg.info("Running Mew.")
     app.run(host='127.0.0.1', debug=False)

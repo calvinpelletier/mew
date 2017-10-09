@@ -2,3 +2,4 @@
 *.pyc
 *.db
 server/secret_key
+server/.log
