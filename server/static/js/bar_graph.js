@@ -88,8 +88,9 @@ function drawBarGraph(labels, values, divId, title) {
         showInLegend: false,
         data: values,
         // color: '#2d333c'
-        // color: '#31c4e9'
-        color: '#344754'
+        color: '#31c4e9'
+        // color: '#344754'
+        // color: '#47e48f'
     }]
 });
 }

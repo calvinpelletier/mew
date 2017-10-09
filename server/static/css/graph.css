@@ -154,6 +154,21 @@ body {
     font-size: 30px;
 }
 
+#chart0-options label {
+    background-color: #2d333c;
+    /*margin: 5px;*/
+    border-style: none;
+}
+
+#chart0-options label:hover {
+    background-color: #3b434f;
+}
+
+#chart0-options label.active {
+    background-color: #31c4e9;
+}
+
+/* ~~~ THIRD CARD ~~~ */
 #chart1-container {
   margin-top: 100px;
 }
