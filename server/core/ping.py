@@ -1,8 +1,9 @@
+import logging
 import time
 from threading import Lock, Timer
 
-from util import open_db
 from event_storage import insert
+from util import open_db
 
 """
 possible problems:
@@ -11,27 +12,29 @@ possible problems:
 [TODO] stop pinging due to network problems, then resume pinging after we pronouced dead - TODO
 """
 
-INSPECTION_INTERVAL = 60. # seconds
-FATAL_TIME = 15. # seconds after which the inspector pronounces a client dead
-ADJUSTMENT = 2.5 # seconds to add to last active time for null event. 2.5 is half of a ping interval so lowest average error
+INSPECTION_INTERVAL = 60.  # seconds
+FATAL_TIME = 15.  # seconds after which the inspector pronounces a client dead
+ADJUSTMENT = 2.5  # seconds to add to last active time for null event. 2.5 is half of a ping interval so lowest average error
 
 
-def init(database_path, web_event, logger):
+def init(database_path, web_event):
     global last_active, DATABASE_PATH, WebEvent, lg, last_active_lock
     last_active = {}
     DATABASE_PATH = database_path
     WebEvent = web_event
-    lg = logger
+    lg = logging.getLogger("main")
     last_active_lock = Lock()
 
     t = Timer(INSPECTION_INTERVAL, inspection)
     t.daemon = True
     t.start()
 
+
 def rec(token, ts):
     last_active_lock.acquire()
     last_active[token] = ts
     last_active_lock.release()
+
 
 def inspection():
     global last_active
@@ -39,7 +42,7 @@ def inspection():
     lg.info('[PING] running inspection.')
 
     last_active_lock.acquire()
-    cur_time = time.time() * 1000 # sec to ms unixtime
+    cur_time = time.time() * 1000  # sec to ms unixtime
     # IMPORTANT: WILL NOT WORK IN PYTHON 3
     # CHANGE TO list(last_active.items()) IF WE SWITCH
     for token, last_active_time in last_active.items():
@@ -49,7 +52,7 @@ def inspection():
     last_active_lock.release()
 
     if len(dead) > 0:
-        db = open_db(DATABASE_PATH) # need to open because we're outside app context
+        db = open_db(DATABASE_PATH)  # need to open because we're outside app context
         for token, last_active_time in dead:
             lg.info('[PING] %s pronounced dead.', token)
             insert(db, WebEvent(
