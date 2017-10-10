@@ -11,7 +11,7 @@ import time
 import unittest
 from json import loads, dumps
 
-import main
+from server import main
 
 logging.config.fileConfig("config/logging.conf")
 lg = logging.getLogger("test")

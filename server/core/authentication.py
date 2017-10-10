@@ -2,7 +2,7 @@ import hashlib
 import logging
 import uuid
 
-lg = logging.getLogger("main")
+from log import *
 
 
 def add_user(db, email, password):
@@ -29,7 +29,7 @@ def add_guest(db, token):
     db.commit()
     c.close()
 
-    lg.info("Added new guest with uid=%d, token=%s", uid, token)
+    info("Added new guest with uid=%d, token=%s", uid, token)
 
     return uid
 

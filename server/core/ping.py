@@ -4,6 +4,7 @@ from threading import Lock, Timer
 
 from event_storage import insert
 from util import open_db
+from log import *
 
 """
 possible problems:
@@ -22,7 +23,6 @@ def init(database_path, web_event):
     last_active = {}
     DATABASE_PATH = database_path
     WebEvent = web_event
-    lg = logging.getLogger("main")
     last_active_lock = Lock()
 
     t = Timer(INSPECTION_INTERVAL, inspection)
@@ -39,7 +39,7 @@ def rec(token, ts):
 def inspection():
     global last_active
     dead = []
-    lg.info('[PING] running inspection.')
+    info('[PING] running inspection.')
 
     last_active_lock.acquire()
     cur_time = time.time() * 1000  # sec to ms unixtime
@@ -54,7 +54,7 @@ def inspection():
     if len(dead) > 0:
         db = open_db(DATABASE_PATH)  # need to open because we're outside app context
         for token, last_active_time in dead:
-            lg.info('[PING] %s pronounced dead.', token)
+            info('[PING] %s pronounced dead.', token)
             insert(db, WebEvent(
                 token=token,
                 hostname=None,

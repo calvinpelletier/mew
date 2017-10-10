@@ -1,5 +1,4 @@
 import argparse
-import logging
 from os import environ, getcwd, path
 from collections import namedtuple
 from datetime import datetime
@@ -11,7 +10,8 @@ from core.util import *
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
-from core import authentication, event_analysis, event_storage, log, ping
+from core import *
+from core import authentication, event_storage, event_analysis, ping
 
 MEW_PATH = environ.get('MEW_PATH')
 if not MEW_PATH:
@@ -22,8 +22,7 @@ WebEvent = namedtuple("WebEvent", "token hostname time")
 
 app = Flask(__name__, root_path=path.join(MEW_PATH, 'server/'), static_url_path="/static")
 
-log.init_loggers(MEW_PATH)
-lg = logging.getLogger("main")
+init_loggers(MEW_PATH)
 
 with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
     app.secret_key = secret_key_file.readline()
@@ -51,7 +50,7 @@ def redirect_guest(token):
         uid = authentication.add_guest(get_db(DATABASE_PATH), token)
 
     session['uid'] = uid
-    lg.info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
+    info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
 
     return response
 
@@ -115,7 +114,7 @@ def rec_ping():
         token = req['token']
         ts = req['time']
     except:
-        lg.warn('Possible attack from ip: %s', request.environ['REMOTE_ADDR'])
+        warn('Possible attack from ip: %s', request.environ['REMOTE_ADDR'])
         return gen_resp(False, {})
 
     ping.rec(token, ts)
@@ -145,7 +144,7 @@ def add_event():
         ping.rec(event.token, event.time) # in case they send an event then close chrome before a ping is sent
         return 'Successfully added an event.', 200
     except Exception as ex:
-        lg.error("Failed to add an event '%s': %s", str(req_data), ex.message)
+        error("Failed to add an event '%s': %s", str(req_data), ex.message)
         return "Failed to add an event", 400
 
 
@@ -184,7 +183,7 @@ def get_stacked_graph_data():
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
         return gen_resp(False, {'reason', 'no events'})
-    # lg.debug(summary)
+    # debug(summary)
     return gen_resp(True, summary)
 
 
@@ -234,7 +233,7 @@ def setup():
         print 'You need to set $MEW_DB_PATH.'
         exit(1)
 
-    ping.init(DATABASE_PATH, WebEvent, lg)
+    ping.init(DATABASE_PATH, WebEvent)
 
 
 #########################################
@@ -248,9 +247,9 @@ if __name__ == "__main__":
     cli_args = parser.parse_args()
 
     if cli_args.verbose:
-        lg.info("Using verbose logging.")
-        lg.level = logging.DEBUG
+        info("Using verbose logging.")
+        level = logging.DEBUG
     setup()
 
-    lg.info("Running Mew.")
+    info("Running Mew.")
     app.run(host='127.0.0.1', debug=False)
