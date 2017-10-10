@@ -10,7 +10,7 @@ from log import *
 possible problems:
 [probably fixed] send event then close chrome before the first ping is sent
 [fixed] adding a token to last_active while the inspector is iterating over the dictionary would cause an exception
-[TODO] stop pinging due to network problems, then resume pinging after we pronouced dead - TODO
+[TODO] stop pinging due to network problems, then resume pinging after we pronouced dead
 """
 
 INSPECTION_INTERVAL = 60.  # seconds

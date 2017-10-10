@@ -7,7 +7,7 @@ import subprocess
 import time
 from random import randint, choice
 
-HEAVY = False # create a fuck ton of data
+HEAVY = True # create a fuck ton of data
 
 fmt = '%Y-%m-%d %H:%M:%S %Z'
 
@@ -90,7 +90,7 @@ else:
             hostname = prev_hostname
             while hostname == prev_hostname:
                 hostname = choice(hostnames)
-            insert(hostname, timestamp)
+            insert(c, hostname, timestamp)
     db.commit()
     c.close()
 

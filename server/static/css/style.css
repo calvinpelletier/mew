@@ -35,18 +35,27 @@
     font-style: normal;
 }
 
-div#container {
-  width: 80%;
-  margin-left: 10%;
-  text-align: center;
-  padding: 50px 0 100px 0;
+.inline {
+    display: inline-block;
 }
 
-div#chart1-container {
-  margin-top: 100px;
+.center-vertically {
+    top: 50%;
+    transform: translateY(-50%);*/
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-div#hostnameCheckboxes {
-  height: 400px;
-  overflow-y: scroll;
+.center-text {
+    text-align: center;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.hidden {
+    display: none;
 }

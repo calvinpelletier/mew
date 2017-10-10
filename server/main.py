@@ -251,5 +251,4 @@ if __name__ == "__main__":
         level = logging.DEBUG
     setup()
 
-    info("Running Mew.")
-    app.run(host='127.0.0.1', debug=False)
+    app.run(host='127.0.0.1', debug=True)

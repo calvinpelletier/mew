@@ -31,7 +31,8 @@ function requestBarGraphData()
 		dataType: 'json',
 		data: JSON.stringify(postData),
 		success: function(response) {
-      title = "Last 24 Hours - Total Time: " + formatTime(response.total);
+            title = "Last 24 Hours - Total Time: " + formatTime(response.total);
+            $('#card1-title').text(title);
 			console.log(JSON.stringify(response));
 			drawBarGraph(response.labels, response.values, "chart0", title);
 		},
@@ -42,33 +43,54 @@ function requestBarGraphData()
 }
 
 function drawBarGraph(labels, values, divId, title) {
-  chartDiv = document.getElementById(divId);
-
-  console.log("Drawing bar graph with labels: " + labels + "\nand values: " + values);
-
-  chartValues = values.reverse()
-  chartLabels = labels.reverse()
-
-  var chartData = [{
-    type: 'bar',
-    x: chartValues,
-    y: chartLabels,
-    orientation: 'h',
-    hoverinfo: 'text+all',
-    text: chartValues.map(formatTime)
-  }];
-
-  var layout = {
-    xaxis: {title: 'Minutes Spent'},
-    yaxis: {title: 'Website'},
-    margin: {t: 20},
-    hovermode: 'closest',
-    title: title,
-    margin: {
-      b: 90
-    }
-  };
-
-  Plotly.purge(chartDiv);
-  Plotly.plot(chartDiv, chartData, layout);
+  Highcharts.chart(divId, {
+    chart: {
+        type: 'bar'
+    },
+    title: {
+        text: null
+    },
+    xAxis: {
+        categories: labels,
+        title: {
+            text: null
+        }
+    },
+    yAxis: {
+        min: 0,
+        title: {
+            text: 'Time spent (minutes)',
+            align: 'high'
+        },
+        labels: {
+            overflow: 'justify'
+        }
+    },
+    tooltip: {
+        enabled: false,
+        valueSuffix: ' minutes'
+    },
+    plotOptions: {
+        bar: {
+            dataLabels: {
+                enabled: true,
+                formatter: function() {
+                    return formatTime(this.y);
+                }
+            }
+        }
+    },
+    credits: {
+        enabled: false
+    },
+    series: [{
+        name: 'x',
+        showInLegend: false,
+        data: values,
+        // color: '#2d333c'
+        color: '#31c4e9'
+        // color: '#344754'
+        // color: '#47e48f'
+    }]
+});
 }
