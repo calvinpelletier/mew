@@ -6,6 +6,8 @@ import calendar
 import event_storage
 from collections import defaultdict
 
+from log import *
+
 def update(db, uid, tz, today, data):
     c = db.cursor()
     for day, summary in data.iteritems():
@@ -51,7 +53,11 @@ def load(db, uid, tz):
         # unixtime of first non-cached LOCAL day:
         start_time = time.mktime(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, tzinfo=tz_obj).timetuple())
         # TODO remove when we're confident this works
-        assert first_non_cached_day == calendar.timegm(datetime.datetime.utcfromtimestamp(start_time).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date().timetuple())
+        calculated_first_non_cached_day = \
+            calendar.timegm(datetime.datetime.utcfromtimestamp(start_time)
+                            .replace(tzinfo=pytz.UTC).astimezone(tz_obj).date().timetuple())
+        if first_non_cached_day != calculated_first_non_cached_day:
+            error("first_non_cached_day is %s but was calculated as %s", str(first_non_cached_day), str(calculated_first_non_cached_day))
 
         events = event_storage.select(db, uid, start_time * 1000)
 
