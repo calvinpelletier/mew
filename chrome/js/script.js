@@ -48,7 +48,7 @@ function setup() {
 
 function processNew(url) {
   var newHostname = url ? new URL(url).hostname : null;
-  currentTime = new Date().getTime();
+  currentTime = new Date().getTime(); // UTC
   if (currentPage == null || newHostname != currentPage.hostname) {
     newPage = {
       time: currentTime,
