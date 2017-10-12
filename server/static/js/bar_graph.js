@@ -37,7 +37,7 @@ function requestBarGraphData()
 			drawBarGraph(response.labels, response.values, "chart0", title);
 		},
 		fail: function() {
-			// TODO: what happens here?
+			toastr.error('Request for bar graph data failed.');
 		}
 	});
 }

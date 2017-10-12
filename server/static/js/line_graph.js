@@ -29,7 +29,7 @@ function requestLineGraphData() {
 			filterAndDrawLineGraph(getLineGraphMinutes());
 		},
 		fail: function() {
-			// TODO: what happens here?
+			toastr.error('Request for line graph data failed.');
 		}
 	});
 }
