@@ -118,15 +118,11 @@
                 <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
             </label>
         </div>
+    </div>
 
-        <div class="row" id="chart1-container">
-            <div class="col-xs-2 form-group" id="hostnameCheckboxes">
-            </div>
-            <div class="col-xs-10 form-group">
-                <div id="chart1"></div>
-            </div>
-
-        </div>
+    <div id="card2">
+        <h2 id="card2-title">Usage by Site</h2>
+        <div id="chart1"></div>
         <div id="chart1-options" class="btn-group" data-toggle="buttons">
             <label class="btn btn-primary active">
                 <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off" checked>Last Week
@@ -146,8 +142,6 @@
             </label>
         </div>
     </div>
-
-
 
     <script src="{{ url_for('static', filename='js/highcharts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/util.js') }}"></script>

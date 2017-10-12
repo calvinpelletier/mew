@@ -45,7 +45,11 @@ function requestBarGraphData()
 function drawBarGraph(labels, values, divId, title) {
   Highcharts.chart(divId, {
     chart: {
-        type: 'bar'
+        type: 'bar',
+		backgroundColor: null,
+		style: {
+			fontFamily: 'Sinkin-Sans200XLight, sans-serif'
+		}
     },
     title: {
         text: null
