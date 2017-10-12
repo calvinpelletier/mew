@@ -166,6 +166,9 @@ function drawLineGraph(timestamp_labels, data, divId) {
 				}
 			}]
 		},
+		credits: {
+	        enabled: false
+	    },
 
 		// theme stuff
 		colors: ['#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF', '#aaeeee', '#ff0066',
