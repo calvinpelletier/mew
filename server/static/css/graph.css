@@ -146,7 +146,7 @@ body {
 #card1 {
   width: 100%;
   text-align: center;
-  padding: 50px 5% 100px 5%;
+  padding: 50px 5% 50px 5%;
 }
 
 #card1-title {
@@ -156,7 +156,6 @@ body {
 
 #chart0-options label {
     background-color: #2d333c;
-    /*margin: 5px;*/
     border-style: none;
 }
 
@@ -169,11 +168,36 @@ body {
 }
 
 /* ~~~ THIRD CARD ~~~ */
+#card2 {
+  width: 100%;
+  text-align: center;
+  padding: 50px 5% 100px 5%;
+  background-color: #F0F0EA;
+}
+
+#card2-title {
+    color: #000;
+    font-size: 30px;
+}
+
 #chart1-container {
-  margin-top: 100px;
+  /*margin-top: 100px;*/
 }
 
 #hostnameCheckboxes {
   height: 400px;
   overflow-y: scroll;
+}
+
+#chart1-options label {
+    background-color: #2d333c;
+    border-style: none;
+}
+
+#chart1-options label:hover {
+    background-color: #3b434f;
+}
+
+#chart1-options label.active {
+    background-color: #31c4e9;
 }

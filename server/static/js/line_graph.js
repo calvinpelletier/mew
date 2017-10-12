@@ -1,13 +1,13 @@
-function filterAndDrawLineGraph(minutes, domains) {
-	console.log("Drawing line graph for last " + minutes + " minutes, and for " + domains.length + " domains.")
-	data = filter(window.raw_line_graph_data.data, domains, minutes);
-	console.log(data);
+function filterAndDrawLineGraph(minutes) {
+	console.log("Drawing line graph for last " + minutes + " minutes.")
+	data = filter(window.raw_line_graph_data.data, minutes);
+	// console.log(data);
 	drawLineGraph(data["x"], data["y"], "chart1");
 }
 
 function requestLineGraphData() {
 	if (typeof window.raw_line_graph_data !== "undefined") {
-		filterAndDrawLineGraph(getLineGraphMinutes(), getSelectedHostnames());
+		filterAndDrawLineGraph(getLineGraphMinutes());
 		return;
 	}
 
@@ -26,8 +26,7 @@ function requestLineGraphData() {
 		success: function(response) {
 			console.log("Success! " + response);
 			window.raw_line_graph_data = response;
-			createHostnameCheckboxes(window.raw_line_graph_data.hostnames);
-			filterAndDrawLineGraph(getLineGraphMinutes(), getSelectedHostnames());
+			filterAndDrawLineGraph(getLineGraphMinutes());
 		},
 		fail: function() {
 			// TODO: what happens here?
@@ -35,139 +34,153 @@ function requestLineGraphData() {
 	});
 }
 
-// Returns a list of hostnames based on which checkboxes are
-// selected for the line graph
-function getSelectedHostnames() {
-  return $('.form-check-input:checkbox:checked').map(function(i, checkbox) {
-    return checkbox.value;
-  }).get();
-}
-
 function getLineGraphMinutes() {
-  timeframeId = $('input.timeframe-choice:checked', '#chart1-options').attr('id');
-  if (timeframeId in MINUTE_DURATIONS) {
-    minutes = MINUTE_DURATIONS[timeframeId];
-  } else {
-    console.log("ERROR IN DURATION: " + timeframeId);
-    minutes = 0;
-  }
-  return minutes;
-}
-
-function createHostnameCheckbox(hostname, checked) {
-  var $container = $("<div>", {
-    "class": "form-check"
-  });
-  var $checkbox = $("<input>", {
-    "class": "form-check-input line-graph-hostname",
-    "value": hostname,
-    "type": "checkbox"
-  });
-
-  if (checked) {
-    $checkbox.attr("checked", "checked");
-  }
-
-  var $label = $("<label>", {
-    "class": "form-check-label"
-  });
-
-  $checkbox.change(function() {
-    requestLineGraphData(getLineGraphMinutes(), getSelectedHostnames());
-  });
-
-  $label.append($checkbox);
-  $label.append(hostname);
-  $container.append($label);
-  return $container;
-}
-
-// Creates checkboxes for every hostname,
-// and adds listeners to update the line graph
-function createHostnameCheckboxes(hostnames) {
-  $("#hostnameCheckboxes").empty();
-  var idx = 0;
-  hostnames.forEach(function(hostname) {
-    if (idx < 3) {
-      $container = createHostnameCheckbox(hostname, true);
-    } else {
-      $container = createHostnameCheckbox(hostname, false);
-    }
-
-    $("#hostnameCheckboxes").append($container);
-    idx += 1;
-  });
+	timeframeId = $('input.timeframe-choice:checked', '#chart1-options').attr('id');
+	if (timeframeId in MINUTE_DURATIONS) {
+		minutes = MINUTE_DURATIONS[timeframeId];
+	} else {
+		console.log("ERROR IN DURATION: " + timeframeId);
+		minutes = 0;
+	}
+	return minutes;
 }
 
 // TODO: filter by time range
-function filter(summaryData, domains, minutes) {
-  /* summaryData should be of the form:
-  [
-  	{
-  		"date": ...
-  		"summary" : {
-  			hostname: timestamp
-  			another_hostname: another_timestamp
-  		}
-  	}
-  ]
-  */
-  x = [];
-  y = {};
+function filter(summaryData, minutes) {
+	/* summaryData should be of the form:
+	[
+		{
+			"date": ...
+			"summary" : {
+				hostname: timestamp
+				another_hostname: another_timestamp
+			}
+		}
+	]
+	*/
+	domains = window.raw_line_graph_data.hostnames;
+	x = [];
+	y = {};
 
-  if (minutes) {
-    startTime = new Date(new Date().getTime() - MS_PER_MINUTE * minutes).getTime() / 1000;
-    var filteredData = summaryData.filter(function(summarizedDay){
-      return summarizedDay.date >= startTime;
-    });
-    // TODO: we'll need to filter domains, too
-  } else {
-    filteredData = summaryData;
-  }
+	if (minutes) {
+		startTime = new Date(new Date().getTime() - MS_PER_MINUTE * minutes).getTime() / 1000;
+		var filteredData = summaryData.filter(function(summarizedDay){
+			return summarizedDay.date >= startTime;
+		});
+		// TODO: we'll need to filter domains, too
+	} else {
+		filteredData = summaryData;
+	}
 
-  domains.forEach(function(d) {
-    y[d] = [];
-  });
+	domains.forEach(function(d) {
+		y[d] = [];
+	});
 
-  filteredData.forEach(function(day) {
-    x.push(new Date(day.date * 1000));
-    domains.forEach(function(d) {
-      y[d].push(day.summary[d] || 0)
-    });
-  });
+	filteredData.forEach(function(day) {
+		x.push(new Date(day.date * 1000));
+		domains.forEach(function(d) {
+			y[d].push(day.summary[d] || 0)
+		});
+	});
 
-  return {
-    "x": x,
-    "y": y
-  };
+	return {
+		"x": x,
+		"y": y
+	};
 }
 
 function drawLineGraph(timestamp_labels, data, divId) {
-  chartDiv = document.getElementById(divId);
-  console.log("Data for line graph, inside drawing function: "
-              + JSON.stringify(data));
-  var chartData = [];
+	// console.log("Data for line graph, inside drawing function: " + JSON.stringify(data));
+	var N_VISIBLE_DOMAINS = 4;
 
-  for (var domain in data) {
-    line = {
-      x: timestamp_labels,
-      y: data[domain],
-      type: 'scatter',
-      name: domain,
-      // text: data[domain].map(formatTime),
-      hoverinfo: 'text+all',
-      text: data[domain].map(function(duration)
-      {
-        if (duration > 0) {
-          return domain + ": " + formatTime(duration);
-        }
-      })
-    };
-    chartData.push(line);
-  }
+	var chartData = [];
+	var i = 0;
+	for (var domain in data) {
+		chartData.push({
+			name: domain,
+			data: data[domain],
+			visible: i < N_VISIBLE_DOMAINS,
+			pointStart: Date.UTC(timestamp_labels[0].getFullYear(), timestamp_labels[0].getMonth(), timestamp_labels[0].getDate()),
+	        pointInterval: 1000 * 60 * 60 * 24
+		});
+		i++;
+	}
 
-  layout = {};
+	Highcharts.chart(divId, {
+		title: {text: null},
+		yAxis: {
+			title: {
+				text: 'minutes',
+				style: {
+					textTransform: 'uppercase'
+				}
+			},
+			minorTickInterval: 'auto',
+			labels: {
+				style: {
+					fontSize: '12px'
+				}
+			}
+		},
+		legend: {
+			layout: 'vertical',
+			align: 'right',
+			verticalAlign: 'middle',
+			itemStyle: {
+				fontWeight: 'bold',
+				fontSize: '13px'
+			}
+		},
+		xAxis: {
+			type: 'datetime',
+	        labels: {
+	            format: '{value:%Y-%m-%d}',
+	            rotation: 45,
+	            align: 'left',
+				style: {
+					fontSize: '12px'
+				}
+	        },
+			gridLineWidth: 1,
+		},
+		tooltip: {
+			pointFormatter: function() {
+				return this.series.name + ': ' + formatTime(this.y);
+			},
+			borderWidth: 0,
+			backgroundColor: 'rgba(219,219,216,0.8)',
+			shadow: false
+		},
+		series: chartData,
+		responsive: {
+			rules: [{
+				condition: {
+					maxWidth: 500
+				},
+				chartOptions: {
+					legend: {
+						layout: 'horizontal',
+						align: 'center',
+						verticalAlign: 'bottom'
+					}
+				}
+			}]
+		},
 
-  Plotly.purge(chartDiv);
-  Plotly.plot(chartDiv, chartData, layout);
+		// theme stuff
+		colors: ['#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF', '#aaeeee', '#ff0066',
+		'#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+		chart: {
+			backgroundColor: null,
+			style: {
+				fontFamily: 'Sinkin-Sans200XLight, sans-serif'
+			}
+		},
+		plotOptions: {
+			candlestick: {
+				lineColor: '#404048'
+			}
+		},
+		background2: '#F0F0EA'
+	});
 }
