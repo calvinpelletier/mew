@@ -12,6 +12,7 @@ from google.auth.transport import requests
 
 from core import *
 from core import authentication, event_storage, event_analysis, ping
+from core.log import *
 
 MEW_PATH = environ.get('MEW_PATH')
 if not MEW_PATH:
