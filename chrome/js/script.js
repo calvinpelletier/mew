@@ -127,6 +127,26 @@ function setup_chrome_events() {
       }
     })
   }
+
+  // Chrome window focus change
+  chrome.windows.onFocusChanged.addListener(function(windowId) {
+
+    // Funky behavior from some Linux WMs (i3), documented at
+    // https://developer.chrome.com/extensions/windows
+    if (windowId == chrome.windows.WINDOW_ID_NONE) {
+        return;
+    }
+    chrome.tabs.query({ active: true, windowId: windowId }, function (tabs) {
+        if (tabs.length == 0) {
+            console.log("WARNING: onFocusChanged() had an empty tab list. Something is wrong.")
+            return;
+        }
+        if (tabs.length > 1) {
+            console.log("WARNING: onFocusChanged() had a tab list with length " + tabs.length);
+        }
+        processNew(tabs[0].url);
+    });
+  });
 }
 
 function setup_browser_action() {
