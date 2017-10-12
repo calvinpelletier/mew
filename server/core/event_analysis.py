@@ -1,12 +1,13 @@
 import calendar
-from collections import defaultdict
 import datetime
-import pytz
 import time
-import json
+from collections import defaultdict
+
+import pytz
 
 import event_storage
 import summary_cache
+from log import *
 
 # None/null means the user wasn't in chrome
 IGNORED_HOSTNAMES = [None, "newtab"]
@@ -115,4 +116,7 @@ def get_last_x_min(db, uid, x_min):
     else:
         start_time = None
     events = event_storage.select(db, uid, start_time)
+
+    debug("Fetching %s from DB, for user %d, found %d events.", "last %d minutes" % x_min if x_min else "all data", uid,
+          len(events))
     return events

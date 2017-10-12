@@ -3,6 +3,9 @@ import logging.config
 import logging.handlers
 from os import path, mkdir
 
+# `from log import *` will just include the default logging methods.
+__all__ = ['debug', 'info', 'warn', 'error']
+
 _lg = None
 
 
