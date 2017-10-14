@@ -1,7 +1,6 @@
 function filterAndDrawLineGraph(minutes) {
 	console.log("Drawing line graph for last " + minutes + " minutes.")
 	data = filter(window.raw_line_graph_data.data, minutes);
-	// console.log(data);
 	drawLineGraph(data["x"], data["y"], "chart1");
 }
 
@@ -90,7 +89,6 @@ function filter(summaryData, minutes) {
 }
 
 function drawLineGraph(timestamp_labels, data, divId) {
-	// console.log("Data for line graph, inside drawing function: " + JSON.stringify(data));
 	var N_VISIBLE_DOMAINS = 4;
 
 	var chartData = [];

@@ -1,5 +1,6 @@
-function getBarGraphMinutes(chosenTimeframe) {
-  var timeframeId = $('input.timeframe-choice:checked', '#chart0-options').attr('id');
+function getBarGraphConfig() {
+  var $timeframeObj = $('input.timeframe-choice:checked', '#chart0-options');
+  var timeframeId = $timeframeObj.attr('id');
   var minutes;
   if (timeframeId in MINUTE_DURATIONS) {
     minutes = MINUTE_DURATIONS[timeframeId];
@@ -10,18 +11,30 @@ function getBarGraphMinutes(chosenTimeframe) {
   } else {
 		console.log("Unknown timeframe ID: " + timeframeId);
 		minutes = 1440; // Just default to last 24 hours, I guess
-	}
-  return minutes;
+  }
+
+  var timespanName;
+  if ($timeframeObj.length == 0) {
+    timespanName = "Last 24 Hours";
+  } else {
+    timespanName = $.trim($timeframeObj.parent().text());
+  }
+
+  return {
+    "timespanName": timespanName,
+    "minutes": minutes
+  }
 }
 
 function requestBarGraphData()
 {
+    var graphConfig = getBarGraphConfig();
 	// TODO: maybe customize this?
-	var max_sites = 5;
+	var maxSites = 5;
 
 	var postData = {
-		"minutes": getBarGraphMinutes(),
-		"max_sites": max_sites
+		"minutes": graphConfig.minutes,
+		"max_sites": maxSites
 	};
 
 	// Get graph data from server.
@@ -31,10 +44,10 @@ function requestBarGraphData()
 		dataType: 'json',
 		data: JSON.stringify(postData),
 		success: function(response) {
-            title = "Last 24 Hours - Total Time: " + formatTime(response.total);
-            $('#card1-title').text(title);
+            $('#card1-title').text(graphConfig.timespanName);
+            $('#card1-subtitle').text("Total Time: " + formatTime(response.total));
 			console.log(JSON.stringify(response));
-			drawBarGraph(response.labels, response.values, "chart0", title);
+			drawBarGraph(response.labels, response.values, "chart0");
 		},
 		fail: function() {
 			toastr.error('Request for bar graph data failed.');
@@ -42,7 +55,7 @@ function requestBarGraphData()
 	});
 }
 
-function drawBarGraph(labels, values, divId, title) {
+function drawBarGraph(labels, values, divId) {
   Highcharts.chart(divId, {
     chart: {
         type: 'bar',
