@@ -229,6 +229,8 @@ def close_connection(exception):
 
 def setup():
     global DATABASE_PATH
+    info("Running setup() before launching server.")
+
     DATABASE_PATH = environ.get('MEW_DB_PATH')
     if not DATABASE_PATH:
         print 'You need to set $MEW_DB_PATH.'
