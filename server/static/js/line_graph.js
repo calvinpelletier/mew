@@ -27,6 +27,11 @@ function requestLineGraphData() {
 			window.raw_line_graph_data = response;
 			filterAndDrawLineGraph(getLineGraphMinutes());
 		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
 		fail: function() {
 			toastr.error('Request for line graph data failed.');
 		}
