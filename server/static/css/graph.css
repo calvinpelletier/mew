@@ -35,7 +35,7 @@ a h5 {
 
 body {
     /*background-color: #ECF1F4;*/
-    background-color: #fff;
+    background-color: #000;
 }
 
 /* ~~~ FIRST CARD ~~~ */
@@ -59,7 +59,7 @@ body {
 }
 
 #nav {
-    width: 470px;
+    width: 550px;
     display: flex;
     align-items: center;
 }
@@ -142,11 +142,17 @@ body {
 
 }
 
+#settings-icon {
+    height: 24px;
+    cursor: pointer;
+}
+
 /* ~~~ SECOND CARD ~~~ */
 #card1 {
   width: 100%;
   text-align: center;
   padding: 50px 5% 50px 5%;
+  background: #fff;
 }
 
 #card1-title {
@@ -200,4 +206,21 @@ body {
 
 #chart1-options label.active {
     background-color: #31c4e9;
+}
+
+/* ~~~ SETTINGS DIALOG ~~~ */
+
+#settings-dialog {
+    position: fixed; /* Sit on top of the page content */
+    display: none; /* Hidden by default */
+    width: 50%; /* Full width (cover the whole page) */
+    height: 60%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    background: white;
+    z-index: 1; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
 }
