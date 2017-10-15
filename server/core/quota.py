@@ -1,7 +1,7 @@
 import event_analysis
 
 
-def get_streak(db, uid):
+def get_streak(db, uid, summary_data):
     c = db.cursor()
     c.execute('SELECT quota, quota_type, streak, streak_last_updated FROM quotas WHERE uid = ?', (uid,))
     result = c.fetchone()

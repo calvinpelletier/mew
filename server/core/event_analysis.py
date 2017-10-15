@@ -67,14 +67,15 @@ def get_daily_summary(db, uid, timezone_name):
     # summarize non cached events
     prev_ts = None
     prev_hostname = None
+    prev_utc_day_start = None
     total = 0.
     for event in events:
         hostname = event[0]
         ts = event[1]
-        date = ts / 1000
 
         # Event timestamp, in user's local timezone
-        user_ts = datetime.datetime.utcfromtimestamp(date).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
+        ts_sec = ts / 1000
+        user_ts = datetime.datetime.utcfromtimestamp(ts_sec).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
         user_day = user_ts.date()
 
         # A unixtime for midnight (in UTC!) of the day of this timestamp,
@@ -83,11 +84,27 @@ def get_daily_summary(db, uid, timezone_name):
 
         # Ignore nulls, they mean the user wasn't even in Chrome.
         if prev_ts is not None and prev_hostname not in IGNORED_HOSTNAMES:
-            mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
-            new_data[utc_day_start][prev_hostname] += mins_elapsed
-            durations_per_host[prev_hostname] += mins_elapsed
+
+            # if this event overlaps days
+            # TODO: check for multiple day overlap
+            if utc_day_start != prev_utc_day_start:
+                day_division = time.mktime((user_day + datetime.timedelta(days=0)).timetuple()) # unixtime of local day (not utc)
+                min_pre_division = (day_division - prev_ts / 1000.) / (60.)
+                min_post_division = (ts / 1000. - day_division) / (60.)
+                print utc_day_start, prev_utc_day_start, day_division, ts / 1000., prev_ts / 1000.
+                assert min_pre_division > 0 and min_post_division >= 0
+                new_data[prev_utc_day_start][prev_hostname] += min_pre_division
+                new_data[utc_day_start][prev_hostname] += min_post_division
+                durations_per_host[prev_hostname] += min_pre_division + min_post_division
+
+            else:
+                mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
+                new_data[prev_utc_day_start][prev_hostname] += mins_elapsed
+                durations_per_host[prev_hostname] += mins_elapsed
+
         prev_ts = ts
         prev_hostname = hostname
+        prev_utc_day_start = utc_day_start
 
     # cache new findings
     cur_day = datetime.datetime.utcfromtimestamp(time.time()).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date()
