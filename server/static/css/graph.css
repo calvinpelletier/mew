@@ -157,7 +157,14 @@ body {
 
 #card1-title {
     color: #000;
-    font-size: 30px;
+    font-size: 40px;
+}
+
+#card1-subtitle {
+    font-family: Sinkin-Sans400Reg;
+    font-size: 16px;
+    color: #000;
+    margin-top: 0px;
 }
 
 #chart0-options label {
@@ -183,7 +190,7 @@ body {
 
 #card2-title {
     color: #000;
-    font-size: 30px;
+    font-size: 40px;
 }
 
 #chart1-container {

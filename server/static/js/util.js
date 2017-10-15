@@ -15,9 +15,14 @@ var MS_PER_DAY = MS_PER_MINUTE * 60 * 24;
 function formatTime(value) {
   if (value < 1) {
     return Math.round(value * 60) + " seconds";
-  } else if (value < 120) {
+  } else if (value < 60) {
     return Math.round(value) + " minutes";
   } else {
-    return (value / 60).toFixed(1) + " hours";
+    let numHours = value / 60;
+    if (numHours < 24) {
+        return numHours.toFixed(1) + " hours";
+    } else {
+        return Math.round(numHours) + " hours";
+    }
   }
 }
