@@ -11,7 +11,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 
 from core import *
-from core import authentication, event_storage, event_analysis, ping
+from core import authentication, event_storage, event_analysis, ping, unproductive, quota
 from core.log import *
 
 MEW_PATH = environ.get('MEW_PATH')
@@ -196,6 +196,7 @@ def get_streak():
         return gen_resp(False, {'reason': 'No uid found.'})
 
     streak = quota.get_streak(get_db(DATABASE_PATH), uid)
+    # streak of -1 means there is no quota set
     return gen_resp(True, {'streak': streak})
 
 
@@ -211,9 +212,10 @@ def set_get_quota():
         req_data = request.get_json()
         try:
             new_quota = int(req_data['quota'])
+            quota_type = req_data['quota_type']
         except:
-            return gen_resp(False, {'reason': 'invalid or missing quota'})
-        success = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota)
+            return gen_resp(False, {'reason': 'invalid or missing request data'})
+        success = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota, quota_type)
         return gen_resp(success)
     else: # get
         ret = quota.get_quota(get_db(DATABASE_PATH), uid)
@@ -232,11 +234,11 @@ def set_get_unprod_sites():
     if request.methods == 'POST':
         req_data = request.get_json()
         if 'sites' not in req_data:
-            return gen_resp(False, {'reason': 'missing sites'})
-        success = quota.set_unprod_sites(get_db(DATABASE_PATH), uid, req_data['sites'])
+            return gen_resp(False, {'reason': 'invalid or missing request data'})
+        success = unproductive.set_unprod_sites(get_db(DATABASE_PATH), uid, req_data['sites'])
         return gen_resp(success)
     else: # get
-        sites = quota.get_unprod_sites(get_db(DATABASE_PATH), uid)
+        sites = unproductive.get_unprod_sites(get_db(DATABASE_PATH), uid)
         return gen_resp(True, {'sites': sites})
 
 
