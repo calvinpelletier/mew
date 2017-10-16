@@ -99,11 +99,10 @@ def get_daily_summary(db, uid, timezone_name):
                 durations_per_host[prev_hostname] += mins_elapsed
 
             # if this event overlaps two days
-            if day_diff == 86400:
+            elif day_diff == 86400:
                 day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
                 min_pre_division = (day_division - prev_ts / 1000.) / 60.
                 min_post_division = (ts / 1000. - day_division) / 60.
-                assert min_pre_division > 0 and min_post_division >= 0
                 new_data[prev_utc_day_start][prev_hostname] += min_pre_division
                 new_data[utc_day_start][prev_hostname] += min_post_division
                 durations_per_host[prev_hostname] += min_pre_division + min_post_division
@@ -115,20 +114,21 @@ def get_daily_summary(db, uid, timezone_name):
                 _y, _m, _d = [int(x) for x in datetime.datetime.utcfromtimestamp(prev_utc_day_start + 86400).date().isoformat().split('-')]
                 day_division = time.mktime(datetime.datetime(_y, _m, _d, tzinfo=tz_obj).date().timetuple()) # unix time of local day
                 min_pre_division = (day_division - prev_ts / 1000.) / 60.
-                assert min_pre_division > 0
                 new_data[prev_utc_day_start][prev_hostname] += min_pre_division
+                durations_per_host[prev_hostname] += min_pre_division
 
                 # middle days (full)
                 cur_day = prev_utc_day_start + 86400
                 while cur_day < utc_day_start:
-                    new_data[cur_day][prev_hostname] = 1440 # minutes in a day
+                    new_data[cur_day][prev_hostname] = 1440. # minutes in a day
+                    durations_per_host[prev_hostname] += 1440.
                     cur_day += 86400
 
                 # last day (partial)
                 day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
                 min_post_division = (ts / 1000. - day_division) / 60.
-                assert min_post_division >= 0
                 new_data[utc_day_start][prev_hostname] += min_post_division
+                durations_per_host[prev_hostname] += min_post_division
 
         prev_ts = ts
         prev_hostname = hostname
@@ -148,6 +148,7 @@ def get_daily_summary(db, uid, timezone_name):
     ], key=lambda o: o["date"])
 
     hostnames = map(lambda (host,_): host, sorted(durations_per_host.items(), key=lambda (_, dur): dur, reverse=True))
+    print hostnames
 
     return {
         "data": final_data,
