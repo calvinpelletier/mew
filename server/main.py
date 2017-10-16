@@ -11,7 +11,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 
 from core import *
-from core import authentication, event_storage, event_analysis, ping
+from core import authentication, event_storage, event_analysis, ping, unproductive, quota
 from core.log import *
 
 MEW_PATH = environ.get('MEW_PATH')
@@ -186,6 +186,60 @@ def get_stacked_graph_data():
         return gen_resp(False, {'reason', 'no events'})
     # debug(summary)
     return gen_resp(True, summary)
+
+
+@app.route('/api/getstreak', methods=['POST'])
+def get_streak():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_resp(False, {'reason': 'No uid found.'})
+
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid)
+    # streak of -1 means there is no quota set
+    return gen_resp(True, {'streak': streak})
+
+
+# sets or gets quota depending on req type
+@app.route('/api/quota', methods=['POST', 'GET'])
+def set_get_quota():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_resp(False, {'reason': 'No uid found.'})
+
+    if request.methods == 'POST':
+        req_data = request.get_json()
+        try:
+            new_quota = int(req_data['quota'])
+            quota_type = req_data['quota_type']
+        except:
+            return gen_resp(False, {'reason': 'invalid or missing request data'})
+        success = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota, quota_type)
+        return gen_resp(success)
+    else: # get
+        ret = quota.get_quota(get_db(DATABASE_PATH), uid)
+        # ret == 0 means no quota set
+        return gen_resp(True, {'quota': ret})
+
+
+# sets or gets list of unproductive sites deending on req type
+@app.route('/api/unprodsites', methods=['POST', 'GET'])
+def set_get_unprod_sites():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_resp(False, {'reason': 'No uid found.'})
+
+    if request.methods == 'POST':
+        req_data = request.get_json()
+        if 'sites' not in req_data:
+            return gen_resp(False, {'reason': 'invalid or missing request data'})
+        success = unproductive.set_unprod_sites(get_db(DATABASE_PATH), uid, req_data['sites'])
+        return gen_resp(success)
+    else: # get
+        sites = unproductive.get_unprod_sites(get_db(DATABASE_PATH), uid)
+        return gen_resp(True, {'sites': sites})
 
 
 @app.route('/api/debug/data', methods=['GET'])

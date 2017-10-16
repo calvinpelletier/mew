@@ -94,6 +94,8 @@ function filter(summaryData, minutes) {
 }
 
 function drawLineGraph(timestamp_labels, data, divId) {
+	console.log(timestamp_labels);
+	console.log(data);
 	var N_VISIBLE_DOMAINS = 4;
 
 	var chartData = [];

@@ -12,137 +12,146 @@
 </head>
 
 <body>
-    <div id="card0" class="full-width">
-        <div id="header">
-            <div id="title" class="inline">
-                <h1>cProgress</h1>
-            </div>
-            <div id="nav" class="inline">
-                <div class="nav-part inline">
-                    <h5>logged in as: guest<h5>
+    <div id="body-container">
+        <div id="card0" class="full-width">
+            <div id="header">
+                <div id="title" class="inline">
+                    <h1>cProgress</h1>
                 </div>
-                <div class="vert-divider inline"></div>
-                <div class="nav-part inline">
-                    <a href="#"><h5>create an account<h5></a>
-                </div>
-                <div class="vert-divider inline"></div>
-                <div class="nav-part inline" style="margin-right: 0px">
-                    <a href="#"><h5>log out<h5></a>
-                </div>
-            </div>
-        </div>
-        <div id="today">
-            <div class="sub-today inline">
-                <div class="center-text">
-                    <h2>time online today</h2>
-                </div>
-                <div class="center-text">
-                    <div class="inline">
-                        <div class="time-part inline"><h3 id="total-hours">08</h3></div>
-                        <div class="time-part inline"><h3 id="total-minutes">17</h3></div>
+                <div id="nav" class="inline">
+                    <div class="nav-part inline">
+                        <h5>logged in as: guest<h5>
                     </div>
-                </div>
-                <div class="center-text">
-                    <div class="inline">
-                        <div class="label-part inline"><h4>hours</h4></div>
-                        <div class="label-part inline"><h4>minutes</h4></div>
+                    <div class="vert-divider inline"></div>
+                    <div class="nav-part inline">
+                        <a href="#"><h5>create an account<h5></a>
+                    </div>
+                    <div class="vert-divider inline"></div>
+                    <div class="nav-part inline">
+                        <img id="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}" />
+                    </div>
+                    <div class="vert-divider inline"></div>
+                    <div class="nav-part inline" style="margin-right: 0px">
+                        <a href="#"><h5>log out<h5></a>
                     </div>
                 </div>
             </div>
-            <!-- <div class="vert-divider inline"></div> -->
-            <div class="sub-today inline">
-                <div class="center-text">
-                    <h2>unproductive time today</h2>
-                </div>
-                <div class="center-text">
-                    <div class="inline">
-                        <div class="time-part inline"><h3 id="total-hours">05</h3></div>
-                        <div class="time-part inline"><h3 id="total-minutes">54</h3></div>
+            <div id="today">
+                <div class="sub-today inline">
+                    <div class="center-text">
+                        <h2>time online today</h2>
                     </div>
-                </div>
-                <div class="center-text">
-                    <div class="inline">
-                        <div class="label-part inline"><h4>hours</h4></div>
-                        <div class="label-part inline"><h4>minutes</h4></div>
+                    <div class="center-text">
+                        <div class="inline">
+                            <div class="time-part inline"><h3 id="total-hours">08</h3></div>
+                            <div class="time-part inline"><h3 id="total-minutes">17</h3></div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <!-- <div class="vert-divider inline"></div> -->
-            <div class="sub-today inline">
-                <div class="circle-container">
-                    <div id="quota-percent-border" class="circle-active-border">
-                        <div class="circle">
-                            <span id="quota-percent" class="percent"></span>
+                    <div class="center-text">
+                        <div class="inline">
+                            <div class="label-part inline"><h4>hours</h4></div>
+                            <div class="label-part inline"><h4>minutes</h4></div>
                         </div>
                     </div>
                 </div>
-                <div class="center-text">
-                    <h2>of quota</h2>
+                <!-- <div class="vert-divider inline"></div> -->
+                <div class="sub-today inline">
+                    <div class="center-text">
+                        <h2>unproductive time today</h2>
+                    </div>
+                    <div class="center-text">
+                        <div class="inline">
+                            <div class="time-part inline"><h3 id="total-hours">05</h3></div>
+                            <div class="time-part inline"><h3 id="total-minutes">54</h3></div>
+                        </div>
+                    </div>
+                    <div class="center-text">
+                        <div class="inline">
+                            <div class="label-part inline"><h4>hours</h4></div>
+                            <div class="label-part inline"><h4>minutes</h4></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="vert-divider inline"></div> -->
+                <div class="sub-today inline">
+                    <div class="circle-container">
+                        <div id="quota-percent-border" class="circle-active-border">
+                            <div class="circle">
+                                <span id="quota-percent" class="percent"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="center-text">
+                        <h2>of quota</h2>
+                    </div>
+                </div>
+                <!-- <div class="vert-divider inline"></div> -->
+                <div class="sub-today inline">
+                    <div class="center-text">
+                        <h2>streak</h2>
+                    </div>
+                    <div class="center-text">
+                        <h3>18</h3>
+                    </div>
+                    <div class="center-text">
+                        <h4>days</h4>
+                    </div>
                 </div>
             </div>
-            <!-- <div class="vert-divider inline"></div> -->
-            <div class="sub-today inline">
-                <div class="center-text">
-                    <h2>streak</h2>
-                </div>
-                <div class="center-text">
-                    <h3>18</h3>
-                </div>
-                <div class="center-text">
-                    <h4>days</h4>
-                </div>
+        </div>
+
+        <div id="card1">
+            <h2 id="card1-title"></h2>
+            <h3 id="card1-subtitle"></h3>
+            <div id="chart0"></div>
+            <div id="chart0-options" class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="last-hour" class="timeframe-choice" autocomplete="off">Last Hour
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="today" class="timeframe-choice" autocomplete="off">Today
+                </label>
+                <label class="btn btn-primary active">
+                    <input type="radio" name="options" id="last-24" class="timeframe-choice" autocomplete="off" checked>Last 24
+                    Hours
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off">Last Week
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
+                </label>
+            </div>
+        </div>
+
+        <div id="card2">
+            <h2 id="card2-title">Usage by Site</h2>
+            <div id="chart1"></div>
+            <div id="chart1-options" class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary active">
+                    <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off" checked>Last Week
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="last-month" class="timeframe-choice" autocomplete="off">Last Month
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="last-3-months" class="timeframe-choice" autocomplete="off">Last 3
+                    Months
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
+                </label>
             </div>
         </div>
     </div>
 
-    <div id="card1">
-        <h2 id="card1-title"></h2>
-        <h3 id="card1-subtitle"></h3>
-        <div id="chart0"></div>
-        <div id="chart0-options" class="btn-group" data-toggle="buttons">
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="last-hour" class="timeframe-choice" autocomplete="off">Last Hour
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="today" class="timeframe-choice" autocomplete="off">Today
-            </label>
-            <label class="btn btn-primary active">
-                <input type="radio" name="options" id="last-24" class="timeframe-choice" autocomplete="off" checked>Last 24
-                Hours
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off">Last Week
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
-            </label>
-        </div>
-    </div>
-
-    <div id="card2">
-        <h2 id="card2-title">Usage by Site</h2>
-        <div id="chart1"></div>
-        <div id="chart1-options" class="btn-group" data-toggle="buttons">
-            <label class="btn btn-primary active">
-                <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off" checked>Last Week
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="last-month" class="timeframe-choice" autocomplete="off">Last Month
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="last-3-months" class="timeframe-choice" autocomplete="off">Last 3
-                Months
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
-            </label>
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
-            </label>
-        </div>
+    <div id="settings-dialog">
     </div>
 
     <script src="{{ url_for('static', filename='js/highcharts.js') }}"></script>

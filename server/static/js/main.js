@@ -31,4 +31,16 @@ window.onload = function() {
 	});
 
 	setQuotaPercent(65);
+
+	$('#settings-icon').on('click', function(e) {
+		console.log("Clicked settings.");
+		$('#body-container').attr('class', 'blur');
+		$('#settings-dialog').show();
+
+		// Temporary - just to close the dialog
+		$('#settings-dialog').on('click', function(e) {
+			$('#body-container').removeClass('blur');
+			$('#settings-dialog').hide();
+		});
+	});
 };

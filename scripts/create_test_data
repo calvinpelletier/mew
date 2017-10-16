@@ -55,13 +55,20 @@ if HEAVY:
     prev_hostname = ''
 
     c = db.cursor()
-    for day_start in range(int(today) - ms_per_day * days, int(now), ms_per_day):
-        for _ in range(events_per_day):
-            timestamp = randint(day_start, day_start + ms_per_day)
+
+    # test multiday overlap
+    multiday_start = int(today) - ms_per_day * days + 86400 * 1000 / 2
+    insert(c, 'multidayoverlap.com', multiday_start)
+    multiday_end = multiday_start + 86400 * 1000 * 3
+    insert(c, 'endmultidayoverlap.com', multiday_end)
+
+    for _ in range(days * events_per_day):
+            timestamp = randint(multiday_end + 1000, int(now))
             hostname = prev_hostname
             while hostname == prev_hostname:
                 hostname = choice(hostnames)
             insert(c, hostname, timestamp)
+
     db.commit()
     c.close()
 

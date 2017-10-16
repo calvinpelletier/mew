@@ -67,14 +67,15 @@ def get_daily_summary(db, uid, timezone_name):
     # summarize non cached events
     prev_ts = None
     prev_hostname = None
+    prev_utc_day_start = None
     total = 0.
     for event in events:
         hostname = event[0]
         ts = event[1]
-        date = ts / 1000
 
         # Event timestamp, in user's local timezone
-        user_ts = datetime.datetime.utcfromtimestamp(date).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
+        ts_sec = ts / 1000
+        user_ts = datetime.datetime.utcfromtimestamp(ts_sec).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
         user_day = user_ts.date()
 
         # A unixtime for midnight (in UTC!) of the day of this timestamp,
@@ -83,11 +84,55 @@ def get_daily_summary(db, uid, timezone_name):
 
         # Ignore nulls, they mean the user wasn't even in Chrome.
         if prev_ts is not None and prev_hostname not in IGNORED_HOSTNAMES:
-            mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
-            new_data[utc_day_start][prev_hostname] += mins_elapsed
-            durations_per_host[prev_hostname] += mins_elapsed
+            day_diff = utc_day_start - prev_utc_day_start
+            if day_diff % 86400 != 0:
+                # there is fuckery about
+                # possibly leap seconds
+                error("utc_day_start is %s and prev_utc_day_start is %s which is not a multiple of 86400",
+                    str(utc_day_start), str(prev_utc_day_start))
+                raise
+
+            # if this event is in one day
+            if day_diff == 0:
+                mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
+                new_data[prev_utc_day_start][prev_hostname] += mins_elapsed
+                durations_per_host[prev_hostname] += mins_elapsed
+
+            # if this event overlaps two days
+            elif day_diff == 86400:
+                day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
+                min_pre_division = (day_division - prev_ts / 1000.) / 60.
+                min_post_division = (ts / 1000. - day_division) / 60.
+                new_data[prev_utc_day_start][prev_hostname] += min_pre_division
+                new_data[utc_day_start][prev_hostname] += min_post_division
+                durations_per_host[prev_hostname] += min_pre_division + min_post_division
+
+            # this event overlaps more than two days
+            else:
+                # first day (partial)
+                # this could be faster by storing a prev_user_day but this will pretty much never occur so fuck it
+                _y, _m, _d = [int(x) for x in datetime.datetime.utcfromtimestamp(prev_utc_day_start + 86400).date().isoformat().split('-')]
+                day_division = time.mktime(datetime.datetime(_y, _m, _d, tzinfo=tz_obj).date().timetuple()) # unix time of local day
+                min_pre_division = (day_division - prev_ts / 1000.) / 60.
+                new_data[prev_utc_day_start][prev_hostname] += min_pre_division
+                durations_per_host[prev_hostname] += min_pre_division
+
+                # middle days (full)
+                cur_day = prev_utc_day_start + 86400
+                while cur_day < utc_day_start:
+                    new_data[cur_day][prev_hostname] = 1440. # minutes in a day
+                    durations_per_host[prev_hostname] += 1440.
+                    cur_day += 86400
+
+                # last day (partial)
+                day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
+                min_post_division = (ts / 1000. - day_division) / 60.
+                new_data[utc_day_start][prev_hostname] += min_post_division
+                durations_per_host[prev_hostname] += min_post_division
+
         prev_ts = ts
         prev_hostname = hostname
+        prev_utc_day_start = utc_day_start
 
     # cache new findings
     cur_day = datetime.datetime.utcfromtimestamp(time.time()).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date()
@@ -103,6 +148,7 @@ def get_daily_summary(db, uid, timezone_name):
     ], key=lambda o: o["date"])
 
     hostnames = map(lambda (host,_): host, sorted(durations_per_host.items(), key=lambda (_, dur): dur, reverse=True))
+    print hostnames
 
     return {
         "data": final_data,

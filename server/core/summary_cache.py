@@ -57,7 +57,8 @@ def load(db, uid, tz):
             calendar.timegm(datetime.datetime.utcfromtimestamp(start_time)
                             .replace(tzinfo=pytz.UTC).astimezone(tz_obj).date().timetuple())
         if first_non_cached_day != calculated_first_non_cached_day:
-            error("first_non_cached_day is %s but was calculated as %s", str(first_non_cached_day), str(calculated_first_non_cached_day))
+            error("first_non_cached_day is %s but was calculated as %s from start time %s",
+                str(first_non_cached_day), str(calculated_first_non_cached_day), str(start_time))
 
         events = event_storage.select(db, uid, start_time * 1000)
 
