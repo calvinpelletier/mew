@@ -84,23 +84,51 @@ def get_daily_summary(db, uid, timezone_name):
 
         # Ignore nulls, they mean the user wasn't even in Chrome.
         if prev_ts is not None and prev_hostname not in IGNORED_HOSTNAMES:
+            day_diff = utc_day_start - prev_utc_day_start
+            if day_diff % 86400 != 0:
+                # there is fuckery about
+                # possibly leap seconds
+                error("utc_day_start is %s and prev_utc_day_start is %s which is not a multiple of 86400",
+                    str(utc_day_start), str(prev_utc_day_start))
+                raise
 
-            # if this event overlaps days
-            # TODO: check for multiple day overlap
-            if utc_day_start != prev_utc_day_start:
-                day_division = time.mktime((user_day + datetime.timedelta(days=0)).timetuple()) # unixtime of local day (not utc)
-                min_pre_division = (day_division - prev_ts / 1000.) / (60.)
-                min_post_division = (ts / 1000. - day_division) / (60.)
-                print utc_day_start, prev_utc_day_start, day_division, ts / 1000., prev_ts / 1000.
+            # if this event is in one day
+            if day_diff == 0:
+                mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
+                new_data[prev_utc_day_start][prev_hostname] += mins_elapsed
+                durations_per_host[prev_hostname] += mins_elapsed
+
+            # if this event overlaps two days
+            if day_diff == 86400:
+                day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
+                min_pre_division = (day_division - prev_ts / 1000.) / 60.
+                min_post_division = (ts / 1000. - day_division) / 60.
                 assert min_pre_division > 0 and min_post_division >= 0
                 new_data[prev_utc_day_start][prev_hostname] += min_pre_division
                 new_data[utc_day_start][prev_hostname] += min_post_division
                 durations_per_host[prev_hostname] += min_pre_division + min_post_division
 
+            # this event overlaps more than two days
             else:
-                mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
-                new_data[prev_utc_day_start][prev_hostname] += mins_elapsed
-                durations_per_host[prev_hostname] += mins_elapsed
+                # first day (partial)
+                # this could be faster by storing a prev_user_day but this will pretty much never occur so fuck it
+                _y, _m, _d = [int(x) for x in datetime.datetime.utcfromtimestamp(prev_utc_day_start + 86400).date().isoformat().split('-')]
+                day_division = time.mktime(datetime.datetime(_y, _m, _d, tzinfo=tz_obj).date().timetuple()) # unix time of local day
+                min_pre_division = (day_division - prev_ts / 1000.) / 60.
+                assert min_pre_division > 0
+                new_data[prev_utc_day_start][prev_hostname] += min_pre_division
+
+                # middle days (full)
+                cur_day = prev_utc_day_start + 86400
+                while cur_day < utc_day_start:
+                    new_data[cur_day][prev_hostname] = 1440 # minutes in a day
+                    cur_day += 86400
+
+                # last day (partial)
+                day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
+                min_post_division = (ts / 1000. - day_division) / 60.
+                assert min_post_division >= 0
+                new_data[utc_day_start][prev_hostname] += min_post_division
 
         prev_ts = ts
         prev_hostname = hostname
