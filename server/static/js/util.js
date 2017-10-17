@@ -12,7 +12,11 @@ var MINUTE_DURATIONS = {
 var MS_PER_MINUTE = 60000;
 var MS_PER_DAY = MS_PER_MINUTE * 60 * 24;
 
-function formatTime(value) {
+function formatTime(value, allowBeyondHours) {
+  if (allowBeyondHours == null) {
+      allowBeyondHours = false;
+  }
+
   if (value < 1) {
     return Math.round(value * 60) + " seconds";
   } else if (value < 60) {
@@ -21,8 +25,10 @@ function formatTime(value) {
     let numHours = value / 60;
     if (numHours < 24) {
         return numHours.toFixed(1) + " hours";
-    } else {
+    } else if (allowBeyondHours == false) {
         return Math.round(numHours) + " hours";
+    } else {
+        return (numHours / 24).toFixed(1) + " days";
     }
   }
 }
