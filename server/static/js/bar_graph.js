@@ -45,7 +45,7 @@ function requestBarGraphData()
         data: JSON.stringify(postData),
         success: function(response) {
             $('#card1-title').text(graphConfig.timespanName);
-            $('#card1-subtitle').text("Total Time: " + formatTime(response.total));
+            $('#card1-subtitle').text("Total Time: " + formatTime(response.total, true));
             console.log(JSON.stringify(response));
             drawBarGraph(response.labels, response.values, "chart0");
         },
