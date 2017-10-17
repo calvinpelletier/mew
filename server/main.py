@@ -165,14 +165,13 @@ def get_bar_graph_data():
     return gen_resp(True, summary)
 
 
-@app.route('/api/stackedgraph', methods=['POST'])
-def get_stacked_graph_data():
+@app.route('/api/getmaindata', methods=['POST'])
+def get_main_data():
     req_data = request.get_json()
 
     if not req_data:
         return gen_resp("False")
 
-    num_days = req_data['days']
     timezone = req_data['timezone']
 
     if 'uid' in session:

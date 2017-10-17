@@ -14,7 +14,7 @@ IGNORED_HOSTNAMES = [None, "newtab"]
 
 
 def get_last_x_min_summary(db, uid, x_min, max_sites):
-    events = get_last_x_min(db, uid, x_min)
+    events = _get_last_x_min(db, uid, x_min)
 
     prev_ts = None
     prev_hostname = None
@@ -64,11 +64,14 @@ def get_daily_summary(db, uid, timezone_name):
 
     tz_obj = pytz.timezone(timezone_name)
 
+    unprod_sites = frozenset(unproductive.get_unprod_sites(db, uid)) # list -> frozenset for performance gain
+
     # summarize non cached events
     prev_ts = None
     prev_hostname = None
     prev_utc_day_start = None
     total = 0.
+    # TODO: maybe insert null event at current time to capture last event and avoid an edge case in quota
     for event in events:
         hostname = event[0]
         ts = event[1]
@@ -95,17 +98,15 @@ def get_daily_summary(db, uid, timezone_name):
             # if this event is in one day
             if day_diff == 0:
                 mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
-                new_data[prev_utc_day_start][prev_hostname] += mins_elapsed
-                durations_per_host[prev_hostname] += mins_elapsed
+                _add_to_summary(new_data, durations_per_host, unprod_sites, prev_utc_day_start, prev_hostname, mins_elapsed)
 
             # if this event overlaps two days
             elif day_diff == 86400:
                 day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
                 min_pre_division = (day_division - prev_ts / 1000.) / 60.
                 min_post_division = (ts / 1000. - day_division) / 60.
-                new_data[prev_utc_day_start][prev_hostname] += min_pre_division
-                new_data[utc_day_start][prev_hostname] += min_post_division
-                durations_per_host[prev_hostname] += min_pre_division + min_post_division
+                _add_to_summary(new_data, durations_per_host, unprod_sites, prev_utc_day_start, prev_hostname, min_pre_division)
+                _add_to_summary(new_data, durations_per_host, unprod_sites, utc_day_start, prev_hostname, min_post_division)
 
             # this event overlaps more than two days
             else:
@@ -114,21 +115,18 @@ def get_daily_summary(db, uid, timezone_name):
                 _y, _m, _d = [int(x) for x in datetime.datetime.utcfromtimestamp(prev_utc_day_start + 86400).date().isoformat().split('-')]
                 day_division = time.mktime(datetime.datetime(_y, _m, _d, tzinfo=tz_obj).date().timetuple()) # unix time of local day
                 min_pre_division = (day_division - prev_ts / 1000.) / 60.
-                new_data[prev_utc_day_start][prev_hostname] += min_pre_division
-                durations_per_host[prev_hostname] += min_pre_division
+                _add_to_summary(new_data, durations_per_host, unprod_sites, prev_utc_day_start, prev_hostname, min_pre_division)
 
                 # middle days (full)
                 cur_day = prev_utc_day_start + 86400
                 while cur_day < utc_day_start:
-                    new_data[cur_day][prev_hostname] = 1440. # minutes in a day
-                    durations_per_host[prev_hostname] += 1440.
+                    _add_to_summary(new_data, durations_per_host, unprod_sites, cur_day, prev_hostname, 1440) # min in day
                     cur_day += 86400
 
                 # last day (partial)
                 day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
                 min_post_division = (ts / 1000. - day_division) / 60.
-                new_data[utc_day_start][prev_hostname] += min_post_division
-                durations_per_host[prev_hostname] += min_post_division
+                _add_to_summary(new_data, durations_per_host, unprod_sites, utc_day_start, prev_hostname, min_post_division)
 
         prev_ts = ts
         prev_hostname = hostname
@@ -156,7 +154,16 @@ def get_daily_summary(db, uid, timezone_name):
     }
 
 
-def get_last_x_min(db, uid, x_min):
+# helper for get_daily_summary
+def _add_to_summary(summary, dur_per_host, unprod_sites, day, site, duration):
+    summary[day][site] += duration
+    dur_per_host[site] += duration
+    summary[day]['_total'] += duration
+    if site in unprod_sites:
+        summary[day]['_unprod'] += duration
+
+
+def _get_last_x_min(db, uid, x_min):
     if x_min:
         start_time = (time.time() - (x_min * 60.)) * 1000  # sec to ms
     else:
