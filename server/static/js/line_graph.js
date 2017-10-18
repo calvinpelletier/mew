@@ -1,41 +1,8 @@
-function filterAndDrawLineGraph(minutes) {
+function filterAndDrawLineGraph() {
+	var minutes = getLineGraphMinutes()
 	console.log("Drawing line graph for last " + minutes + " minutes.")
 	data = filter(window.raw_line_graph_data.data, minutes);
 	drawLineGraph(data["x"], data["y"], "chart1");
-}
-
-function requestLineGraphData() {
-	if (typeof window.raw_line_graph_data !== "undefined") {
-		filterAndDrawLineGraph(getLineGraphMinutes());
-		return;
-	}
-
-	// Note: we always fetch all day, it's just filtered to a timespan later.
-	var postData = {
-		"days": null,
-		"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
-	};
-
-	// Get graph data from server.
-	$.post({
-		url: '/api/stackedgraph',
-		contentType: 'application/json',
-		dataType: 'json',
-		data: JSON.stringify(postData),
-		success: function(response) {
-			console.log("Success! " + response);
-			window.raw_line_graph_data = response;
-			filterAndDrawLineGraph(getLineGraphMinutes());
-		},
-		statusCode: {
-            500: function() {
-              this.fail();
-            }
-        },
-		fail: function() {
-			toastr.error('Request for line graph data failed.');
-		}
-	});
 }
 
 function getLineGraphMinutes() {

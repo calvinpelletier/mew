@@ -183,8 +183,12 @@ def get_main_data():
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
         return gen_resp(False, {'reason', 'no events'})
-    # debug(summary)
-    return gen_resp(True, summary)
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary, timezone)
+    print streak
+    return gen_resp(True, {
+        'linegraph': summary,
+        'streak': streak
+    })
 
 
 @app.route('/api/getstreak', methods=['POST'])

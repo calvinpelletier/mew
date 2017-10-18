@@ -7,6 +7,7 @@ import pytz
 
 import event_storage
 import summary_cache
+import unproductive
 from log import *
 
 # None/null means the user wasn't in chrome
@@ -66,12 +67,18 @@ def get_daily_summary(db, uid, timezone_name):
 
     unprod_sites = frozenset(unproductive.get_unprod_sites(db, uid)) # list -> frozenset for performance gain
 
+    # insert null event at current time to capture last event and avoid an edge case in quota
+    cur_time = time.time() * 1000.
+    if events[-1][1] > cur_time:
+        # TODO: proper way to handle this?
+        cur_time = events[-1][1]
+    events.append([None, cur_time])
+
     # summarize non cached events
     prev_ts = None
     prev_hostname = None
     prev_utc_day_start = None
     total = 0.
-    # TODO: maybe insert null event at current time to capture last event and avoid an edge case in quota
     for event in events:
         hostname = event[0]
         ts = event[1]

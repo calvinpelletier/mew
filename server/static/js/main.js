@@ -20,14 +20,39 @@ function setQuotaPercent(percent) {
 
 window.onload = function() {
 	requestBarGraphData();
-	requestLineGraphData();
+
+	// Bundles a bunch of api calls into one
+	// TODO: include bar graph data
+	$.post({
+		url: '/api/getmaindata',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify({
+			"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
+		}),
+		success: function(response) {
+			window.raw_line_graph_data = response['linegraph'];
+			filterAndDrawLineGraph();
+
+			// TODO: set streak
+			console.log(response['streak'])
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+			toastr.error('Request for line graph data failed.');
+		}
+	});
 
 	$('#chart0-options input.timeframe-choice').on('change', function (e) {
 		requestBarGraphData();
 	});
 
 	$('#chart1-options input.timeframe-choice').on('change', function (e) {
-		requestLineGraphData();
+		filterAndDrawLineGraph();
 	});
 
 	setQuotaPercent(65);

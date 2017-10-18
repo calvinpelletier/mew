@@ -26,7 +26,7 @@ def get_unprod_sites(db, uid):
         c.execute('INSERT INTO unprod_sites VALUES (?, ?)', (uid, '[]'))
         db.commit()
     else:
-        sites = json.loads(result)
+        sites = json.loads(result[0])
 
     c.close()
     return sites

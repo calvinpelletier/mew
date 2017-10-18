@@ -28,7 +28,7 @@ def get_streak(db, uid, summary, tz):
         streak_last_updated = 0
 
     # find summary location of streak_last_updated
-    if streak_last_updated < summary[0]['date']
+    if streak_last_updated < summary[0]['date']:
         slu_idx = 0
     else:
         assert int(streak_last_updated - summary[0]['date']) % 86400 == 0
