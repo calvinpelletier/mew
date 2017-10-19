@@ -13,13 +13,12 @@ def set_unprod_sites(db, uid, sites):
     c.execute('INSERT OR REPLACE INTO unprod_sites VALUES (?, ?)', (uid, sites_json))
     db.commit()
     c.close()
+    return True
 
 def get_unprod_sites(db, uid):
     c = db.cursor()
     c.execute('SELECT json FROM unprod_sites WHERE uid = ?', (uid,))
     result = c.fetchone()
-    print 'unprod sites:'
-    print result
 
     if result is None:
         sites = []

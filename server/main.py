@@ -182,8 +182,8 @@ def get_main_data():
 
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
-        return gen_resp(False, {'reason', 'no events'})
-    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary, timezone)
+        return gen_resp(False, {'reason': 'no events'})
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'], timezone)
     print streak
     return gen_resp(True, {
         'linegraph': summary,
@@ -198,7 +198,13 @@ def get_streak():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    streak = quota.get_streak(get_db(DATABASE_PATH), uid)
+    req_data = request.get_json()
+    timezone = req_data['timezone']
+
+    summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
+    if summary is None:
+        return gen_resp(False, {'reason': 'no events'})
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'], timezone)
     # streak of -1 means there is no quota set
     return gen_resp(True, {'streak': streak})
 
@@ -211,7 +217,7 @@ def set_get_quota():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    if request.methods == 'POST':
+    if request.method == 'POST':
         req_data = request.get_json()
         try:
             new_quota = int(req_data['quota'])
@@ -234,7 +240,7 @@ def set_get_unprod_sites():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    if request.methods == 'POST':
+    if request.method == 'POST':
         req_data = request.get_json()
         if 'sites' not in req_data:
             return gen_resp(False, {'reason': 'invalid or missing request data'})
