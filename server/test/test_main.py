@@ -116,8 +116,9 @@ class TestMain(unittest.TestCase):
         db = sqlite3.connect(self.db_path)
         c = db.cursor()
 
-        c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, 'test.com', (self.today - days_ago * 86400) * 1000))
-        c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, None, (self.today - days_ago * 86400 + usage * 60) * 1000))
+        local_day = time.mktime(datetime.datetime.now(pytz.timezone(self.tz)).date().timetuple())
+        c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, 'test.com', (local_day - days_ago * 86400) * 1000))
+        c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, None, (local_day - days_ago * 86400 + usage * 60) * 1000))
 
         db.commit()
         c.close()
@@ -163,7 +164,6 @@ class TestMain(unittest.TestCase):
         # run all tests twice, once with all, once with unprod only
         for quota_type in ['all', 'unprod']:
             if quota_type == 'unprod':
-                print 'AYYYYY'
                 self._post('/api/unprodsites', {'sites': ['test.com']})
             self._post('/api/quota', {'quota': 10, 'quota_type': quota_type})
             self._clear_events()

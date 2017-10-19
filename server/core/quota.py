@@ -13,10 +13,6 @@ def get_streak(db, uid, summary, tz):
         # there's no quota set
         return -1
 
-    print '~~~~~'
-    print result
-    print summary
-
     quota, quota_type, old_streak, streak_last_updated, stored_tz = result
 
     if quota_type == 1:
@@ -52,16 +48,13 @@ def get_streak(db, uid, summary, tz):
             slu_idx = int(streak_last_updated - summary[0]['date']) /  86400
 
         new_streak = 0
-        print len(summary), slu_idx
         # loop from yesterday to slu (inclusive)
         for i in range(len(summary) - 2, slu_idx - 1, -1):
-            print '~', new_streak
             if summary[i]['summary'][metric] > quota:
                 break
             new_streak += 1
             if i == slu_idx:
                 new_streak += old_streak
-            print '~~', new_streak
 
     # update table
     c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?, ?, ?, ?)', (uid, quota, quota_type, new_streak, today, tz))
