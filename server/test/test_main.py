@@ -16,7 +16,7 @@ from json import loads, dumps
 
 import main
 
-logging.config.fileConfig("config/logging.conf")
+logging.config.fileConfig("config/test_log.conf")
 lg = logging.getLogger("test")
 
 class TestMain(unittest.TestCase):
