@@ -51,7 +51,7 @@ def load(db, uid, tz):
         first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
         utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
         # unixtime of first non-cached LOCAL day:
-        start_time = time.mktime(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, tzinfo=tz_obj).timetuple())
+        start_time = int(time.mktime(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, tzinfo=tz_obj).date().timetuple()))
         # TODO remove when we're confident this works
         calculated_first_non_cached_day = \
             calendar.timegm(datetime.datetime.utcfromtimestamp(start_time)
@@ -59,6 +59,7 @@ def load(db, uid, tz):
         if first_non_cached_day != calculated_first_non_cached_day:
             error("first_non_cached_day is %s but was calculated as %s from start time %s",
                 str(first_non_cached_day), str(calculated_first_non_cached_day), str(start_time))
+            raise
 
         events = event_storage.select(db, uid, start_time * 1000)
 

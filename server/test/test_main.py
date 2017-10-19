@@ -9,6 +9,9 @@ import sqlite3
 import tempfile
 import time
 import unittest
+import calendar
+import datetime
+import pytz
 from json import loads, dumps
 
 import main
@@ -75,6 +78,52 @@ class TestMain(unittest.TestCase):
         lg.debug("Generated token %s", self.token)
         self.uid = 1
 
+    def _post(self, api, data):
+        resp = loads(self.app.post(api, data=dumps(data), headers={"content-type": "application/json"}).data)
+        self.assertTrue(resp['success'])
+        return resp
+
+    def _set_streak_cache(self, streak, days_ago):
+        if streak is None or days_ago is None:
+            streak = 0
+            last_updated = 0
+        else:
+            last_updated = self.today - days_ago * 86400
+
+        db = sqlite3.connect(self.db_path)
+        c = db.cursor()
+        c.execute('SELECT quota, quota_type, tz FROM quotas WHERE uid = ?', (self.uid,))
+        result = c.fetchone()
+        if result is None:
+            result = (0, 0, None)
+        c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?, ?, ?, ?)',
+            (self.uid, result[0], result[1], streak, last_updated, result[2]))
+        db.commit()
+        c.close()
+        db.close()
+
+    def _clear_events(self):
+        db = sqlite3.connect(self.db_path)
+        c = db.cursor()
+        c.execute('DELETE FROM events WHERE uid = ?', (self.uid,))
+        c.execute('DELETE FROM daily_summary_cache WHERE uid = ?', (self.uid,))
+        db.commit()
+        c.close()
+        db.close()
+
+    # usage in minutes
+    def _set_day_usage(self, days_ago, usage):
+        db = sqlite3.connect(self.db_path)
+        c = db.cursor()
+
+        local_day = time.mktime(datetime.datetime.now(pytz.timezone(self.tz)).date().timetuple())
+        c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, 'test.com', (local_day - days_ago * 86400) * 1000))
+        c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, None, (local_day - days_ago * 86400 + usage * 60) * 1000))
+
+        db.commit()
+        c.close()
+        db.close()
+
     def test_gen_token(self):
         self._gen_token()
 
@@ -99,6 +148,86 @@ class TestMain(unittest.TestCase):
         for domain in ['test.com', 'test2.com', 'other']:
             self.assertIn(domain, response_data['labels'])
         self.assertEqual(len(response_data['values']), 3)
+
+    def test_streak(self):
+        self._gen_token()
+        with self.app.session_transaction() as sess:
+            sess['uid'] = self.uid
+        self.tz = 'America/Chicago'
+        self.today = calendar.timegm(datetime.datetime.now(pytz.timezone(self.tz)).date().timetuple())
+
+        # no quota
+        self._set_day_usage(0, 5)
+        streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+        self.assertEqual(streak, -1)
+
+        # run all tests twice, once with all, once with unprod only
+        for quota_type in ['all', 'unprod']:
+            if quota_type == 'unprod':
+                self._post('/api/unprodsites', {'sites': ['test.com']})
+            self._post('/api/quota', {'quota': 10, 'quota_type': quota_type})
+            self._clear_events()
+            self._set_streak_cache(None, None)
+
+            # less than one day of data
+            self._set_day_usage(0, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 0)
+
+            # duplicate to check caching
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 0)
+
+            # below quota every day, no cache
+            self._clear_events()
+            self._set_streak_cache(None, None)
+            self._set_day_usage(0, 5)
+            self._set_day_usage(1, 5)
+            self._set_day_usage(2, 5)
+            self._set_day_usage(3, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 3)
+
+            # duplicate to check caching
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 3)
+
+            # below quota every day, cache first day
+            self._set_streak_cache(0, 3)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 3)
+
+            # below quota every day, cache in the middle
+            self._set_streak_cache(2, 1)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 3)
+
+            # above quota today
+            self._clear_events()
+            self._set_streak_cache(None, None)
+            self._set_day_usage(0, 15)
+            self._set_day_usage(1, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 0)
+
+            # duplicate to check caching
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 0)
+
+            # above quota two days ago, no cache
+            self._clear_events()
+            self._set_streak_cache(None, None)
+            self._set_day_usage(0, 5)
+            self._set_day_usage(1, 5)
+            self._set_day_usage(2, 15)
+            self._set_day_usage(3, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 1)
+
+            # above quota two days ago, cache two days ago
+            self._set_streak_cache(1, 2)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 1)
 
 
 if __name__ == '__main__':

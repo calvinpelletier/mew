@@ -165,14 +165,13 @@ def get_bar_graph_data():
     return gen_resp(True, summary)
 
 
-@app.route('/api/stackedgraph', methods=['POST'])
-def get_stacked_graph_data():
+@app.route('/api/getmaindata', methods=['POST'])
+def get_main_data():
     req_data = request.get_json()
 
     if not req_data:
         return gen_resp("False")
 
-    num_days = req_data['days']
     timezone = req_data['timezone']
 
     if 'uid' in session:
@@ -183,9 +182,13 @@ def get_stacked_graph_data():
 
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
-        return gen_resp(False, {'reason', 'no events'})
-    # debug(summary)
-    return gen_resp(True, summary)
+        return gen_resp(False, {'reason': 'no events'})
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'], timezone)
+    print streak
+    return gen_resp(True, {
+        'linegraph': summary,
+        'streak': streak
+    })
 
 
 @app.route('/api/getstreak', methods=['POST'])
@@ -195,7 +198,13 @@ def get_streak():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    streak = quota.get_streak(get_db(DATABASE_PATH), uid)
+    req_data = request.get_json()
+    timezone = req_data['timezone']
+
+    summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
+    if summary is None:
+        return gen_resp(False, {'reason': 'no events'})
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'], timezone)
     # streak of -1 means there is no quota set
     return gen_resp(True, {'streak': streak})
 
@@ -208,7 +217,7 @@ def set_get_quota():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    if request.methods == 'POST':
+    if request.method == 'POST':
         req_data = request.get_json()
         try:
             new_quota = int(req_data['quota'])
@@ -231,7 +240,7 @@ def set_get_unprod_sites():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    if request.methods == 'POST':
+    if request.method == 'POST':
         req_data = request.get_json()
         if 'sites' not in req_data:
             return gen_resp(False, {'reason': 'invalid or missing request data'})
