@@ -1,19 +1,16 @@
 import event_analysis
-import calendar
-import datetime
-import pytz
 
-
-def get_streak(db, uid, summary, tz):
+def get_streak(db, uid, summary):
     c = db.cursor()
-    c.execute('SELECT quota, quota_type, streak, streak_last_updated, tz FROM quotas WHERE uid = ?', (uid,))
+    c.execute('SELECT quota, quota_type FROM quotas WHERE uid = ?', (uid,))
     result = c.fetchone()
+    c.close()
 
     if result is None or result[1] == 0:
         # there's no quota set
         return -1
 
-    quota, quota_type, old_streak, streak_last_updated, stored_tz = result
+    quota, quota_type = result
 
     if quota_type == 1:
         metric = '_total'
@@ -24,44 +21,18 @@ def get_streak(db, uid, summary, tz):
         # TODO: log
         return -1
 
-    # make sure timezone is the same
-    if stored_tz is None or stored_tz != tz:
-        # recalculate entire streak
-        old_streak = 0
-        streak_last_updated = 0
+    # loop backwards over summary
+    streak = 0
+    for day in reversed(summary):
+        if metric in day['summary'] and day['summary'][metric] > quota:
+            break
+        streak += 1
 
-    # check if we don't need to do anything
-    today = calendar.timegm(datetime.datetime.now(pytz.timezone(tz)).date().timetuple()) # date (based on user's tz) encoded as UTC day start
-    if today == streak_last_updated and (old_streak == 0 or summary[-1]['summary'][metric] <= quota):
-        c.close()
-        return old_streak
+    # don't count current day
+    if streak > 0:
+        streak -= 1
 
-    # calculate new streak
-    if summary[-1]['summary'][metric] > quota:
-        new_streak = 0
-    else:
-        # find summary location of streak_last_updated
-        if streak_last_updated < summary[0]['date']:
-            slu_idx = 0
-        else:
-            assert int(streak_last_updated - summary[0]['date']) % 86400 == 0
-            slu_idx = int(streak_last_updated - summary[0]['date']) /  86400
-
-        new_streak = 0
-        # loop from yesterday to slu (inclusive)
-        for i in range(len(summary) - 2, slu_idx - 1, -1):
-            if summary[i]['summary'][metric] > quota:
-                break
-            new_streak += 1
-            if i == slu_idx:
-                new_streak += old_streak
-
-    # update table
-    c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?, ?, ?, ?)', (uid, quota, quota_type, new_streak, today, tz))
-    db.commit()
-    c.close()
-
-    return new_streak
+    return streak
 
 
 def get_quota(db, uid):
@@ -72,7 +43,7 @@ def get_quota(db, uid):
     if result is None:
         quota = 0
         quota_type = 'none'
-        c.execute('INSERT INTO quotas VALUES (?, ?, ?, ?, ?, ?)', (uid, 0, 0, 0, 0, None))
+        c.execute('INSERT INTO quotas VALUES (?, ?, ?)', (uid, 0, 0))
         db.commit()
     else:
         quota = result[0]
@@ -89,7 +60,7 @@ def get_quota(db, uid):
 
 
 def set_quota(db, uid, new_quota, quota_type):
-    if new_quota <= 0 or new_quota > 2147483647:
+    if new_quota < 0 or new_quota > 2147483647:
         return False
 
     if quota_type == 'none':
@@ -102,7 +73,7 @@ def set_quota(db, uid, new_quota, quota_type):
         return False
 
     c = db.cursor()
-    c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?, ?, ?, ?)', (uid, new_quota, qt, 0, 0, None))
+    c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?)', (uid, new_quota, qt))
     db.commit()
     c.close()
     return True

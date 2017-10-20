@@ -183,7 +183,7 @@ def get_main_data():
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
         return gen_resp(False, {'reason': 'no events'})
-    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'], timezone)
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
     print streak
     return gen_resp(True, {
         'linegraph': summary,
@@ -204,7 +204,7 @@ def get_streak():
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
         return gen_resp(False, {'reason': 'no events'})
-    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'], timezone)
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
     # streak of -1 means there is no quota set
     return gen_resp(True, {'streak': streak})
 
@@ -227,9 +227,8 @@ def set_get_quota():
         success = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota, quota_type)
         return gen_resp(success)
     else: # get
-        ret = quota.get_quota(get_db(DATABASE_PATH), uid)
-        # ret == 0 means no quota set
-        return gen_resp(True, {'quota': ret})
+        cur_quota, quota_type = quota.get_quota(get_db(DATABASE_PATH), uid)
+        return gen_resp(True, {'quota': cur_quota, 'quota_type': quota_type})
 
 
 # sets or gets list of unproductive sites deending on req type
