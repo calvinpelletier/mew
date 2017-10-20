@@ -17,6 +17,13 @@ IGNORED_HOSTNAMES = [None, "newtab"]
 def get_last_x_min_summary(db, uid, x_min, max_sites):
     events = _get_last_x_min(db, uid, x_min)
 
+    # insert null event at current time to capture last event
+    cur_time = time.time() * 1000.
+    if events[-1][1] > cur_time:
+        # TODO: proper way to handle this?
+        cur_time = events[-1][1]
+    events.append([None, cur_time])
+
     prev_ts = None
     prev_hostname = None
     summary = {}
