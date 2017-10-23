@@ -16,10 +16,13 @@ possible problems:
 INSPECTION_INTERVAL = 60.  # seconds
 FATAL_TIME = 15.  # seconds after which the inspector pronounces a client dead
 ADJUSTMENT = 2.5  # seconds to add to last active time for null event. 2.5 is half of a ping interval so lowest average error
-
+ALREADY_INITED = False
 
 def init(database_path, web_event):
-    global last_active, DATABASE_PATH, WebEvent, lg, last_active_lock
+    global last_active, DATABASE_PATH, WebEvent, lg, last_active_lock, ALREADY_INITED
+    if ALREADY_INITED:
+        return
+    have_inited = True
     last_active = {}
     DATABASE_PATH = database_path
     WebEvent = web_event
