@@ -237,21 +237,33 @@ body {
     width: 80%;
 }
 
-.cancel-button {
+#settings-content h1 {
+    font-family: Sinkin-Sans200XLight;
+    font-size: 40px;
+    color: #000;
+}
+
+#settings-content h2 {
+    font-family: Sinkin-Sans200XLight;
+    font-size: 30px;
+    color: #000;
+}
+
+#settings-cancel {
     background-color: #2d333c;
     border-style: none;
     font-family: Sinkin-Sans300Light;
 }
-.cancel-button:hover {
+#settings-cancel:hover {
     background-color: #3b434f;
 }
 
-.save-button {
+#settings-save {
     background-color: #31c4e9;
     border-style: none;
     font-family: Sinkin-Sans300Light;
     color: #000;
 }
-.save-button:hover {
+#settings-save:hover {
     background-color: #1f7e96;
 }

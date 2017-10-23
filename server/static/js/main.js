@@ -36,6 +36,7 @@ window.onload = function() {
 			filterAndDrawLineGraph();
 
 			// TODO: set streak
+			setQuotaPercent(65);
 			console.log(response['streak'])
 		},
 		statusCode: {
@@ -55,32 +56,4 @@ window.onload = function() {
 	$('#chart1-options input.timeframe-choice').on('change', function (e) {
 		filterAndDrawLineGraph();
 	});
-
-	setQuotaPercent(65);
-
-	$('#settings-icon').on('click', function(e) {
-		$('#settings-container').removeClass('hidden');
-		$('#body-container').addClass('blur');
-		$('#body-container').addClass('no-scrolling');
-	});
-
-	// When the user clicks anywhere outside of the modal, close it
-	window.onclick = function(event) {
-		if (event.target == document.getElementById('settings-container')) {
-			$('#settings-container').addClass('hidden');
-			$('#body-container').removeClass('blur');
-			$('#body-container').removeClass('no-scrolling');
-		}
-	}
-
-	// $('#settings-cancel').on('click', function(e) {
-	// 	$('#body-container').removeClass('blur');
-	// 	$('#settings-dialog').hide();
-	// });
-	//
-	// $('#settings-save').on('click', function(e) {
-	// 	// TODO: post
-	// 	$('#body-container').removeClass('blur');
-	// 	$('#settings-dialog').hide();
-	// });
 };
