@@ -13,27 +13,57 @@
 <body>
     <div id="settings-container" class="hidden">
         <div id="settings-content">
-            <h1>Settings</h1>
-            <h2>Quota</h2>
-            <div>
-                <input type="text" placeholder="minutes" class="inline">
-                <p class="inline"> minutes of </p>
-                <div class="form-group inline">
-                    <select class="form-control" id="quota-type">
-                        <option>unproductive usage</option>
-                        <option>any usage</option>
-                    </select>
+            <div id="settings-title">
+                <h1>Settings</h1>
+            </div>
+            <div class="settings-section-a">
+                <div id="quota-header">
+                    <h2 id="quota-title">Quota</h2>
+                    <label class="switch inline">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div>
+                    <div class="form-group inline">
+                        <input type="text" placeholder="minutes" class="form-control" style="width: 100px">
+                    </div>
+                    <p id="quota-label"> minutes of </p>
+                    <div class="form-group inline">
+                        <select class="form-control" id="quota-type">
+                            <option>unproductive usage</option>
+                            <option>any usage</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <h2>Unproductive Sites</h2>
-            <div id="unprod-sites">
-                <p>facebook.com</p>
-                <p>reddit.com</p>
+            <div class="settings-section-b">
+                <h2>Unproductive Sites</h2>
+                <div id="unprod-sites">
+                    <div class="unprod-site">
+                        <p class="site">facebook.com</p>
+                        <div class="remove-site" id="remove-site0">
+                            <img height=15 width=15 src="{{ url_for('static', filename='img/x.png') }}"/>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="unprod-site">
+                        <p class="site">reddit.com</p>
+                        <div class="remove-site" id="remove-site1">
+                            <img height=15 width=15 src="{{ url_for('static', filename='img/x.png') }}"/>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div id="add-unprod-site">
+                    <img height=20 width=20 src="{{ url_for('static', filename='img/plus.png') }}"/>
+                </div>
             </div>
-            <img id="add-unprod-site" height=30 width=30 src="{{ url_for('static', filename='img/plus.png') }}"/>
-            <div>
-                <button id="settings-cancel" class="btn btn-primary inline">cancel</button>
-                <button id="settings-save" class="btn btn-primary inline">save</button>
+            <div class="settings-section-a">
+                <div id="settings-buttons">
+                    <button id="settings-cancel" class="btn btn-primary inline">cancel</button>
+                    <button id="settings-save" class="btn btn-primary inline">save</button>
+                </div>
             </div>
         </div>
     </div>

@@ -232,27 +232,50 @@ body {
 #settings-content {
     background-color: #fefefe;
     margin: 15% auto;
-    padding: 20px;
+    /*padding: 10px 20px;*/
     border: 1px solid #888;
-    width: 80%;
+    width: 800px;
 }
 
 #settings-content h1 {
     font-family: Sinkin-Sans300Light;
-    font-size: 40px;
-    color: #000;
+    font-size: 30px;
+    color: #fff;
 }
 
 #settings-content h2 {
     font-family: Sinkin-Sans300Light;
-    font-size: 30px;
+    font-size: 25px;
     color: #000;
+    /*text-decoration: underline;*/
+    margin: 0px 0px 20px;
+}
+
+.site {
+    font-size: 18px;
+    margin: 0px;
+}
+
+#settings-title {
+    padding: 10px 10px;
+    background-color: #2d333c;
+    text-align: center;
+}
+
+.settings-section-a {
+    padding: 15px 20px;
+}
+
+.settings-section-b {
+    padding: 15px 20px;
+    background-color: #eee;
 }
 
 #settings-cancel {
     background-color: #2d333c;
     border-style: none;
     font-family: Sinkin-Sans300Light;
+    margin-right: 10px;
 }
 #settings-cancel:hover {
     background-color: #3b434f;
@@ -268,6 +291,46 @@ body {
     background-color: #1f7e96;
 }
 
+#settings-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
 #add-unprod-site {
+    display: inline-flex;
+    background-color: #31c4e9;
     cursor: pointer;
+    margin: 5px 0px;
+}
+
+.unprod-site {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#unprod-sites hr {
+    border-color: #000;
+    border-width: 1px;
+    margin: 5px 0px;
+}
+
+.remove-site {
+    cursor: pointer;
+}
+
+#quota-label {
+    display: inline;
+    margin: 0px 10px;
+    font-size: 15px;
+}
+
+#quota-header {
+    display: flex;
+    align-items: center;
+    margin: 0px 0px 20px;
+}
+
+#quota-title {
+    margin: 0px 20px 0px 0px !important;
 }

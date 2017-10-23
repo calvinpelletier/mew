@@ -1,4 +1,8 @@
 function initSettings() {
+    $('#settings-container').removeClass('hidden');
+    $('#body-container').addClass('blur');
+    $('#body-container').addClass('no-scrolling');
+
     $('#settings-icon').on('click', function(e) {
         console.log('check');
         $('#settings-container').removeClass('hidden');
