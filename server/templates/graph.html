@@ -15,8 +15,26 @@
         <div id="settings-content">
             <h1>Settings</h1>
             <h2>Quota</h2>
-            <button id="settings-cancel" class="btn btn-primary">cancel</button>
-            <button id="settings-save" class="btn btn-primary">save</button>
+            <div>
+                <input type="text" placeholder="minutes" class="inline">
+                <p class="inline"> minutes of </p>
+                <div class="form-group inline">
+                    <select class="form-control" id="quota-type">
+                        <option>unproductive usage</option>
+                        <option>any usage</option>
+                    </select>
+                </div>
+            </div>
+            <h2>Unproductive Sites</h2>
+            <div id="unprod-sites">
+                <p>facebook.com</p>
+                <p>reddit.com</p>
+            </div>
+            <img id="add-unprod-site" height=30 width=30 src="{{ url_for('static', filename='img/plus.png') }}"/>
+            <div>
+                <button id="settings-cancel" class="btn btn-primary inline">cancel</button>
+                <button id="settings-save" class="btn btn-primary inline">save</button>
+            </div>
         </div>
     </div>
     <div id="body-container">

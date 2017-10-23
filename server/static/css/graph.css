@@ -238,13 +238,13 @@ body {
 }
 
 #settings-content h1 {
-    font-family: Sinkin-Sans200XLight;
+    font-family: Sinkin-Sans300Light;
     font-size: 40px;
     color: #000;
 }
 
 #settings-content h2 {
-    font-family: Sinkin-Sans200XLight;
+    font-family: Sinkin-Sans300Light;
     font-size: 30px;
     color: #000;
 }
@@ -266,4 +266,8 @@ body {
 }
 #settings-save:hover {
     background-color: #1f7e96;
+}
+
+#add-unprod-site {
+    cursor: pointer;
 }
