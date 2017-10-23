@@ -67,6 +67,15 @@ def load(db, uid, tz):
                 info(cache_data)
                 info(time.time())
 
+                # clear the cache
+                c = db.cursor()
+                c.execute(
+                    'DELETED FROM daily_summary_cache WHERE uid = ?',
+                    (uid,)
+                )
+                db.commit()
+                c.close()
+
                 raise ValueError(exception_msg)
 
             events = event_storage.select(db, uid, start_time * 1000)
