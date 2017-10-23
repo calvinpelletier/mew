@@ -19,9 +19,9 @@ function setQuotaPercent(percent) {
 }
 
 window.onload = function() {
+	initSettings();
 	requestBarGraphData();
 
-	console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
 	// Bundles a bunch of api calls into one
 	// TODO: include bar graph data
 	$.post({
@@ -36,6 +36,7 @@ window.onload = function() {
 			filterAndDrawLineGraph();
 
 			// TODO: set streak
+			setQuotaPercent(65);
 			console.log(response['streak'])
 		},
 		statusCode: {
@@ -54,19 +55,5 @@ window.onload = function() {
 
 	$('#chart1-options input.timeframe-choice').on('change', function (e) {
 		filterAndDrawLineGraph();
-	});
-
-	setQuotaPercent(65);
-
-	$('#settings-icon').on('click', function(e) {
-		console.log("Clicked settings.");
-		$('#body-container').attr('class', 'blur');
-		$('#settings-dialog').show();
-
-		// Temporary - just to close the dialog
-		$('#settings-dialog').on('click', function(e) {
-			$('#body-container').removeClass('blur');
-			$('#settings-dialog').hide();
-		});
 	});
 };
