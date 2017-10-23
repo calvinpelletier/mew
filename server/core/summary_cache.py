@@ -70,7 +70,7 @@ def load(db, uid, tz):
                 # clear the cache
                 c = db.cursor()
                 c.execute(
-                    'DELETED FROM daily_summary_cache WHERE uid = ?',
+                    'DELETE FROM daily_summary_cache WHERE uid = ?',
                     (uid,)
                 )
                 db.commit()
