@@ -39,36 +39,48 @@ def load(db, uid, tz):
     cache_data = {} # Map from unixtime -> {hostname: time spent}
 
     if len(cache) > 0:
-        latest_cached = None # unixtime (utc) of last cached day
-        for utc_day, json_summary in cache:
-            cache_data[utc_day] = json.loads(json_summary)
-            if latest_cached is None or utc_day > latest_cached:
-                latest_cached = utc_day
-            # setup durations_per_host dict
-            for host, total_time in cache_data[utc_day].iteritems():
-                durations_per_host[host] += total_time
+        try:
+            latest_cached = None # unixtime (utc) of last cached day
+            for utc_day, json_summary in cache:
+                cache_data[utc_day] = json.loads(json_summary)
+                if latest_cached is None or utc_day > latest_cached:
+                    latest_cached = utc_day
+                # setup durations_per_host dict
+                for host, total_time in cache_data[utc_day].iteritems():
+                    durations_per_host[host] += total_time
 
-        first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
-        utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
-        # unixtime of first non-cached LOCAL day:
-        start_time = int(time.mktime(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, tzinfo=tz_obj).date().timetuple()))
-        # TODO remove when we're confident this works
-        calculated_first_non_cached_day = \
-            calendar.timegm(datetime.datetime.utcfromtimestamp(start_time)
-                            .replace(tzinfo=pytz.UTC).astimezone(tz_obj).date().timetuple())
-        if first_non_cached_day != calculated_first_non_cached_day:
-            error("first_non_cached_day is %s but was calculated as %s from start time %s",
-                str(first_non_cached_day), str(calculated_first_non_cached_day), str(start_time))
-            raise
+            first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
+            utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
+            # unixtime of first non-cached LOCAL day:
+            start_time = int(time.mktime(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, tzinfo=tz_obj).date().timetuple()))
+            # TODO remove when we're confident this works
+            calculated_first_non_cached_day = \
+                calendar.timegm(datetime.datetime.utcfromtimestamp(start_time)
+                                .replace(tzinfo=pytz.UTC).astimezone(tz_obj).date().timetuple())
+            if first_non_cached_day != calculated_first_non_cached_day:
+                exception_msg = "first_non_cached_day is %s but was calculated as %s from start time %s" % (
+                    str(first_non_cached_day), str(calculated_first_non_cached_day), str(start_time))
 
-        events = event_storage.select(db, uid, start_time * 1000)
+                # TODO: get rid of this BS
+                invalid_events = event_storage.select(db, uid)
+                info(invalid_events)
+                info(cache_data)
+                info(time.time())
 
-    else: # no cache
-        events = event_storage.select(db, uid) # get all events
-        if len(events) > 0:
-            first_timestamp = datetime.datetime.utcfromtimestamp(events[0][1] / 1000).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
-            first_non_cached_day = calendar.timegm(first_timestamp.date().timetuple())
-        else:
-            first_non_cached_day = None
+                raise ValueError(exception_msg)
+
+            events = event_storage.select(db, uid, start_time * 1000)
+            return cache_data, durations_per_host, events, first_non_cached_day
+        except Exception as ex:
+            error(ex.message)
+            pass
+
+    # If control flow reaches here, either (a) there isn't cached data or (b) we failed to get the cached data
+    events = event_storage.select(db, uid) # get all events
+    if len(events) > 0:
+        first_timestamp = datetime.datetime.utcfromtimestamp(events[0][1] / 1000).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
+        first_non_cached_day = calendar.timegm(first_timestamp.date().timetuple())
+    else:
+        first_non_cached_day = None
 
     return cache_data, durations_per_host, events, first_non_cached_day
