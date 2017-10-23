@@ -1,5 +1,6 @@
-window.onload = function() {
+function initSettings() {
     $('#settings-icon').on('click', function(e) {
+        console.log('check');
         $('#settings-container').removeClass('hidden');
         $('#body-container').addClass('blur');
         $('#body-container').addClass('no-scrolling');
@@ -26,4 +27,4 @@ window.onload = function() {
         $('#body-container').removeClass('blur');
         $('#body-container').removeClass('no-scrolling');
     });
-};
+}

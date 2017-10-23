@@ -19,9 +19,9 @@ function setQuotaPercent(percent) {
 }
 
 window.onload = function() {
+	initSettings();
 	requestBarGraphData();
 
-	console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
 	// Bundles a bunch of api calls into one
 	// TODO: include bar graph data
 	$.post({
