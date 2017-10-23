@@ -22,7 +22,7 @@ def init(database_path, web_event):
     global last_active, DATABASE_PATH, WebEvent, lg, last_active_lock, ALREADY_INITED
     if ALREADY_INITED:
         return
-    have_inited = True
+    ALREADY_INITED = True
     last_active = {}
     DATABASE_PATH = database_path
     WebEvent = web_event
