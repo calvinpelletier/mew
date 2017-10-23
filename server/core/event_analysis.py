@@ -64,10 +64,13 @@ def get_daily_summary(db, uid, timezone_name):
         # no events
         return None
 
+
+    last_non_cached_day = calendar.timegm(datetime.datetime.now(pytz.timezone(timezone_name)).date().timetuple())
+
     # Initialize a list of datetimes, one for each day
     # Map from unixtime -> {hostname: time spent} (which is a defaultdict(int)
     new_data = {
-        ut: defaultdict(int) for ut in range(first_non_cached_day, int(time.time()), 86400)
+        ut: defaultdict(int) for ut in range(first_non_cached_day, last_non_cached_day + 1, 86400)
     }
 
     if len(events) != 0:
