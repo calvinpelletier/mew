@@ -60,7 +60,7 @@ def inspection():
                 hostname=None,
                 time=int(last_active_time + ADJUSTMENT * 1000)
             ))
-            db.close()
+        db.close()
 
     t = Timer(INSPECTION_INTERVAL, inspection)
     t.daemon = True
