@@ -12,6 +12,18 @@ var MINUTE_DURATIONS = {
 var MS_PER_MINUTE = 60000;
 var MS_PER_DAY = MS_PER_MINUTE * 60 * 24;
 
+if (!String.format) {
+  String.format = function(format) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return format.replace(/{(\d+)}/g, function(match, number) {
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
+
 function formatTime(value, allowBeyondHours) {
   if (allowBeyondHours == null) {
       allowBeyondHours = false;
