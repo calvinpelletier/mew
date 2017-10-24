@@ -1,39 +1,49 @@
 import event_analysis
 
-
-def get_streak(db, uid, summary_data):
+def get_streak(db, uid, summary):
     c = db.cursor()
-    c.execute('SELECT quota, quota_type, streak, streak_last_updated FROM quotas WHERE uid = ?', (uid,))
+    c.execute('SELECT quota, quota_type FROM quotas WHERE uid = ?', (uid,))
     result = c.fetchone()
+    c.close()
 
-    if result is None or result[0] == 0 or result[1] == 0:
+    if result is None or result[1] == 0:
         # there's no quota set
         return -1
 
-    quota = result[0]
-    quota_type = results[1]
-    old_streak = result[2]
-    streak_last_updated = result[3]
+    quota, quota_type = result
 
-    # check if we dont need to do anything
+    if quota_type == 1:
+        metric = '_total'
+    elif quota_type == 2:
+        metric = '_unprod'
+    else:
+        # should never happen
+        # TODO: log
+        return -1
 
-    # get summary
+    # loop backwards over summary
+    streak = 0
+    for day in reversed(summary):
+        if metric in day['summary'] and day['summary'][metric] > quota:
+            break
+        streak += 1
 
-    # calculate new streak
+    # don't count current day
+    if streak > 0:
+        streak -= 1
 
-    # update table
+    return streak
+
 
 def get_quota(db, uid):
     c = db.cursor()
     c.execute('SELECT quota, quota_type FROM quotas WHERE uid = ?', (uid,))
     result = c.fetchone()
-    print 'quota:'
-    print result
 
     if result is None:
         quota = 0
         quota_type = 'none'
-        c.execute('INSERT INTO quotas VALUES (?, ?, ?, ?)', (uid, 0, 0, 0, 0))
+        c.execute('INSERT INTO quotas VALUES (?, ?, ?)', (uid, 0, 0))
         db.commit()
     else:
         quota = result[0]
@@ -48,8 +58,9 @@ def get_quota(db, uid):
     c.close()
     return quota, quota_type
 
+
 def set_quota(db, uid, new_quota, quota_type):
-    if new_quota <= 0 or new_quota > 2147483647:
+    if new_quota < 0 or new_quota > 2147483647:
         return False
 
     if quota_type == 'none':
@@ -62,6 +73,7 @@ def set_quota(db, uid, new_quota, quota_type):
         return False
 
     c = db.cursor()
-    c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?, ?)', (uid, new_quota, qt, 0, 0))
+    c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?)', (uid, new_quota, qt))
     db.commit()
     c.close()
+    return True

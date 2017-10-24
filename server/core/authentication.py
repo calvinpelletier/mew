@@ -21,6 +21,7 @@ def add_user(db, email, password):
 
     return uid
 
+
 def add_guest(db, token):
     c = db.cursor()
     c.execute('INSERT INTO users VALUES (NULL, NULL, NULL, NULL)')
@@ -73,6 +74,19 @@ def google_auth(db, email, google_uid):
         uid = user[2]
 
     return uid
+
+
+def get_user_email(db, uid):
+    """
+    :return: email if uid is a logged in user, None if uid is a guest
+    """
+
+    c = db.cursor()
+    c.execute("SELECT email from USERS where uid=?", (uid,))
+    email = c.fetchone()[0]
+    c.close()
+
+    return email
 
 
 def token_to_uid(db, token):

@@ -19,28 +19,44 @@ function setQuotaPercent(percent) {
 }
 
 window.onload = function() {
+	initSettings();
 	requestBarGraphData();
-	requestLineGraphData();
+
+	// Bundles a bunch of api calls into one
+	// TODO: include bar graph data
+	$.post({
+		url: '/api/getmaindata',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify({
+			"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
+		}),
+		success: function(response) {
+			window.raw_line_graph_data = response['linegraph'];
+			filterAndDrawLineGraph();
+
+			// TODO: set streak
+			setQuotaPercent(65);
+			console.log(response['streak'])
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+			toastr.error('Request for line graph data failed.');
+			// TODO: create some sort of "loading failed graphic"
+            // temporary solution - just hide the whole thing
+            $("#card2").hide();
+		}
+	});
 
 	$('#chart0-options input.timeframe-choice').on('change', function (e) {
 		requestBarGraphData();
 	});
 
 	$('#chart1-options input.timeframe-choice').on('change', function (e) {
-		requestLineGraphData();
-	});
-
-	setQuotaPercent(65);
-
-	$('#settings-icon').on('click', function(e) {
-		console.log("Clicked settings.");
-		$('#body-container').attr('class', 'blur');
-		$('#settings-dialog').show();
-
-		// Temporary - just to close the dialog
-		$('#settings-dialog').on('click', function(e) {
-			$('#body-container').removeClass('blur');
-			$('#settings-dialog').hide();
-		});
+		filterAndDrawLineGraph();
 	});
 };

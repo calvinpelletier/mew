@@ -72,3 +72,22 @@
     filter: blur(5px);
     opacity: 0.5;
 }
+
+.no-scrolling {
+    overflow: hidden;
+    position: fixed;
+}
+
+#logo h1 {
+    font-family: Sinkin-Sans300Light;
+    font-size: 40px;
+}
+
+#logo1 {
+    color: #ffffff;
+}
+
+#logo2 {
+    margin-left: -4px;
+    color: #31c4e9;
+}

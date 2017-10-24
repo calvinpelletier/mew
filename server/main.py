@@ -58,9 +58,14 @@ def redirect_guest(token):
 
 @app.route('/graph/')
 def graph():
-    fake_labels = ['reddit.com', 'facebook.com', 'youtube.com', 'OTHER']
-    fake_values = [45, 28, 27, 36]
-    return render_template('graph.html', labels=fake_labels, values=fake_values)
+    uid = session['uid']
+    if uid:
+        user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+    else:
+        warn("uid cookie is None when requesting graph page...")
+        user_email = None
+
+    return render_template('graph.html', email=user_email)
 
 
 @app.route('/api/login', methods=['POST'])
@@ -165,14 +170,13 @@ def get_bar_graph_data():
     return gen_resp(True, summary)
 
 
-@app.route('/api/stackedgraph', methods=['POST'])
-def get_stacked_graph_data():
+@app.route('/api/getmaindata', methods=['POST'])
+def get_main_data():
     req_data = request.get_json()
 
     if not req_data:
         return gen_resp("False")
 
-    num_days = req_data['days']
     timezone = req_data['timezone']
 
     if 'uid' in session:
@@ -183,9 +187,13 @@ def get_stacked_graph_data():
 
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
-        return gen_resp(False, {'reason', 'no events'})
-    # debug(summary)
-    return gen_resp(True, summary)
+        return gen_resp(False, {'reason': 'no events'})
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
+    print streak
+    return gen_resp(True, {
+        'linegraph': summary,
+        'streak': streak
+    })
 
 
 @app.route('/api/getstreak', methods=['POST'])
@@ -195,7 +203,13 @@ def get_streak():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    streak = quota.get_streak(get_db(DATABASE_PATH), uid)
+    req_data = request.get_json()
+    timezone = req_data['timezone']
+
+    summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
+    if summary is None:
+        return gen_resp(False, {'reason': 'no events'})
+    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
     # streak of -1 means there is no quota set
     return gen_resp(True, {'streak': streak})
 
@@ -208,7 +222,7 @@ def set_get_quota():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    if request.methods == 'POST':
+    if request.method == 'POST':
         req_data = request.get_json()
         try:
             new_quota = int(req_data['quota'])
@@ -218,9 +232,8 @@ def set_get_quota():
         success = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota, quota_type)
         return gen_resp(success)
     else: # get
-        ret = quota.get_quota(get_db(DATABASE_PATH), uid)
-        # ret == 0 means no quota set
-        return gen_resp(True, {'quota': ret})
+        cur_quota, quota_type = quota.get_quota(get_db(DATABASE_PATH), uid)
+        return gen_resp(True, {'quota': cur_quota, 'quota_type': quota_type})
 
 
 # sets or gets list of unproductive sites deending on req type
@@ -231,7 +244,7 @@ def set_get_unprod_sites():
     else:
         return gen_resp(False, {'reason': 'No uid found.'})
 
-    if request.methods == 'POST':
+    if request.method == 'POST':
         req_data = request.get_json()
         if 'sites' not in req_data:
             return gen_resp(False, {'reason': 'invalid or missing request data'})

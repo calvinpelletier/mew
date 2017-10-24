@@ -9,6 +9,9 @@ import sqlite3
 import tempfile
 import time
 import unittest
+import calendar
+import datetime
+import pytz
 from json import loads, dumps
 
 import main
@@ -51,7 +54,9 @@ class TestMain(unittest.TestCase):
         domains = ["test.com", "test2.com"]
         domain_idx = 0
         now = int(time.time()) * 1000
-        for timestamp in range(now - 1000000, now, 100000):
+        # Note - last 5 or so minutes will be clear of activity
+        _5min = 1000 * 60 * 5
+        for timestamp in range(now - 1000000 - _5min, now - _5min, 100000):
             post_data = {
                 "token": 1111,
                 "hostname": domains[domain_idx],
@@ -74,6 +79,33 @@ class TestMain(unittest.TestCase):
         self.token = response_data["token"]
         lg.debug("Generated token %s", self.token)
         self.uid = 1
+
+    def _post(self, api, data):
+        resp = loads(self.app.post(api, data=dumps(data), headers={"content-type": "application/json"}).data)
+        self.assertTrue(resp['success'])
+        return resp
+
+    def _clear_events(self):
+        db = sqlite3.connect(self.db_path)
+        c = db.cursor()
+        c.execute('DELETE FROM events WHERE uid = ?', (self.uid,))
+        c.execute('DELETE FROM daily_summary_cache WHERE uid = ?', (self.uid,))
+        db.commit()
+        c.close()
+        db.close()
+
+    # usage in minutes
+    def _set_day_usage(self, days_ago, usage, site='test.com'):
+        db = sqlite3.connect(self.db_path)
+        c = db.cursor()
+
+        local_day = time.mktime(datetime.datetime.now(pytz.timezone(self.tz)).date().timetuple())
+        c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, site, (local_day - days_ago * 86400) * 1000))
+        c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, None, (local_day - days_ago * 86400 + usage * 60) * 1000))
+
+        db.commit()
+        c.close()
+        db.close()
 
     def test_gen_token(self):
         self._gen_token()
@@ -99,6 +131,101 @@ class TestMain(unittest.TestCase):
         for domain in ['test.com', 'test2.com', 'other']:
             self.assertIn(domain, response_data['labels'])
         self.assertEqual(len(response_data['values']), 3)
+
+    def test_no_bg_data(self):
+        self._gen_token()
+        self._post_10_events()
+        post_data = {
+            "minutes": 5,
+            "max_sites": 2
+        }
+
+        with self.app.session_transaction() as sess:
+            sess['uid'] = self.uid
+
+        rv = self.app.post('/api/bargraph', data=dumps(post_data), headers={"content-type": "application/json"})
+        response_data = loads(rv.data)
+        print(response_data)
+        self.assertTrue(response_data["success"])
+        self.assertEqual(response_data['labels'], [])
+        self.assertEqual(response_data['values'], [])
+        self.assertEqual(response_data['total'], 0)
+
+
+    def test_streak(self):
+        self._gen_token()
+        with self.app.session_transaction() as sess:
+            sess['uid'] = self.uid
+        self.tz = 'America/Chicago'
+        self.today = calendar.timegm(datetime.datetime.now(pytz.timezone(self.tz)).date().timetuple())
+
+        # no quota
+        self._set_day_usage(0, 5)
+        streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+        self.assertEqual(streak, -1)
+
+        # run all tests twice, once with all, once with unprod only
+        for quota_type in ['all', 'unprod']:
+            self._post('/api/quota', {'quota': 10, 'quota_type': quota_type})
+
+            if quota_type == 'unprod':
+                self._post('/api/unprodsites', {'sites': ['test.com']})
+
+                # test no unprod usage
+                self._clear_events()
+                self._set_day_usage(0, 15, site='productive.com')
+                self._set_day_usage(1, 15, site='productive.com')
+                streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+                self.assertEqual(streak, 1)
+
+            # less than one day of data
+            self._clear_events()
+            self._set_day_usage(0, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 0)
+
+            # below quota every day
+            self._clear_events()
+            self._set_day_usage(0, 5)
+            self._set_day_usage(1, 5)
+            self._set_day_usage(2, 5)
+            self._set_day_usage(3, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 3)
+
+            # above quota today
+            self._clear_events()
+            self._set_day_usage(0, 15)
+            self._set_day_usage(1, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 0)
+
+            # above quota two days ago
+            self._clear_events()
+            self._set_day_usage(0, 5)
+            self._set_day_usage(1, 5)
+            self._set_day_usage(2, 15)
+            self._set_day_usage(3, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 1)
+
+            # no usage for the last few days
+            self._clear_events()
+            self._set_day_usage(3, 5)
+            self._set_day_usage(4, 15)
+            self._set_day_usage(5, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 3)
+
+            # quota of zero (valid)
+            self._post('/api/quota', {'quota': 0, 'quota_type': quota_type})
+
+            # at quota for a few days
+            self._clear_events()
+            self._set_day_usage(3, 5)
+            self._set_day_usage(5, 5)
+            streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
+            self.assertEqual(streak, 2)
 
 
 if __name__ == '__main__':

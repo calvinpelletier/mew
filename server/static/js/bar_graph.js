@@ -26,6 +26,11 @@ function getBarGraphConfig() {
     }
 }
 
+function hideBarGraphLoader() {
+	$("#card1 .loader").hide();
+}
+
+
 function requestBarGraphData()
 {
     var graphConfig = getBarGraphConfig();
@@ -48,6 +53,7 @@ function requestBarGraphData()
             $('#card1-subtitle').text("Total Time: " + formatTime(response.total, true));
             console.log(JSON.stringify(response));
             drawBarGraph(response.labels, response.values, "chart0");
+            hideBarGraphLoader();
         },
         statusCode: {
             500: function() {
@@ -56,11 +62,16 @@ function requestBarGraphData()
         },
         fail: function() {
             toastr.error('Request for bar graph data failed.');
+            // TODO: create some sort of "loading failed graphic"
+            // temporary solution - just hide the whole thing
+            $("#card1").hide();
         }
     });
 }
 
 function drawBarGraph(labels, values, divId) {
+    var scrollTop = $(window).scrollTop();
+
     Highcharts.chart(divId, {
         chart: {
             type: 'bar',
@@ -115,4 +126,6 @@ function drawBarGraph(labels, values, divId) {
             // color: '#47e48f'
         }]
     });
+
+    $(window).scrollTop(scrollTop);
 }
