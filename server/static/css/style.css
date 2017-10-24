@@ -77,3 +77,17 @@
     overflow: hidden;
     position: fixed;
 }
+
+#logo h1 {
+    font-family: Sinkin-Sans300Light;
+    font-size: 40px;
+}
+
+#logo1 {
+    color: #ffffff;
+}
+
+#logo2 {
+    margin-left: -4px;
+    color: #31c4e9;
+}
