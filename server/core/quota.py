@@ -7,8 +7,9 @@ def get_streak(db, uid, summary):
     c.close()
 
     if result is None or result[1] == 0:
+        print 'check1'
         # there's no quota set
-        return -1
+        return -1, -1
 
     quota, quota_type = result
 
@@ -17,9 +18,10 @@ def get_streak(db, uid, summary):
     elif quota_type == 2:
         metric = '_unprod'
     else:
+        print 'check2'
         # should never happen
         # TODO: log
-        return -1
+        return -1, -1
 
     # loop backwards over summary
     streak = 0
@@ -32,7 +34,18 @@ def get_streak(db, uid, summary):
     if streak > 0:
         streak -= 1
 
-    return streak
+    # get current day's usage (for getmaindata api)
+    if quota > 0:
+        percent_usage = int(100. * summary[-1]['summary'][metric] / quota)
+    else:
+        # TODO: proper way to do 0 quotas?
+        if int(summary[-1]['summary'][metric]) == 0:
+            percent_usage = 0
+        else:
+            percent_usage = 101 # anything over 100 gets displayed as >100% on frontend
+
+    print streak, percent_usage
+    return streak, percent_usage
 
 
 def get_quota(db, uid):

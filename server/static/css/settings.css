@@ -135,3 +135,8 @@
 #unprod-sites input:focus {
     outline: none;
 }
+
+.settings-error {
+    color: red;
+    margin: 0px;
+}

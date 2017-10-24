@@ -39,8 +39,9 @@ function initSettings() {
                     $('#quota-type').attr('disabled', true);
                     $('#quota-label').addClass('disabled');
                 } else {
-                    $('#quota-type').value = response['quota_type'];
-                    $('#quota-val').value = response['quota'];
+                    $('#quota-toggle').attr('checked', true);
+                    $('#quota-type').val(response['quota_type']);
+                    $('#quota-val').val(response['quota']);
                 }
             } else {
                 // TODO
@@ -56,8 +57,8 @@ function initSettings() {
         contentType: 'application/json',
         success: function(response) {
             if (response['success']) {
-                for (site in response['sites']) {
-                    globalUnprodSites.push(site);
+                for (i in response['sites']) {
+                    globalUnprodSites.push(response['sites'][i]);
                 }
                 drawUnprodSites();
             } else {
@@ -69,12 +70,13 @@ function initSettings() {
         }
     });
 
-    // $('#settings-container').removeClass('hidden');
-    // $('#body-container').addClass('blur');
-    // $('#body-container').addClass('no-scrolling');
-
     $('#settings-icon').on('click', function(e) {
-        console.log('check');
+        if (!$('#quota-error').hasClass('hidden')) {
+            $('#quota-error').addClass('hidden');
+        }
+        if (!$('#quota-enable-msg').hasClass('hidden')) {
+            $('#quota-enable-msg').addClass('hidden');
+        }
         $('#settings-container').removeClass('hidden');
         $('#body-container').addClass('blur');
         $('#body-container').addClass('no-scrolling');
@@ -86,6 +88,12 @@ function initSettings() {
             $('#settings-container').addClass('hidden');
             $('#body-container').removeClass('blur');
             $('#body-container').removeClass('no-scrolling');
+        } else if (event.target == document.getElementById('quota-val')
+                || event.target == document.getElementById('quota-type')) {
+            // hint the user about the toggle
+            if (!$('#quota-toggle').is(':checked')) {
+                $('#quota-enable-msg').removeClass('hidden');
+            }
         }
     }
 
@@ -96,7 +104,8 @@ function initSettings() {
     });
 
     $('#settings-save').on('click', function(e) {
-        // TODO: validate
+        // send unprod sites
+        // TODO: validate sites
         readUnprodSites();
         $.post({
     		url: '/api/unprodsites',
@@ -120,9 +129,20 @@ function initSettings() {
             }
     	});
 
+        // send quota
         if ($('#quota-toggle').is(':checked')) {
             var quotaType = $('#quota-type').val();
+
+            // validate quota
+            var quota = $('#quota-val').val();
+            console.log(quota);
+            if (!quota || isNaN(quota)) {
+                console.log('check');
+                $('#quota-error').removeClass('hidden');
+                return;
+            }
         } else {
+            var quota = 0;
             var quotaType = 'none';
         }
         $.post({
@@ -130,7 +150,7 @@ function initSettings() {
     		contentType: 'application/json',
     		dataType: 'json',
     		data: JSON.stringify({
-    			'quota': $('#quota-val').val(),
+    			'quota': quota,
                 'quota_type': quotaType
     		}),
     		success: function(response) {
@@ -148,6 +168,7 @@ function initSettings() {
             }
     	});
 
+        // close settings modal
         $('#settings-container').addClass('hidden');
         $('#body-container').removeClass('blur');
         $('#body-container').removeClass('no-scrolling');
@@ -158,6 +179,9 @@ function initSettings() {
             $('#quota-val').removeAttr('disabled');
             $('#quota-type').removeAttr('disabled');
             $('#quota-label').removeClass('disabled');
+            if (!$('#quota-enable-msg').hasClass('hidden')) {
+                $('#quota-enable-msg').addClass('hidden');
+            }
         } else {
             $('#quota-val').attr('disabled', true);
             $('#quota-type').attr('disabled', true);

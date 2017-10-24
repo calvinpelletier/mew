@@ -58,9 +58,23 @@ def redirect_guest(token):
 
 @app.route('/graph/')
 def graph():
-    fake_labels = ['reddit.com', 'facebook.com', 'youtube.com', 'OTHER']
-    fake_values = [45, 28, 27, 36]
-    return render_template('graph.html', labels=fake_labels, values=fake_values)
+    uid = session['uid']
+    if uid:
+        user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+
+        _, quota_type = quota.get_quota(get_db(DATABASE_PATH), uid)
+        if quota_type == 'none':
+            quota_streak_section = 'hidden'
+            today_section_id = 'today-no-quota'
+        else:
+            quota_streak_section = ''
+            today_section_id = 'today'
+
+        return render_template('graph.html',
+            email=user_email, today_section_id=today_section_id, quota_streak_section=quota_streak_section)
+    else:
+        warn("uid cookie is None when requesting graph page...")
+        return make_response(redirect('/graph'))
 
 
 @app.route('/api/login', methods=['POST'])
@@ -183,11 +197,13 @@ def get_main_data():
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
         return gen_resp(False, {'reason': 'no events'})
-    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
-    print streak
+
+    streak, percent_usage_today = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
+
     return gen_resp(True, {
         'linegraph': summary,
-        'streak': streak
+        'streak': streak,
+        'quota-percent': percent_usage_today
     })
 
 
@@ -204,7 +220,7 @@ def get_streak():
     summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
     if summary is None:
         return gen_resp(False, {'reason': 'no events'})
-    streak = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
+    streak, _ = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
     # streak of -1 means there is no quota set
     return gen_resp(True, {'streak': streak})
 

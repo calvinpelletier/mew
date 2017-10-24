@@ -1,7 +1,12 @@
 
 
 function setQuotaPercent(percent) {
-	$('#quota-percent').text(percent.toString() + '%');
+	if (percent > 100) {
+		$('#quota-percent').text('>100%');
+		percent = 100;
+	} else {
+		$('#quota-percent').text(percent.toString() + '%');
+	}
 	var deg = 360. * percent / 100.;
 	var activeBorder = $('#quota-percent-border');
 	if (deg <= 180){
@@ -32,12 +37,14 @@ window.onload = function() {
 			"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
 		}),
 		success: function(response) {
+			console.log(JSON.stringify(response));
 			window.raw_line_graph_data = response['linegraph'];
 			filterAndDrawLineGraph();
 
-			// TODO: set streak
-			setQuotaPercent(65);
-			console.log(response['streak'])
+			if (response['streak'] != -1) {
+				$('#streak-val').text(response['streak'].toString());
+				setQuotaPercent(response['quota-percent']);
+			}
 		},
 		statusCode: {
             500: function() {
@@ -48,7 +55,7 @@ window.onload = function() {
 			toastr.error('Request for line graph data failed.');
 			// TODO: create some sort of "loading failed graphic"
             // temporary solution - just hide the whole thing
-            $("#card2").hide();
+            drawLineGraphFailure(LG_FAIL_PLACEHOLDER);
 		}
 	});
 
