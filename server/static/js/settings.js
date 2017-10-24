@@ -31,4 +31,16 @@ function initSettings() {
         $('#body-container').removeClass('blur');
         $('#body-container').removeClass('no-scrolling');
     });
+
+    $('#quota-toggle').on('change', function(e) {
+        if ($('#quota-toggle').is(':checked')) {
+            $('#quota-val').attr('disabled', true);
+            $('#quota-type').attr('disabled', true);
+            $('#quota-label').addClass('disabled');
+        } else {
+            $('#quota-val').removeAttr('disabled');
+            $('#quota-type').removeAttr('disabled');
+            $('#quota-label').removeClass('disabled');
+        }
+    });
 }
