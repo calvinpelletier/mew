@@ -54,7 +54,7 @@ def load(db, uid, tz):
             # unixtime of first non-cached LOCAL day:
 
             info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0)))
-            start_time = int(time.mktime(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0))))
+            start_time = int(time.mktime(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0)).timetuple()))
             # TODO remove when we're confident this works
             calculated_first_non_cached_day = \
                 calendar.timegm(datetime.datetime.utcfromtimestamp(start_time)
