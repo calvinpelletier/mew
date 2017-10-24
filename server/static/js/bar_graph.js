@@ -1,3 +1,6 @@
+var BG_FAIL_PLACEHOLDER = "Failed to load bar graph data.";
+var BG_NO_DATA_PLACEHOLDER = "No data found for bar graph.";
+
 function getBarGraphConfig() {
     var $timeframeObj = $('input.timeframe-choice:checked', '#chart0-options');
     var timeframeId = $timeframeObj.attr('id');
@@ -30,6 +33,13 @@ function hideBarGraphLoader() {
 	$("#card1 .loader").hide();
 }
 
+function drawBarGraphFailure(message) {
+    hideBarGraphLoader();
+    $("#chart0").hide();
+    $("#chart0-nodata").text(message);
+    $("#chart0-nodata").removeClass('hidden');
+}
+
 
 function requestBarGraphData()
 {
@@ -54,6 +64,7 @@ function requestBarGraphData()
             console.log(JSON.stringify(response));
             drawBarGraph(response.labels, response.values, "chart0");
             hideBarGraphLoader();
+
         },
         statusCode: {
             500: function() {
@@ -64,7 +75,7 @@ function requestBarGraphData()
             toastr.error('Request for bar graph data failed.');
             // TODO: create some sort of "loading failed graphic"
             // temporary solution - just hide the whole thing
-            $("#card1").hide();
+            drawBarGraphFailure(BG_FAIL_PLACEHOLDER);
         }
     });
 }
@@ -72,60 +83,65 @@ function requestBarGraphData()
 function drawBarGraph(labels, values, divId) {
     var scrollTop = $(window).scrollTop();
 
-    Highcharts.chart(divId, {
-        chart: {
-            type: 'bar',
-            backgroundColor: null,
-            style: {
-                fontFamily: 'Sinkin-Sans200XLight, sans-serif'
-            }
-        },
-        title: {
-            text: null
-        },
-        xAxis: {
-            categories: labels,
+    if (labels.length == 0) {
+        console.log("Bar graph endpoint returned no data.");
+        drawBarGraphFailure(BG_NO_DATA_PLACEHOLDER);
+    } else {
+        Highcharts.chart(divId, {
+            chart: {
+                type: 'bar',
+                backgroundColor: null,
+                style: {
+                    fontFamily: 'Sinkin-Sans200XLight, sans-serif'
+                }
+            },
             title: {
                 text: null
-            }
-        },
-        yAxis: {
-            min: 0,
-            title: {
-                text: 'Time spent (minutes)',
-                align: 'high'
             },
-            labels: {
-                overflow: 'justify'
-            }
-        },
-        tooltip: {
-            enabled: false,
-            valueSuffix: ' minutes'
-        },
-        plotOptions: {
-            bar: {
-                dataLabels: {
-                    enabled: true,
-                    formatter: function() {
-                        return formatTime(this.y);
+            xAxis: {
+                categories: labels,
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Time spent (minutes)',
+                    align: 'high'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+            tooltip: {
+                enabled: false,
+                valueSuffix: ' minutes'
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function() {
+                            return formatTime(this.y);
+                        }
                     }
                 }
-            }
-        },
-        credits: {
-            enabled: false
-        },
-        series: [{
-            name: 'x',
-            showInLegend: false,
-            data: values,
-            // color: '#2d333c'
-            color: '#31c4e9'
-            // color: '#344754'
-            // color: '#47e48f'
-        }]
-    });
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: 'x',
+                showInLegend: false,
+                data: values,
+                // color: '#2d333c'
+                color: '#31c4e9'
+                // color: '#344754'
+                // color: '#47e48f'
+            }]
+        });
+    }
 
     $(window).scrollTop(scrollTop);
 }

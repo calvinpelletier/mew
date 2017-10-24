@@ -339,3 +339,17 @@ body {
 #card2 .loader:before, #card2 .loader:after {
     background: #f0f0ea;
 }
+
+.nodata {
+    font-size: 60px;
+    text-shadow: 0px -1px -1px #4d4d4d;
+    padding: 100px;
+}
+
+#chart0-nodata {
+    color: #dddddd;
+}
+
+#chart1-nodata {
+    color: #bbbbbb;
+}
