@@ -46,6 +46,9 @@ window.onload = function() {
         },
 		fail: function() {
 			toastr.error('Request for line graph data failed.');
+			// TODO: create some sort of "loading failed graphic"
+            // temporary solution - just hide the whole thing
+            $("#card2").hide();
 		}
 	});
 
