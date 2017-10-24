@@ -1,3 +1,6 @@
+var LG_FAIL_PLACEHOLDER = "Failed to load line graph data.";
+var LG_NO_DATA_PLACEHOLDER = "No data found for line graph.";
+
 function filterAndDrawLineGraph(minutes) {
 	console.log("Drawing line graph for last " + minutes + " minutes.")
 	let filteredData = filterData(window.raw_line_graph_data.data, minutes);
@@ -53,6 +56,13 @@ function getLineGraphMinutes() {
 
 function hideLineGraphLoader() {
 	$("#card2 .loader").hide();
+}
+
+function drawLineGraphFailure(message) {
+	hideLineGraphLoader();
+    $("#chart1").hide();
+    $("#chart1-nodata").text(message);
+    $("#chart1-nodata").removeClass('hidden');
 }
 
 // TODO: filter by time range
@@ -143,7 +153,8 @@ function drawLineGraph(timestamp_labels, data, divId) {
 			itemStyle: {
 				fontWeight: 'bold',
 				fontSize: '13px'
-			}
+			},
+			margin: 50
 		},
 		xAxis: {
 			type: 'datetime',
