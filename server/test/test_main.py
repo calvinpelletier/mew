@@ -54,7 +54,9 @@ class TestMain(unittest.TestCase):
         domains = ["test.com", "test2.com"]
         domain_idx = 0
         now = int(time.time()) * 1000
-        for timestamp in range(now - 1000000, now, 100000):
+        # Note - last 5 or so minutes will be clear of activity
+        _5min = 1000 * 60 * 5
+        for timestamp in range(now - 1000000 - _5min, now - _5min, 100000):
             post_data = {
                 "token": 1111,
                 "hostname": domains[domain_idx],
@@ -129,6 +131,26 @@ class TestMain(unittest.TestCase):
         for domain in ['test.com', 'test2.com', 'other']:
             self.assertIn(domain, response_data['labels'])
         self.assertEqual(len(response_data['values']), 3)
+
+    def test_no_bg_data(self):
+        self._gen_token()
+        self._post_10_events()
+        post_data = {
+            "minutes": 5,
+            "max_sites": 2
+        }
+
+        with self.app.session_transaction() as sess:
+            sess['uid'] = self.uid
+
+        rv = self.app.post('/api/bargraph', data=dumps(post_data), headers={"content-type": "application/json"})
+        response_data = loads(rv.data)
+        print(response_data)
+        self.assertTrue(response_data["success"])
+        self.assertEqual(response_data['labels'], [])
+        self.assertEqual(response_data['values'], [])
+        self.assertEqual(response_data['total'], 0)
+
 
     def test_streak(self):
         self._gen_token()
