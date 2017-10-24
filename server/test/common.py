@@ -101,7 +101,9 @@ class TestBase(unittest.TestCase):
         db = sqlite3.connect(self.db_path)
         c = db.cursor()
 
+        print datetime.datetime.now(pytz.timezone(self.tz)).date().timetuple()
         local_day = time.mktime(datetime.datetime.now(pytz.timezone(self.tz)).date().timetuple())
+        print local_day
         c.execute('INSERT INTO events VALUES (?, ?, ?)', (self.uid, site, (local_day - days_ago * 86400) * 1000))
         c.execute('INSERT INTO events VALUES (?, ?, ?)',
                   (self.uid, None, (local_day - days_ago * 86400 + usage * 60) * 1000))

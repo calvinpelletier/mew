@@ -53,8 +53,8 @@ def load(db, uid, tz):
             utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
             # unixtime of first non-cached LOCAL day:
 
-            info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0)))
-            info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0)).timetuple())
+            info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0), is_dst=None))
+            info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0), is_dst=None).timetuple())
             start_time = int(time.mktime(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0)).timetuple()))
             # TODO remove when we're confident this works
             calculated_first_non_cached_day = \
