@@ -28,22 +28,34 @@
                 </div>
                 <div id="nav" class="inline">
                     <div class="nav-part inline">
-                        <h5>logged in as: guest<h5>
-                        </div>
-                        <div class="vert-divider inline"></div>
-                        <div class="nav-part inline">
-                            <a href="#"><h5>create an account<h5></a>
-                            </div>
-                            <div class="vert-divider inline"></div>
-                            <div class="nav-part inline">
-                                <img id="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
-                            </div>
-                            <div class="vert-divider inline"></div>
-                            <div class="nav-part inline" style="margin-right: 0px">
-                                <a href="#"><h5>log out<h5></a>
-                                </div>
-                            </div>
-                        </div>
+                        <h5>logged in as:
+                            {% if email %}
+                                {{ email }}
+                            {% else %}
+                                guest
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="vert-divider inline"></div>
+                    {% if email %}
+                    <div class="nav-part inline">
+                        <a href="#"><h5>log out<h5></a>
+                    </div>
+                    {% else %}
+                    <div class="nav-part inline">
+                        <a href="#"><h5>login<h5></a>
+                    </div>
+                    <div class="vert-divider inline"></div>
+                    <div class="nav-part inline">
+                        <a href="#"><h5>create an account<h5></a>
+                    </div>
+                    {% endif %}
+                    <div class="vert-divider inline"></div>
+                    <div class="nav-part inline">
+                        <img id="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
+                    </div>
+                </div>
+            </div>
                         <div id="today">
                             <div class="sub-today inline">
                                 <div class="center-text">

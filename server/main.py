@@ -58,9 +58,14 @@ def redirect_guest(token):
 
 @app.route('/graph/')
 def graph():
-    fake_labels = ['reddit.com', 'facebook.com', 'youtube.com', 'OTHER']
-    fake_values = [45, 28, 27, 36]
-    return render_template('graph.html', labels=fake_labels, values=fake_values)
+    uid = session['uid']
+    if uid:
+        user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+    else:
+        warn("uid cookie is None when requesting graph page...")
+        user_email = None
+
+    return render_template('graph.html', email=user_email)
 
 
 @app.route('/api/login', methods=['POST'])
