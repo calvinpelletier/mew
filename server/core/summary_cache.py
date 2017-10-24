@@ -52,10 +52,8 @@ def load(db, uid, tz):
             first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
             utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
             # unixtime of first non-cached LOCAL day:
-
-            info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0), is_dst=None))
-            info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0), is_dst=None).timetuple())
-            start_time = int(time.mktime(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0))
+            start_time = int(time.mktime(tz_obj.localize(
+                datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0))
                 .astimezone(pytz.utc).timetuple()))
             # TODO remove when we're confident this works
             calculated_first_non_cached_day = \
@@ -64,12 +62,6 @@ def load(db, uid, tz):
             if first_non_cached_day != calculated_first_non_cached_day:
                 exception_msg = "first_non_cached_day is %s but was calculated as %s from start time %s" % (
                     str(first_non_cached_day), str(calculated_first_non_cached_day), str(start_time))
-
-                # TODO: get rid of this BS
-                invalid_events = event_storage.select(db, uid)
-                info(invalid_events)
-                info(cache_data)
-                info(time.time())
 
                 # clear the cache
                 c = db.cursor()
