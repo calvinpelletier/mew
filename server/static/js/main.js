@@ -37,7 +37,6 @@ window.onload = function() {
 			"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
 		}),
 		success: function(response) {
-			console.log(JSON.stringify(response));
 			window.raw_line_graph_data = response['linegraph'];
 			filterAndDrawLineGraph();
 
