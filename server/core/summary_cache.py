@@ -55,7 +55,8 @@ def load(db, uid, tz):
 
             info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0), is_dst=None))
             info(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0), is_dst=None).timetuple())
-            start_time = int(time.mktime(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0)).timetuple()))
+            start_time = int(time.mktime(tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0))
+                .astimezone(pytz.utc).timetuple()))
             # TODO remove when we're confident this works
             calculated_first_non_cached_day = \
                 calendar.timegm(datetime.datetime.utcfromtimestamp(start_time)
