@@ -78,7 +78,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="today">
+                        <div id="{{ today_section_id }}">
                             <div class="sub-today inline">
                                 <div class="center-text">
                                     <h2>time online today</h2>
@@ -115,7 +115,7 @@
                                 </div>
                             </div>
                             <!-- <div class="vert-divider inline"></div> -->
-                            <div class="sub-today inline">
+                            <div id="quota-percent-section" class="sub-today inline {{ quota_streak_section }}">
                                 <div class="circle-container">
                                     <div id="quota-percent-border" class="circle-active-border">
                                         <div class="circle">
@@ -128,7 +128,7 @@
                                 </div>
                             </div>
                             <!-- <div class="vert-divider inline"></div> -->
-                            <div class="sub-today inline">
+                            <div id="streak-section" class="sub-today inline {{ quota_streak_section }}">
                                 <div class="center-text">
                                     <h2>streak</h2>
                                 </div>
