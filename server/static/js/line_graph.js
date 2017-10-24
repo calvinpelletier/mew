@@ -1,8 +1,9 @@
 function filterAndDrawLineGraph() {
-	var minutes = getLineGraphMinutes()
-	console.log("Drawing line graph for last " + minutes + " minutes.")
+	var minutes = getLineGraphMinutes();
+	console.log("Drawing line graph for last " + minutes + " minutes.");
 	data = filter(window.raw_line_graph_data.data, minutes);
 	drawLineGraph(data["x"], data["y"], "chart1");
+	hideLineGraphLoader();
 }
 
 function getLineGraphMinutes() {
@@ -14,6 +15,10 @@ function getLineGraphMinutes() {
 		minutes = 0;
 	}
 	return minutes;
+}
+
+function hideLineGraphLoader() {
+	$("#card2 .loader").hide();
 }
 
 // TODO: filter by time range
@@ -61,8 +66,6 @@ function filter(summaryData, minutes) {
 }
 
 function drawLineGraph(timestamp_labels, data, divId) {
-	console.log(timestamp_labels);
-	console.log(data);
 	var N_VISIBLE_DOMAINS = 4;
 
 	var chartData = [];
@@ -77,6 +80,8 @@ function drawLineGraph(timestamp_labels, data, divId) {
 		});
 		i++;
 	}
+
+	var scrollTop = $(window).scrollTop();
 
 	Highcharts.chart(divId, {
 		title: {text: null},
@@ -158,4 +163,6 @@ function drawLineGraph(timestamp_labels, data, divId) {
 		},
 		background2: '#F0F0EA'
 	});
+
+	$(window).scrollTop(scrollTop);
 }

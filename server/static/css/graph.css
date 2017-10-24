@@ -56,9 +56,6 @@ body {
     justify-content: space-between;
 }
 
-#title {
-}
-
 #nav {
     width: 550px;
     display: flex;
@@ -333,4 +330,12 @@ body {
 
 #quota-title {
     margin: 0px 20px 0px 0px !important;
+}
+
+#card1 .loader:before, #card1 .loader:after {
+    background: #ffffff;
+}
+
+#card2 .loader:before, #card2 .loader:after {
+    background: #f0f0ea;
 }

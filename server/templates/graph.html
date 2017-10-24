@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Mew</title>
+    <title>See Progress</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/toastr.min.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -70,8 +70,9 @@
     <div id="body-container">
         <div id="card0" class="full-width">
             <div id="header">
-                <div id="title" class="inline">
-                    <h1>cProgress</h1>
+                <div id="logo" class="inline">
+                    <h1 id="logo1" class="inline">see</h1>
+                    <h1 id="logo2" class="inline">progress</h1>
                 </div>
                 <div id="nav" class="inline">
                     <div class="nav-part inline">
@@ -158,6 +159,7 @@
                     <div id="card1">
                         <h2 id="card1-title"></h2>
                         <h3 id="card1-subtitle"></h3>
+                        <div class="loader">Loading...</div>
                         <div id="chart0"></div>
                         <div id="chart0-options" class="btn-group" data-toggle="buttons">
                             <label class="btn btn-primary">
@@ -184,6 +186,7 @@
 
                     <div id="card2">
                         <h2 id="card2-title">Usage by Site</h2>
+                        <div class="loader">Loading...</div>
                         <div id="chart1"></div>
                         <div id="chart1-options" class="btn-group" data-toggle="buttons">
                             <label class="btn btn-primary active">
