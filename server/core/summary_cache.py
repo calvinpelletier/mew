@@ -8,6 +8,21 @@ from collections import defaultdict
 
 from log import *
 
+
+def get_date_in_tz(tz_obj, utc_date):
+    """
+    TODO document this shit
+
+
+    :param tz_obj:
+    :param utc_date:
+    :return:
+    """
+    local_datetime = tz_obj.localize(datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0))
+    unixtime = calendar.timegm(local_datetime.utctimetuple())
+    return unixtime
+
+
 def update(db, uid, tz, today, data):
     c = db.cursor()
     for day, summary in data.iteritems():
@@ -19,6 +34,7 @@ def update(db, uid, tz, today, data):
             )
     db.commit()
     c.close()
+
 
 # RETURNS TUPLE OF:
 # cached_data - {ut: {host: duration}},
@@ -51,14 +67,12 @@ def load(db, uid, tz):
 
             first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
             utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
+
             # unixtime of first non-cached LOCAL day:
-            start_time = int(time.mktime(tz_obj.localize(
-                datetime.datetime(utc_date.year, utc_date.month, utc_date.day, 0, 0, 0, 0))
-                .astimezone(pytz.utc).timetuple()))
+            start_time = get_date_in_tz(tz_obj, utc_date)
+
             # TODO remove when we're confident this works
-            calculated_first_non_cached_day = \
-                calendar.timegm(datetime.datetime.utcfromtimestamp(start_time)
-                                .replace(tzinfo=pytz.UTC).astimezone(tz_obj).date().timetuple())
+            calculated_first_non_cached_day = get_date_in_tz(pytz.utc, datetime.datetime.utcfromtimestamp(start_time))
             if first_non_cached_day != calculated_first_non_cached_day:
                 exception_msg = "first_non_cached_day is %s but was calculated as %s from start time %s" % (
                     str(first_non_cached_day), str(calculated_first_non_cached_day), str(start_time))
