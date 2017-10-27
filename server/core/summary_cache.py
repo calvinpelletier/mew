@@ -53,6 +53,10 @@ def load(db, uid, tz):
 
             # unixtime of first non-cached LOCAL day:
             start_time = get_date_in_tz(tz_obj, first_non_cached_day)
+
+            info("For user %d, the first non-cached day start is %s (%s)" % (
+            uid, get_user_string(tz_obj, start_time), str(tz_obj)))
+
             events = event_storage.select(db, uid, start_time * 1000)
             return cache_data, durations_per_host, events, first_non_cached_day
         except Exception as ex:
