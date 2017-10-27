@@ -45,6 +45,17 @@ function drawLineGraphFailure(message) {
 function drawLineGraph(timestamp_labels, data, divId) {
 	var N_VISIBLE_DOMAINS = 4;
 
+	// var domainList = Object.keys(data);
+
+	var domainNamesInGraph = [];
+	for (var domain in data) {
+	    if (domain in GRAPH_NAME_CHANGES) {
+		    domainNamesInGraph.push(GRAPH_NAME_CHANGES[domain]);
+		} else {
+		    domainNamesInGraph.push(domain);
+		}
+	}
+
 	visible = {};
 	if (lineGraph) {
         for (var i = 0;i < lineGraph.series.length; i++) {
@@ -53,9 +64,8 @@ function drawLineGraph(timestamp_labels, data, divId) {
             }
         }
 	} else {
-	    var domainList = Object.keys(data);
 	    for (var i = 0;i < N_VISIBLE_DOMAINS; i++) {
-	        visible[domainList[i]] = true;
+	        visible[domainNamesInGraph[i]] = true;
 	    }
 	}
 
@@ -67,16 +77,10 @@ function drawLineGraph(timestamp_labels, data, divId) {
 		  return [ts.getTime(), data[domain][i]];
 		});
 
-		let _visible = (domain in visible) ? true : false;
-
-		let nameInGraph = domain;
-
-		if (nameInGraph in GRAPH_NAME_CHANGES) {
-		    nameInGraph = GRAPH_NAME_CHANGES[nameInGraph];
-		}
+		let _visible = (domainNamesInGraph[i] in visible) ? true : false;
 
 		chartData.push({
-			name: nameInGraph,
+			name: domainNamesInGraph[i],
 			data: fullData,
 			visible: _visible
 		});
