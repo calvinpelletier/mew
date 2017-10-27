@@ -1,5 +1,23 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "Usage: deploy_server [--cc|--ncc]"
+    echo "--cc clears daily summary cache"
+    echo "--ncc doesnt"
+    exit 1
+fi
+
+if [ $1 = "--cc" ]; then
+    sqlite3 -line /var/www/mew/db/prod.db 'DELETE FROM daily_summary_cache;' || exit 1
+else
+    if [ $1 != "--ncc" ]; then
+        echo "Usage: deploy_server [--cc|--ncc]"
+        echo "--cc clears daily summary cache"
+        echo "--ncc doesnt"
+        exit 1
+    fi
+fi
+
 sudo cp /var/www/mew/mew.conf /var/www/mew/mew-le-ssl.conf /etc/apache2/sites-available/
-sudo chmod 777 /var/www/mew/db
-sudo chmod 666 /var/www/mew/db/prod.db
 sudo a2ensite mew
 sudo service apache2 restart
