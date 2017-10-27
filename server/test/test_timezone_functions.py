@@ -8,7 +8,7 @@ import unittest
 
 import pytz
 
-from core.summary_cache import get_date_in_tz
+from core.timezones import *
 
 _1hr = 3600
 _1day = _1hr * 24
@@ -56,3 +56,25 @@ class TestTZFunctions(unittest.TestCase):
         for _ in range(30):
             self._assert_two_way_conversion(curr_day, tz_obj, 4)
             curr_day += _1day
+
+    def test_unixdate_for_local_time(self):
+        tz_obj = pytz.timezone("America/New_York")
+
+        # input:
+        #   3 am feb 2nd, utc
+        # result should be:
+        #   midnight, feb 1st, utc
+        #   (because the user's local time is 10pm feb 1st)
+        curr_day = feb_1_2017_utc + _1day + 3 * _1hr
+        result = get_unixdate_for_local_time(tz_obj, curr_day)
+        self.assertEqual(result, feb_1_2017_utc)
+
+        # input:
+        #   6 am feb 2nd, utc
+        # result should be:
+        #   midnight, feb 2nd, utc
+        #   (because the user's local time is 10pm feb 1st)
+        curr_day = feb_1_2017_utc + _1day + 6 * _1hr
+        result = get_unixdate_for_local_time(tz_obj, curr_day)
+        self.assertEqual(result, feb_1_2017_utc + _1day)
+
