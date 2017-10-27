@@ -34,7 +34,8 @@ window.onload = function() {
 		contentType: 'application/json',
 		dataType: 'json',
 		data: JSON.stringify({
-			"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
+			'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+			'max_sites': 20
 		}),
 		success: function(response) {
 			window.raw_line_graph_data = response['linegraph'];

@@ -65,7 +65,7 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
 
 # I removed the last_x_days param because it makes our caching logic way more complicated
 # and we probably weren't going to use it anyway
-def get_daily_summary(db, uid, timezone_name):
+def get_daily_summary(db, uid, timezone_name, max_sites=None):
     cache_data, durations_per_host, events, first_non_cached_day = summary_cache.load(db, uid, timezone_name)
 
     if first_non_cached_day is None:
@@ -179,6 +179,8 @@ def get_daily_summary(db, uid, timezone_name):
 
     hostnames = map(lambda (host,_): host, sorted(durations_per_host.items(), key=lambda (_, dur): dur, reverse=True))
     hostnames = ['_total', '_unprod'] + hostnames # add total and unprod to top of the list
+    if max_sites is not None and max_sites >= 1 and max_sites < len(hostnames):
+        hostnames = hostnames[:max_sites]
 
     return {
         "data": final_data,

@@ -8,6 +8,7 @@ import time
 from random import randint, choice
 
 HEAVY = True # create a fuck ton of data
+LOTS_O_SITES = False # use a fuck ton of sites
 
 fmt = '%Y-%m-%d %H:%M:%S %Z'
 
@@ -43,6 +44,9 @@ now = time.mktime(datetime.datetime.now().timetuple()) * 1000
 
 # valid hostnames
 hostnames = ['google.com', 'facebook.com', 'reddit.com', 'stackoverflow.com', 'breitbart.com', 'xxxmidgetporn.com', 'glutenfreesingles.com']
+if LOTS_O_SITES:
+    for i in range(100):
+        hostnames.append('site{}.com'.format(i))
 
 def insert(c, hostname, timestamp):
     # print "Adding event at %s" % (datetime.datetime.utcfromtimestamp(timestamp / 1000)).strftime(fmt)

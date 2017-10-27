@@ -180,9 +180,10 @@ def get_main_data():
     req_data = request.get_json()
 
     if not req_data:
-        return gen_resp("False")
+        return gen_resp(False)
 
     timezone = req_data['timezone']
+    max_sites = req_data.get('max_sites') # 'get' so it returns None if not there
 
     if 'uid' in session:
         uid = session['uid']
@@ -190,7 +191,7 @@ def get_main_data():
         # not logged in
         return gen_resp(False, {"reason": "No uid found."})
 
-    summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone)
+    summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, timezone, max_sites)
     if summary is None:
         return gen_resp(False, {'reason': 'no events'})
 
