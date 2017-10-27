@@ -9,6 +9,7 @@ import event_storage
 import summary_cache
 import unproductive
 from log import *
+from util import clean_hostname
 
 # None/null means the user wasn't in chrome
 IGNORED_HOSTNAMES = [None, "newtab"]
@@ -100,7 +101,7 @@ def get_daily_summary(db, uid, timezone_name, max_sites=None):
         prev_utc_day_start = None
         total = 0.
         for event in events:
-            hostname = event[0]
+            hostname = clean_hostname(event[0])
             ts = event[1]
 
             # Event timestamp, in user's local timezone
