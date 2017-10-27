@@ -23,7 +23,7 @@ function requestMainData(includeLineGraphData) {
 		dataType: 'json',
 		data: JSON.stringify({
 			'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-			'max_sites': 20
+			'max_sites': 20,
 			"ignore_linegraph_data": !includeLineGraphData
 		}),
 		success: function(response) {
