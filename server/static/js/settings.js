@@ -132,6 +132,7 @@ function initSettings() {
         // send quota
         if ($('#quota-toggle').is(':checked')) {
             var quotaType = $('#quota-type').val();
+            var quotaUnit = $('#quota-unit').val();
 
             // validate quota
             var quota = $('#quota-val').val();
@@ -140,6 +141,14 @@ function initSettings() {
                 console.log('check');
                 $('#quota-error').removeClass('hidden');
                 return;
+            }
+
+            // TODO: we need to store the unit choice on the backend instead of just doing this.
+            //  We'll need to show the appropriate hours/minutes to the user depending on their last choice.
+            //  Additionally, we should validate that quoteUnit < 24 hours, AS they type it in.
+            // convert hours to minutes.
+            if (quotaUnit == 'hours') {
+                quota *= 60;
             }
         } else {
             var quota = 0;
@@ -167,6 +176,9 @@ function initSettings() {
                 // TODO
             }
     	});
+
+    	// Update quota/streak data
+        requestMainData(false);
 
         // close settings modal
         $('#settings-container').addClass('hidden');

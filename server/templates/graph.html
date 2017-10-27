@@ -19,7 +19,7 @@
             </div>
             <div class="settings-section-a">
                 <div id="quota-header">
-                    <h2 id="quota-title">Quota</h2>
+                    <h2 id="quota-title">Daily Quota</h2>
                     <label class="switch inline">
                         <input id="quota-toggle" type="checkbox">
                         <span class="slider round"></span>
@@ -28,9 +28,17 @@
                 </div>
                 <div>
                     <div class="form-group inline">
-                        <input id="quota-val" type="text" placeholder="minutes" class="form-control" style="width: 100px">
+                        <input id="quota-val" type="text" class="form-control" style="width: 100px">
                     </div>
-                    <p id="quota-label"> minutes of </p>
+
+                    <div class="form-group inline">
+                        <select class="form-control" id="quota-unit">
+                            <option value="hours">hours</option>
+                            <option value="minutes">minutes</option>
+                        </select>
+                    </div>
+
+                    <p id="quota-label"> of </p>
                     <div class="form-group inline">
                         <select class="form-control" id="quota-type">
                             <option value="unprod">unproductive usage</option>
