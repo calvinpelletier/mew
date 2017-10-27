@@ -1,5 +1,5 @@
 import sqlite3
-
+import log
 from flask import g, jsonify
 
 def clean_hostname(hostname):
@@ -18,6 +18,7 @@ def gen_resp(success, data=None):
             if key == 'success':
                 raise Exception('redundant success in resp')
             resp[key] = value
+    log.debug("Response generated: " + ", ".join([str(key) + "=" + str(value) for key,value in resp.items()]))
     return jsonify(resp)
 
 

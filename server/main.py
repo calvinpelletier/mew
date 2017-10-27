@@ -185,6 +185,11 @@ def get_main_data():
     timezone = req_data['timezone']
     max_sites = req_data.get('max_sites') # 'get' so it returns None if not there
 
+    # I'm so sorry
+    include_linegraph_data = True
+    if req_data["ignore_linegraph_data"]:
+        include_linegraph_data = False
+
     if 'uid' in session:
         uid = session['uid']
     else:
@@ -197,11 +202,15 @@ def get_main_data():
 
     streak, percent_usage_today = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
 
-    return gen_resp(True, {
-        'linegraph': summary,
+    resp_data = {
         'streak': streak,
         'quota-percent': percent_usage_today
-    })
+    }
+
+    if include_linegraph_data:
+        resp_data['linegraph'] = summary
+
+    return gen_resp(True, resp_data)
 
 
 @app.route('/api/getstreak', methods=['POST'])
