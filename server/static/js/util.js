@@ -28,7 +28,6 @@ function formatTime(value, allowBeyondHours) {
   if (allowBeyondHours == null) {
       allowBeyondHours = false;
   }
-
   if (value < 1) {
     return Math.round(value * 60) + " seconds";
   } else if (value < 60) {
@@ -36,11 +35,19 @@ function formatTime(value, allowBeyondHours) {
   } else {
     let numHours = value / 60;
     if (numHours < 24) {
-        return numHours.toFixed(1) + " hours";
+        let numHoursFixed = numHours.toFixed(1);
+        if (numHoursFixed % 1 == 0) {
+            numHoursFixed = Math.floor(numHoursFixed);
+        }
+        return numHoursFixed + " hours";
     } else if (allowBeyondHours == false) {
         return Math.round(numHours) + " hours";
     } else {
-        return (numHours / 24).toFixed(1) + " days";
+        let numDaysFixed = (numHours / 24).toFixed(1);
+        if (numDaysFixed % 1 == 0) {
+            numDaysFixed = Math.floor(numDaysFixed);
+        }
+        return numDaysFixed + " days";
     }
   }
 }
