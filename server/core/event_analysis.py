@@ -178,6 +178,7 @@ def get_daily_summary(db, uid, timezone_name):
     ], key=lambda o: o["date"])
 
     hostnames = map(lambda (host,_): host, sorted(durations_per_host.items(), key=lambda (_, dur): dur, reverse=True))
+    hostnames = ['_total', '_unprod'] + hostnames # add total and unprod to top of the list
 
     return {
         "data": final_data,
