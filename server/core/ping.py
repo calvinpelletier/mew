@@ -42,7 +42,6 @@ def rec(token, ts):
 def inspection():
     global last_active
     dead = []
-    info('[PING] running inspection.')
 
     last_active_lock.acquire()
     cur_time = time.time() * 1000  # sec to ms unixtime
