@@ -24,6 +24,12 @@ if (!String.format) {
   };
 }
 
+Number.prototype.pad = function(size) {
+    var s = String(this);
+    while (s.length < (size || 2)) {s = "0" + s;}
+    return s;
+}
+
 function formatTime(value, allowBeyondHours) {
   if (allowBeyondHours == null) {
       allowBeyondHours = false;
@@ -52,25 +58,3 @@ function formatTime(value, allowBeyondHours) {
   }
 }
 
-function setQuotaPercent(percent) {
-	if (percent > 100) {
-		$('#quota-percent').text('>100%');
-		percent = 100;
-	} else {
-		$('#quota-percent').text(percent.toString() + '%');
-	}
-	var deg = 360. * percent / 100.;
-	var activeBorder = $('#quota-percent-border');
-	if (deg <= 180){
-        activeBorder.css(
-			'background-image',
-			'linear-gradient(' + (90 + deg) + 'deg, transparent 50%, #344754 50%),linear-gradient(90deg, #344754 50%, transparent 50%)'
-		);
-    }
-    else{
-        activeBorder.css(
-			'background-image',
-			'linear-gradient(' + (deg - 90) + 'deg, transparent 50%, #31c4e9 50%),linear-gradient(90deg, #344754 50%, transparent 50%)'
-		);
-    }
-}

@@ -14,12 +14,25 @@ function requestMainData(includeLineGraphData) {
 		    if (includeLineGraphData) {
 		        window.raw_line_graph_data = response['linegraph'];
                 console.log(response['linegraph']);
+
+                // Show usage today in top card
+                if (window.raw_line_graph_data) {
+                    let _data = window.raw_line_graph_data.data;
+                    var today = _data[_data.length - 1]['summary'];
+                    var total = today['_total'];
+                    var unprod = today['_unprod'];
+                    showTotalAndUnprodUsage(total, unprod);
+                } else {
+                    showTotalAndUnprodUsage(0, 0);
+                }
+
+
                 filterAndDrawLineGraph();
 		    }
-
+            // Draw streak
 			if (response['streak'] != -1) {
-				$('#streak-val').text(response['streak'].toString());
-				setQuotaPercent(response['quota-percent']);
+				showStreak(response['streak']);
+				showQuotaPercent(response['quota-percent']);
 			}
 		},
 		statusCode: {
