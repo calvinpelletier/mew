@@ -16,6 +16,7 @@ function filterData(summaryData, minutes) {
 		}
 	]
 	*/
+	console.log("Filtering to last " + minutes + " minutes.");
 	domains = window.raw_line_graph_data.hostnames;
 	x = [];
 	y = {};

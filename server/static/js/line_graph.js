@@ -1,9 +1,9 @@
 var LG_FAIL_PLACEHOLDER = "Failed to load line graph data.";
 var LG_NO_DATA_PLACEHOLDER = "No data found for line graph.";
 
-function filterAndDrawLineGraph(minutes) {
+function filterAndDrawLineGraph() {
     if (window.raw_line_graph_data) {
-        let filteredData = filterData(window.raw_line_graph_data.data, minutes);
+        let filteredData = filterData(window.raw_line_graph_data.data, getLineGraphMinutes());
         let bucketedData = bucketData(filteredData);
         drawLineGraph(bucketedData["x"], bucketedData["y"], "chart1");
     } else {
@@ -32,50 +32,6 @@ function drawLineGraphFailure(message) {
     $("#chart1").hide();
     $("#chart1-nodata").text(message);
     $("#chart1-nodata").removeClass('hidden');
-}
-
-// TODO: filter by time range
-function filter(summaryData, minutes) {
-	/* summaryData should be of the form:
-	[
-		{
-			"date": ...
-			"summary" : {
-				hostname: timestamp
-				another_hostname: another_timestamp
-			}
-		}
-	]
-	*/
-	domains = window.raw_line_graph_data.hostnames;
-	x = [];
-	y = {};
-
-	if (minutes) {
-		startTime = new Date(new Date().getTime() - MS_PER_MINUTE * minutes).getTime() / 1000;
-		var filteredData = summaryData.filter(function(summarizedDay){
-			return summarizedDay.date >= startTime;
-		});
-		// TODO: we'll need to filter domains, too
-	} else {
-		filteredData = summaryData;
-	}
-
-	domains.forEach(function(d) {
-		y[d] = [];
-	});
-
-	filteredData.forEach(function(day) {
-		x.push(new Date(day.date * 1000));
-		domains.forEach(function(d) {
-			y[d].push(day.summary[d] || 0)
-		});
-	});
-
-	return {
-		"x": x,
-		"y": y
-	};
 }
 
 function drawLineGraph(timestamp_labels, data, divId) {
