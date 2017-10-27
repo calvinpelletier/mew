@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS unprod_sites (
 
 CREATE TABLE IF NOT EXISTS quotas (
     uid INTEGER PRIMARY KEY,
-    quota INTEGER, /* minutes */
-    quota_type TINYINT /* 0 for none, 1 for all web usage, 2 for unproductive web usage only */
+    quota INTEGER, /* always in minutes, regardless of quota_unit */
+    quota_type TINYINT, /* 0 for none, 1 for all web usage, 2 for unproductive web usage only */
+    quota_unit TINYINT /* 0 for minutes, 1 for hours */
 );

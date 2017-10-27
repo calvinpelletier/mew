@@ -98,7 +98,8 @@ function postQuota(quota, quotaType) {
         dataType: 'json',
         data: JSON.stringify({
             'quota': quota,
-            'quota_type': quotaType
+            'quota_type': quotaType,
+            'quota_unit': quotaUnit
         }),
         success: function(response) {
             if (!response['success']) {

@@ -58,7 +58,7 @@ def graph():
     if uid:
         user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
 
-        _, quota_type = quota.get_quota(get_db(DATABASE_PATH), uid)
+        _, quota_type, _ = quota.get_quota(get_db(DATABASE_PATH), uid)
         if quota_type == 'none':
             quota_streak_section = 'hidden'
             today_section_id = 'today-no-quota'
@@ -244,13 +244,14 @@ def set_get_quota():
         try:
             new_quota = int(req_data['quota'])
             quota_type = req_data['quota_type']
+            quota_unit = req_data['quota_unit']
         except:
             return gen_resp(False, {'reason': 'invalid or missing request data'})
-        success = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota, quota_type)
+        success = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota, quota_type, quota_unit)
         return gen_resp(success)
     else: # get
-        cur_quota, quota_type = quota.get_quota(get_db(DATABASE_PATH), uid)
-        return gen_resp(True, {'quota': cur_quota, 'quota_type': quota_type})
+        cur_quota, quota_type, quota_unit = quota.get_quota(get_db(DATABASE_PATH), uid)
+        return gen_resp(True, {'quota': cur_quota, 'quota_type': quota_type, 'quota_unit': quota_unit})
 
 
 # sets or gets list of unproductive sites deending on req type

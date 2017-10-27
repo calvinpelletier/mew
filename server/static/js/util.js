@@ -12,6 +12,10 @@ var MINUTE_DURATIONS = {
 var MS_PER_MINUTE = 60000;
 var MS_PER_DAY = MS_PER_MINUTE * 60 * 24;
 
+var _KEY_0 = 48;
+var _KEY_9 = 57;
+var _KEY_DOT = 46;
+
 if (!String.format) {
   String.format = function(format) {
     var args = Array.prototype.slice.call(arguments, 1);
@@ -56,5 +60,9 @@ function formatTime(value, allowBeyondHours) {
         return numDaysFixed + " days";
     }
   }
+}
+
+function validateNumeric(event) {
+    return (event.charCode >= _KEY_0 && event.charCode <= _KEY_9) || event.charCode == _KEY_DOT;
 }
 
