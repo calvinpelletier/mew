@@ -66,7 +66,7 @@ class TestMain(TestBase):
 
         # run all tests twice, once with all, once with unprod only
         for quota_type in ['all', 'unprod']:
-            self._post('/api/quota', {'quota': 10, 'quota_type': quota_type})
+            self._post('/api/quota', {'quota': 10, 'quota_type': quota_type, 'quota_unit': 'minutes'})
 
             if quota_type == 'unprod':
                 self._post('/api/unprodsites', {'sites': ['test.com'], 'timezone': self.tz})
@@ -118,7 +118,7 @@ class TestMain(TestBase):
             self.assertEqual(streak, 3)
 
             # quota of zero (valid)
-            self._post('/api/quota', {'quota': 0, 'quota_type': quota_type})
+            self._post('/api/quota', {'quota': 0, 'quota_type': quota_type, 'quota_unit': 'minutes'})
 
             # at quota for a few days
             self._clear_events()
