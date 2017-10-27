@@ -12,38 +12,6 @@ function filterAndDrawLineGraph(minutes) {
 	hideLineGraphLoader();
 }
 
-function requestLineGraphData() {
-	if (typeof window.raw_line_graph_data !== "undefined") {
-		filterAndDrawLineGraph(getLineGraphMinutes());
-		return;
-	}
-
-	// Note: we always fetch all day, it's just filtered to a timespan later.
-	var postData = {
-		"days": null,
-		"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone
-	};
-
-	// Get graph data from server.
-	$.post({
-		url: '/api/stackedgraph',
-		contentType: 'application/json',
-		dataType: 'json',
-		data: JSON.stringify(postData),
-		success: function(response) {
-			filterAndDrawLineGraph(getLineGraphMinutes());
-		},
-		statusCode: {
-            500: function() {
-              this.fail();
-            }
-        },
-		fail: function() {
-			toastr.error('Request for line graph data failed.');
-		}
-	});
-}
-
 function getLineGraphMinutes() {
 	timeframeId = $('input.timeframe-choice:checked', '#chart1-options').attr('id');
 	if (timeframeId in MINUTE_DURATIONS) {

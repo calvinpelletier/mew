@@ -1,3 +1,5 @@
+var _ENTER = 13;
+
 var globalUnprodSites = [];
 
 function readUnprodSites() {
@@ -17,7 +19,7 @@ function drawUnprodSites() {
     for (var i = 0; i < globalUnprodSites.length; i++) {
         var html = `
             <div class="unprod-site">
-                <input id="site`+ i +`" class="site" type="text" value="`+ globalUnprodSites[i] +`" placeholder="e.g. facebook.com">
+                <input id="site`+ i +`" class="site" type="text" value="`+ globalUnprodSites[i] +`" placeholder="e.g. facebook.com" onkeypress="unprodSiteKeyPress(this, event,`+ i +`)">
                 <div class="remove-site" onclick="removeUnprodSite(`+ i +`);">
                     <img height=15 width=15 src="/static/img/x.png"/>
                 </div>
@@ -26,6 +28,23 @@ function drawUnprodSites() {
         html_all += html
     }
     $('#unprod-sites').html(html_all);
+    $('#unprod-sites input').last().focus();
+}
+
+function unprodSiteKeyPress(o, e, i) {
+    if (e.keyCode == _ENTER) {
+        if (i == globalUnprodSites.length - 1) {
+            addUnprodSite();
+        } else {
+            $('#unprod-sites input').eq(i + 1).focus();
+        }
+    }
+}
+
+function addUnprodSite() {
+    readUnprodSites();
+    globalUnprodSites.push('');
+    drawUnprodSites();
 }
 
 function initSettings() {
@@ -201,9 +220,5 @@ function initSettings() {
         }
     });
 
-    $('#add-unprod-site').on('click', function(e) {
-        readUnprodSites();
-        globalUnprodSites.push('');
-        drawUnprodSites();
-    });
+    $('#add-unprod-site').on('click', addUnprodSite);
 }

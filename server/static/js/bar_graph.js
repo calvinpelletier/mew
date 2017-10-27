@@ -52,31 +52,22 @@ function requestBarGraphData()
         "max_sites": maxSites
     };
 
-    // Get graph data from server.
-    $.post({
-        url: '/api/bargraph',
-        contentType: 'application/json',
-        dataType: 'json',
-        data: JSON.stringify(postData),
-        success: function(response) {
+    success = function(response) {
             $('#card1-title').text(graphConfig.timespanName);
             $('#card1-subtitle').text("Total Time: " + formatTime(response.total, true));
             drawBarGraph(response.labels, response.values, "chart0");
             hideBarGraphLoader();
 
-        },
-        statusCode: {
-            500: function() {
-                this.fail();
-            }
-        },
-        fail: function() {
-            toastr.error('Request for bar graph data failed.');
-            // TODO: create some sort of "loading failed graphic"
-            // temporary solution - just hide the whole thing
-            drawBarGraphFailure(BG_FAIL_PLACEHOLDER);
-        }
-    });
+    };
+
+    fail = function() {
+        toastr.error('Request for bar graph data failed.');
+        // TODO: create some sort of "loading failed graphic"
+        // temporary solution - just hide the whole thing
+        drawBarGraphFailure(BG_FAIL_PLACEHOLDER);
+    };
+
+    postBarGraphData(postData, success, fail);
 }
 
 function drawBarGraph(labels, values, divId) {
