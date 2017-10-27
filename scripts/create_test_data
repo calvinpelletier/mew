@@ -43,7 +43,7 @@ today = time.mktime(datetime.datetime(today_date.year, today_date.month, today_d
 now = time.mktime(datetime.datetime.now().timetuple()) * 1000
 
 # valid hostnames
-hostnames = ['google.com', 'facebook.com', 'reddit.com', 'stackoverflow.com', 'breitbart.com', 'xxxmidgetporn.com', 'glutenfreesingles.com']
+hostnames = ['google.com', 'www.facebook.com', 'm.reddit.com', 'stackoverflow.com', 'breitbart.com', 'xxxmidgetporn.com', 'glutenfreesingles.com']
 if LOTS_O_SITES:
     for i in range(100):
         hostnames.append('site{}.com'.format(i))

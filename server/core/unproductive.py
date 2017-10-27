@@ -1,9 +1,12 @@
 import json
+from util import clean_hostname
 
 
 def set_unprod_sites(db, uid, sites):
     if type(sites) not in [list, tuple] or len(sites) > 1000: # arbitrary limit
         return False
+
+    sites = [clean_hostname(site) for site in sites]
 
     sites_json = json.dumps(sites, separators=(',',':'))
     if len(sites_json) > 1000000: # arbitrary limit

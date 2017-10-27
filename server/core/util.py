@@ -2,6 +2,14 @@ import sqlite3
 
 from flask import g, jsonify
 
+def clean_hostname(hostname):
+    if hostname is None:
+        return hostname
+    if hostname.startswith('www.'):
+        return hostname[4:] # strip www.
+    if hostname.startswith('m.'):
+        return hostname[2:] # strip m.
+    return hostname
 
 def gen_resp(success, data=None):
     resp = {'success': success}
