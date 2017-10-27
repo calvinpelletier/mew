@@ -43,17 +43,14 @@ def get_landing_page():
 
 @app.route('/guest/<token>')
 def redirect_guest(token):
-    redirect_to_index = redirect('/graph')
-    response = make_response(redirect_to_index)
-
     uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
     if uid is None:
-        uid = authentication.add_guest(get_db(DATABASE_PATH), token)
-
+        if 'uid' in session:
+            session.pop('uid', None)
+        return make_response(redirect('/'))
     session['uid'] = uid
     info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
-
-    return response
+    return make_response(redirect('/graph'))
 
 
 @app.route('/graph/')
