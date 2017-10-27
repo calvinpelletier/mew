@@ -124,30 +124,29 @@ function initSettings() {
 
     $('#settings-save').on('click', function(e) {
         // send unprod sites
-        // TODO: validate sites (and remove empty ones)
         readUnprodSites();
-        $.post({
-    		url: '/api/unprodsites',
-    		contentType: 'application/json',
-    		dataType: 'json',
-    		data: JSON.stringify({
-                'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-    			'sites': globalUnprodSites
-    		}),
-    		success: function(response) {
-                if (!response['success']) {
-                    // TODO
-                }
-            },
-    		statusCode: {
-                500: function() {
-                  this.fail();
-                }
-            },
-    		fail: function() {
-                // TODO
+        var sites = [];
+        for (i in globalUnprodSites) {
+            var site = globalUnprodSites[i];
+
+            // strip http:// and https://
+            if (site.startsWith('http://')) {
+                site = site.replace('http://', '');
+            } else if (site.startsWith('https://')) {
+                site = site.replace('https://', '');
             }
-    	});
+
+            // strip url path
+            let loc = site.indexOf('/');
+            if (loc != -1) {
+                site = site.substring(0, loc);
+            }
+
+            if (site.length > 0) {
+                sites.push(site);
+            }
+        }
+        postUnprodSites(sites);
 
         // send quota
         if ($('#quota-toggle').is(':checked')) {
@@ -174,28 +173,7 @@ function initSettings() {
             var quota = 0;
             var quotaType = 'none';
         }
-        $.post({
-    		url: '/api/quota',
-    		contentType: 'application/json',
-    		dataType: 'json',
-    		data: JSON.stringify({
-    			'quota': quota,
-                'quota_type': quotaType
-    		}),
-    		success: function(response) {
-                if (!response['success']) {
-                    // TODO
-                }
-            },
-    		statusCode: {
-                500: function() {
-                  this.fail();
-                }
-            },
-    		fail: function() {
-                // TODO
-            }
-    	});
+        postQuota(quota, quotaType);
 
     	// Update quota/streak data
         requestMainData(false);

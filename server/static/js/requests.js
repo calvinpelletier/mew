@@ -65,3 +65,53 @@ function postBarGraphData(data, success, fail) {
         fail: fail
     });
 }
+
+function postUnprodSites(sites) {
+    $.post({
+        url: '/api/unprodsites',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({
+            'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+            'sites': sites
+        }),
+        success: function(response) {
+            if (!response['success']) {
+                // TODO
+            }
+        },
+        statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+        fail: function() {
+            // TODO
+        }
+    });
+}
+
+function postQuota(quota, quotaType) {
+    $.post({
+        url: '/api/quota',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({
+            'quota': quota,
+            'quota_type': quotaType
+        }),
+        success: function(response) {
+            if (!response['success']) {
+                // TODO
+            }
+        },
+        statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+        fail: function() {
+            // TODO
+        }
+    });
+}
