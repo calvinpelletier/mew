@@ -32,7 +32,6 @@ with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
 #########################################
 # ENDPOINTS
 #########################################
-
 @app.route('/')
 def get_landing_page():
     if 'uid' in session:

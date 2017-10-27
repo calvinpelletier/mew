@@ -38,6 +38,7 @@ window.onload = function() {
 		}),
 		success: function(response) {
 			window.raw_line_graph_data = response['linegraph'];
+			console.log(response['linegraph']);
 			filterAndDrawLineGraph();
 
 			if (response['streak'] != -1) {

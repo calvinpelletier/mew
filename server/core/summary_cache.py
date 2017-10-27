@@ -47,7 +47,8 @@ def load(db, uid, tz):
                     latest_cached = utc_day
                 # setup durations_per_host dict
                 for host, total_time in cache_data[utc_day].iteritems():
-                    durations_per_host[host] += total_time
+                    if not host.startswith('_'): # skip _total and _unprod
+                        durations_per_host[host] += total_time
 
             first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
             utc_date = datetime.datetime.utcfromtimestamp(first_non_cached_day)
