@@ -69,7 +69,7 @@ class TestMain(TestBase):
             self._post('/api/quota', {'quota': 10, 'quota_type': quota_type})
 
             if quota_type == 'unprod':
-                self._post('/api/unprodsites', {'sites': ['test.com']})
+                self._post('/api/unprodsites', {'sites': ['test.com'], 'timezone': self.tz})
 
                 # test no unprod usage
                 self._clear_events()

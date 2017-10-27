@@ -5,7 +5,6 @@ from summary_cache import recalc_unprod
 
 # tz is used for recalculating unprod in cache
 def set_unprod_sites(db, uid, sites, tz):
-    print 'check0'
     if type(sites) not in [list, tuple] or len(sites) > 1000: # arbitrary limit
         # TODO log that we might be under attack
         return False
@@ -24,7 +23,6 @@ def set_unprod_sites(db, uid, sites, tz):
 
     # if it's different
     if result is None or result[0] != sites_json:
-        print 'check'
         c.execute('INSERT OR REPLACE INTO unprod_sites VALUES (?, ?)', (uid, sites_json))
         db.commit()
         recalc_unprod(db, uid, tz, clean_sites) # refresh cached unprod usage (see summary_cache.py)
