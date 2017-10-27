@@ -2,9 +2,13 @@ var LG_FAIL_PLACEHOLDER = "Failed to load line graph data.";
 var LG_NO_DATA_PLACEHOLDER = "No data found for line graph.";
 
 function filterAndDrawLineGraph(minutes) {
-	let filteredData = filterData(window.raw_line_graph_data.data, minutes);
-	let bucketedData = bucketData(filteredData);
-	drawLineGraph(bucketedData["x"], bucketedData["y"], "chart1");
+    if (window.raw_line_graph_data) {
+        let filteredData = filterData(window.raw_line_graph_data.data, minutes);
+        let bucketedData = bucketData(filteredData);
+        drawLineGraph(bucketedData["x"], bucketedData["y"], "chart1");
+    } else {
+        drawLineGraphFailure(LG_NO_DATA_PLACEHOLDER);
+    }
 	hideLineGraphLoader();
 }
 
