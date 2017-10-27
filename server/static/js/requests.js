@@ -91,7 +91,7 @@ function postUnprodSites(sites) {
     });
 }
 
-function postQuota(quota, quotaType) {
+function postQuota(quota, quotaType, quotaUnit) {
     $.post({
         url: '/api/quota',
         contentType: 'application/json',

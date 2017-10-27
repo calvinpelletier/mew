@@ -185,7 +185,7 @@ function initSettings() {
             var quotaType = 'none';
             var quotaUnit = 'minutes'; // Just a default value, shouldn't really matter.
         }
-        postQuota(quota, quotaType);
+        postQuota(quota, quotaType, quotaUnit);
 
     	// Update quota/streak data
         requestMainData(false);
