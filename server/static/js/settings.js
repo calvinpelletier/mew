@@ -124,13 +124,14 @@ function initSettings() {
 
     $('#settings-save').on('click', function(e) {
         // send unprod sites
-        // TODO: validate sites
+        // TODO: validate sites (and remove empty ones)
         readUnprodSites();
         $.post({
     		url: '/api/unprodsites',
     		contentType: 'application/json',
     		dataType: 'json',
     		data: JSON.stringify({
+                'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
     			'sites': globalUnprodSites
     		}),
     		success: function(response) {

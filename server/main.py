@@ -263,9 +263,9 @@ def set_get_unprod_sites():
 
     if request.method == 'POST':
         req_data = request.get_json()
-        if 'sites' not in req_data:
+        if 'sites' not in req_data or 'timezone' not in req_data:
             return gen_resp(False, {'reason': 'invalid or missing request data'})
-        success = unproductive.set_unprod_sites(get_db(DATABASE_PATH), uid, req_data['sites'])
+        success = unproductive.set_unprod_sites(get_db(DATABASE_PATH), uid, req_data['sites'], req_data['timezone'])
         return gen_resp(success)
     else: # get
         sites = unproductive.get_unprod_sites(get_db(DATABASE_PATH), uid)

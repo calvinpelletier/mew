@@ -19,6 +19,34 @@ def update(db, uid, tz, today, data):
     c.close()
 
 
+def recalc_unprod(db, uid, tz, unprod_sites):
+    c = db.cursor()
+    c.execute(
+        'SELECT ts, json FROM daily_summary_cache WHERE uid = ? AND tz = ?',
+        (uid, tz)
+    )
+    cache = c.fetchall()
+
+    if len(cache) > 0:
+        for utc_day, json_summary in cache:
+            summary = json.loads(json_summary)
+            unprod_dur = 0.
+            for site, dur in summary.iteritems():
+                if site in unprod_sites:
+                    unprod_dur += dur
+            summary['_unprod'] = unprod_dur
+            new_json = json.dumps(summary, separators=(',', ':'))
+            if utc_day == 1487289600:
+                print uid, tz, utc_day, new_json
+            c.execute(
+                # 'INSERT OR REPLACE INTO daily_summary_cache VALUES (?, ?, ?, ?)',
+                'UPDATE daily_summary_cache SET json = ? WHERE uid = ? AND tz = ? AND ts = ?',
+                (new_json, uid, tz, utc_day)
+            )
+        db.commit()
+
+    c.close()
+
 # RETURNS TUPLE OF:
 # cached_data - {ut: {host: duration}},
 # durations_per_host - {host: total_dur},

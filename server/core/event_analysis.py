@@ -38,7 +38,7 @@ def get_last_x_min_summary(db, uid, x_min, max_sites):
     summary = {}
     total = 0.
     for event in events:
-        hostname = event[0]
+        hostname = clean_hostname(event[0])
         ts = event[1]
         if prev_ts is not None and prev_hostname not in IGNORED_HOSTNAMES:
             if ts < prev_ts:
