@@ -2,6 +2,15 @@ var _ENTER = 13;
 
 var globalUnprodSites = [];
 
+function getQuotaMinutes() {
+    var quota = parseFloat($('#quota-val').val());
+    var quotaUnit = $('#quota-unit').val();
+    if (quotaUnit == 'hours') {
+        quota *= 60;
+    }
+    return quota;
+}
+
 function readUnprodSites() {
     for (var i = 0; i < globalUnprodSites.length; i++) {
         globalUnprodSites[i] = $('#site' + i).val();
@@ -60,7 +69,13 @@ function initSettings() {
                 } else {
                     $('#quota-toggle').attr('checked', true);
                     $('#quota-type').val(response['quota_type']);
-                    $('#quota-val').val(response['quota']);
+                    $('#quota-unit').val(response['quota_unit']);
+
+                    var quota = response['quota'];
+                    if (response['quota_unit'] == 'hours') {
+                        quota = quota / 60.
+                    }
+                    $('#quota-val').val(quota);
                 }
             } else {
                 // TODO
@@ -154,24 +169,21 @@ function initSettings() {
             var quotaUnit = $('#quota-unit').val();
 
             // validate quota
-            var quota = $('#quota-val').val();
-            console.log(quota);
+            var quota = getQuotaMinutes();
             if (!quota || isNaN(quota)) {
                 console.log('check');
                 $('#quota-error').removeClass('hidden');
                 return;
-            }
-
-            // TODO: we need to store the unit choice on the backend instead of just doing this.
-            //  We'll need to show the appropriate hours/minutes to the user depending on their last choice.
-            //  Additionally, we should validate that quoteUnit < 24 hours, AS they type it in.
-            // convert hours to minutes.
-            if (quotaUnit == 'hours') {
-                quota *= 60;
+            } else {
+                if (quota > 24 * 60) {
+                    $('#quota-error').removeClass('hidden');
+                    return;
+                }
             }
         } else {
             var quota = 0;
             var quotaType = 'none';
+            var quotaUnit = 'minutes'; // Just a default value, shouldn't really matter.
         }
         postQuota(quota, quotaType);
 

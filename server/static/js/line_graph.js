@@ -1,6 +1,11 @@
 var LG_FAIL_PLACEHOLDER = "Failed to load line graph data.";
 var LG_NO_DATA_PLACEHOLDER = "No data found for line graph.";
 
+var GRAPH_NAME_CHANGES = {
+    "_total" : "All Sites",
+    "_unprod" : "Unproductive Sites"
+};
+
 // Highcharts object
 var lineGraph;
 
@@ -64,8 +69,14 @@ function drawLineGraph(timestamp_labels, data, divId) {
 
 		let _visible = (domain in visible) ? true : false;
 
+		let nameInGraph = domain;
+
+		if (nameInGraph in GRAPH_NAME_CHANGES) {
+		    nameInGraph = GRAPH_NAME_CHANGES[nameInGraph];
+		}
+
 		chartData.push({
-			name: domain,
+			name: nameInGraph,
 			data: fullData,
 			visible: _visible
 		});
