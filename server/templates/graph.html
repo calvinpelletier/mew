@@ -1,5 +1,4 @@
 <html>
-
 <head>
     <title>See Progress</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
@@ -9,6 +8,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
     <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="385569473349-1192ich7o73apbpmu48c4lc32soqgqjk.apps.googleusercontent.com">
+    <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
 </head>
 
 <body>
@@ -83,7 +85,7 @@
                     <div class="vert-divider inline"></div>
                     {% if email %}
                     <div class="nav-part inline">
-                        <a href="#"><h5>log out<h5></a>
+                        <a id="logout-link" href="#"><h5>log out<h5></a>
                         </div>
                         {% else %}
                         <div class="nav-part inline">
@@ -239,7 +241,9 @@
                 <script src="{{ url_for('static', filename='js/bar_graph.js') }}"></script>
                 <script src="{{ url_for('static', filename='js/line_graph.js') }}"></script>
                 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/logout.js') }}"></script>
                 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+                <script src="https://apis.google.com/js/platform.js?onload=onOAuthLoad" async defer></script>
             </body>
 
             </html>

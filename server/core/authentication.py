@@ -65,13 +65,13 @@ def google_auth(db, email, google_uid):
     if user is None:
         # create user
         c = db.cursor()
-        c.execute('INSERT INTO users VALUES (NULL, email, NULL, NULL)')
+        c.execute('INSERT INTO users VALUES (NULL, ?, NULL, NULL)', (email,))
         uid = c.lastrowid
         c.execute('INSERT INTO google VALUES (?, ?)', (google_uid, uid))
         db.commit()
         c.close()
     else:
-        uid = user[2]
+        uid = user[1]
 
     return uid
 

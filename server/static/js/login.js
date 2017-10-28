@@ -92,7 +92,7 @@ function onGoogleSignIn(googleUser) {
         'google_token': id_token
     };
     $.post({
-        url: '/api/logout',
+        url: '/api/login',
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(postData),

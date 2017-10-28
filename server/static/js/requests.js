@@ -11,6 +11,10 @@ function requestMainData(includeLineGraphData) {
 			"ignore_linegraph_data": !includeLineGraphData
 		}),
 		success: function(response) {
+            if (!response['success']) {
+                // TODO
+                return
+            }
 		    if (includeLineGraphData) {
 		        window.raw_line_graph_data = response['linegraph'];
                 console.log(response['linegraph']);

@@ -56,7 +56,13 @@ def redirect_guest(token):
 def graph():
     uid = session['uid']
     if uid:
-        user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+        try:
+            user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+        except:
+            # the user somehow got deleted from the db
+            print 'check'
+            session.pop('uid')
+            return make_response(redirect('/'))
 
         _, quota_type, _ = quota.get_quota(get_db(DATABASE_PATH), uid)
         if quota_type == 'none':
@@ -99,7 +105,7 @@ def login():
         return gen_resp(True)
 
 
-@app.route('/api/logout')
+@app.route('/api/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('uid', None)
     return redirect('/')
