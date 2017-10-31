@@ -1,8 +1,6 @@
 import argparse
 from os import environ, getcwd, path
 from collections import namedtuple
-from datetime import datetime
-import time
 
 from flask import Flask, render_template, request, make_response, redirect, session
 from core.util import *
@@ -11,7 +9,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 
 from core import *
-from core import authentication, event_storage, event_analysis, ping, unproductive, quota
+from core import authentication, event_storage, event_analysis, ping, unproductive, quota, timezones
 from core.log import *
 
 MEW_PATH = environ.get('MEW_PATH')
@@ -326,10 +324,14 @@ def set_get_settings():
 
 @app.route('/api/debug/data', methods=['GET'])
 def get_user_website_data():
-    try:
-        mins = float(request.args.get('minutes'))
-    except:
-        return gen_fail("Couldn't parse minutes parameter '%s'" % str(request.args.get('minutes')))
+    mins_str = request.args.get('minutes')
+    if mins_str:
+        try:
+            mins = float(mins_str)
+        except:
+            return gen_fail("Couldn't parse minutes parameter '%s'" % str(request.args.get('minutes')))
+    else:
+        return gen_fail("You need to provide the `minutes` parameter.")
 
     if 'uid' in session:
         uid = session['uid']
@@ -338,15 +340,14 @@ def get_user_website_data():
         return gen_resp(False, {"reason": "No uid found."})
 
     db = get_db(DATABASE_PATH)
-    events = event_analysis.get_last_x_min(db, uid, mins)
+    events = event_analysis._get_last_x_min(db, uid, mins)
 
     result = []
     for e in events:
         result.append({
             'hostname': e[0],
             'time': e[1],
-            'utc_str': datetime.utcfromtimestamp(e[1] / 1000).strftime('%Y-%m-%dT%H:%M:%SZ')
-
+            'utc_str': timezones.get_utc_string(e[1] / 1000)
         })
 
     return gen_resp(True, {'data': result})

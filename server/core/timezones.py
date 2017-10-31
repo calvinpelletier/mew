@@ -55,4 +55,5 @@ def get_user_string(tz_obj, unixtime):
     user_time = datetime.datetime.utcfromtimestamp(unixtime).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
     return user_time.strftime(DATE_FMT)
 
-
+def get_utc_string(unixtime):
+    return get_user_string(pytz.UTC, unixtime)
