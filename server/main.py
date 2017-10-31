@@ -237,46 +237,92 @@ def get_streak():
     return gen_resp(True, {'streak': streak})
 
 
-# sets or gets quota depending on req type
-@app.route('/api/quota', methods=['POST', 'GET'])
-def set_get_quota():
+"""
+GET:
+    params:
+        'quota': (bool) should return 'quota', 'quota_type', and 'quota_unit'
+        'unprod_sites': (bool) should return 'unprod_sites'
+    returns:
+        depends on params
+POST:
+    params:
+        'quota','quota_type','quota_unit': (optional) new quota values
+        'unprod_sites','timezone': (optional) new unprod sites
+        'ret_linegraph': (bool) should return updated line graph data (max_sites defaults to 20 for now)
+        'ret_streak': (bool) should return updated streak/percent_usage_today
+    returns:
+        'linegraph': if ret_linegraph is true and settings have changed
+        'streak': if ret_streak is true and settings have changed
+        'percent_usage_today': if ret_streak is true and settings have changed
+"""
+@app.route('/api/settings', methods=['POST', 'GET'])
+def set_get_settings():
     if 'uid' in session:
         uid = session['uid']
     else:
-        return gen_resp(False, {'reason': 'No uid found.'})
+        return gen_fail('not authenticated')
 
+    req = request.get_json()
     if request.method == 'POST':
-        req_data = request.get_json()
-        try:
-            new_quota = int(req_data['quota'])
-            quota_type = req_data['quota_type']
-            quota_unit = req_data['quota_unit']
-        except:
-            return gen_resp(False, {'reason': 'invalid or missing request data'})
-        success = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota, quota_type, quota_unit)
-        return gen_resp(success)
+        quota_changed = False
+        unprod_changed = False
+
+        if 'quota' in req:
+            try:
+                new_quota = int(req['quota'])
+                quota_type = req['quota_type']
+                quota_unit = req['quota_unit']
+            except:
+                return gen_fail('invalid or missing request data')
+            result = quota.set_quota(get_db(DATABASE_PATH), uid, new_quota, quota_type, quota_unit)
+            if result == -1:
+                gen_fail('error when setting quota')
+            elif result == 0:
+                # no change in quota
+                pass
+            else: # result == 1
+                quota_changed = True
+
+        if 'unprod_sites' in req:
+            sites = req['unprod_sites']
+            try:
+                tz = req['timezone']
+            except:
+                return gen_fail('missing timezone')
+            result = unproductive.set_unprod_sites(get_db(DATABASE_PATH), uid, sites, tz)
+            if result == -1:
+                gen_fail('error when setting unprod sites')
+            elif result == 0:
+                # no change in unprod sites
+                pass
+            else: # result == 1
+                unprod_changed = True
+
+        ret_linegraph = 'ret_linegraph' in req and req['ret_linegraph'] and unprod_changed
+        ret_streak = 'ret_streak' in req and req['ret_streak'] and (unprod_changed or quota_changed)
+        ret = {}
+        if ret_linegraph or ret_streak:
+            summary = event_analysis.get_daily_summary(get_db(DATABASE_PATH), uid, tz, 20)
+            if summary is None:
+                return gen_fail('no events')
+            if ret_linegraph:
+                ret['linegraph'] = summary
+            if ret_streak:
+                streak, percent_usage_today = quota.get_streak(get_db(DATABASE_PATH), uid, summary['data'])
+                ret['streak'] = streak
+                ret['percent_usage_today'] = percent_usage_today
+        return gen_resp(True, ret)
+
     else: # get
-        cur_quota, quota_type, quota_unit = quota.get_quota(get_db(DATABASE_PATH), uid)
-        return gen_resp(True, {'quota': cur_quota, 'quota_type': quota_type, 'quota_unit': quota_unit})
-
-
-# sets or gets list of unproductive sites deending on req type
-@app.route('/api/unprodsites', methods=['POST', 'GET'])
-def set_get_unprod_sites():
-    if 'uid' in session:
-        uid = session['uid']
-    else:
-        return gen_resp(False, {'reason': 'No uid found.'})
-
-    if request.method == 'POST':
-        req_data = request.get_json()
-        if 'sites' not in req_data or 'timezone' not in req_data:
-            return gen_resp(False, {'reason': 'invalid or missing request data'})
-        success = unproductive.set_unprod_sites(get_db(DATABASE_PATH), uid, req_data['sites'], req_data['timezone'])
-        return gen_resp(success)
-    else: # get
-        sites = unproductive.get_unprod_sites(get_db(DATABASE_PATH), uid)
-        return gen_resp(True, {'sites': sites})
+        ret = {}
+        if 'quota' in req and req['quota']:
+            cur_quota, quota_type, quota_unit = quota.get_quota(get_db(DATABASE_PATH), uid)
+            ret['quota'] = cur_quota
+            ret['quota_type'] = quota_type
+            ret['quota_unit'] = quota_unit
+        if 'unprod_sites' in req and req['unprod_sites']:
+            ret['sites'] = unproductive.get_unprod_sites(get_db(DATABASE_PATH), uid)
+        return gen_resp(True, ret)
 
 
 @app.route('/api/debug/data', methods=['GET'])
