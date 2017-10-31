@@ -65,13 +65,13 @@ def graph():
         _, quota_type, _ = quota.get_quota(get_db(DATABASE_PATH), uid)
         if quota_type == 'none':
             quota_streak_section = 'hidden'
-            today_section_id = 'today-no-quota'
+            today_section_class = 'today-no-quota'
         else:
             quota_streak_section = ''
-            today_section_id = 'today'
+            today_section_class = 'today'
 
         return render_template('graph.html',
-            email=user_email, today_section_id=today_section_id, quota_streak_section=quota_streak_section)
+            email=user_email, today_section_class=today_section_class, quota_streak_section=quota_streak_section)
     else:
         warn("uid cookie is None when requesting graph page...")
         return make_response(redirect('/graph'))
@@ -246,7 +246,7 @@ POST:
     params:
         'quota','quota_type','quota_unit': (optional) new quota values
         'unprod_sites','timezone': (optional) new unprod sites
-        'ret_linegraph': (bool) should return updated line graph data (max_sites defaults to 20 for now)
+        'ret_linegraph': (bool) should return updated line graph data (max_sites is static at 20 for now)
         'ret_streak': (bool) should return updated streak/percent_usage_today
     returns:
         'linegraph': if ret_linegraph is true and settings have changed

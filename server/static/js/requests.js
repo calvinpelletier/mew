@@ -16,21 +16,8 @@ function requestMainData(includeLineGraphData) {
                 return;
             }
 		    if (includeLineGraphData) {
-		        window.raw_line_graph_data = response['linegraph'];
-                console.log(response['linegraph']);
-
-                // Show usage today in top card
-                if (window.raw_line_graph_data) {
-                    let _data = window.raw_line_graph_data.data;
-                    var today = _data[_data.length - 1]['summary'];
-                    var total = today['_total'];
-                    var unprod = today['_unprod'];
-                    showTotalAndUnprodUsage(total, unprod);
-                } else {
-                    showTotalAndUnprodUsage(0, 0);
-                }
-
-
+                window.raw_line_graph_data = response['linegraph'];
+                showTotalAndUnprodUsage();
                 filterAndDrawLineGraph();
 		    }
             // Draw streak
@@ -77,20 +64,23 @@ function postSettings(sites, quota, quotaType, quotaUnit) {
         dataType: 'json',
         data: JSON.stringify({
             'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-            'sites': sites,
+            'unprod_sites': sites,
             'quota': quota,
-            'quotaType': quotaType,
-            'quotaUnit': quotaUnit,
+            'quota_type': quotaType,
+            'quota_unit': quotaUnit,
             'ret_linegraph': true,
             'ret_streak': true
         }),
         success: function(response) {
             if (response['success']) {
                 if ('linegraph' in response) {
-                    // TODO: set linegraph data
+                    window.raw_line_graph_data = response['linegraph'];
+                    showTotalAndUnprodUsage();
+                    filterAndDrawLineGraph();
                 }
                 if ('streak' in response && 'percent_usage_today' in response) {
-                    // TODO
+                    showStreak(response['streak']);
+    				showQuotaPercent(response['percent_usage_today']);
                 }
             } else {
                 // TODO
