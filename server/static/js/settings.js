@@ -1,19 +1,6 @@
 var _ENTER = 13;
 
 var globalUnprodSites = [];
-var globalUnprodSitesOG;
-
-function unprodSitesChanged() {
-    if (globalUnprodSites.length != globalUnprodSitesOG.length) {
-        return true;
-    }
-    for (i in globalUnprodSites) {
-        if (globalUnprodSites[i] != globalUnprodSitesOG[i]) {
-            return true;
-        }
-    }
-    return false;
-}
 
 function getQuotaMinutes() {
     var quota = parseFloat($('#quota-val').val());
@@ -71,10 +58,17 @@ function addUnprodSite() {
 
 function initSettings() {
     $.get({
-		url: '/api/quota',
+		url: '/api/settings',
 		contentType: 'application/json',
 		success: function(response) {
             if (response['success']) {
+                // unprod
+                for (i in response['unprod_sites']) {
+                    globalUnprodSites.push(response['unprod_sites'][i]);
+                }
+                drawUnprodSites();
+
+                // quota
                 if (response['quota_type'] == 'none') {
                     $('#quota-val').attr('disabled', true);
                     $('#quota-type').attr('disabled', true);
@@ -90,6 +84,8 @@ function initSettings() {
                     }
                     $('#quota-val').val(quota);
                 }
+
+                // TODO remove loading icon from settings
             } else {
                 // TODO
             }
@@ -98,25 +94,6 @@ function initSettings() {
             // TODO
 		}
 	});
-
-    $.get({
-        url: '/api/unprodsites',
-        contentType: 'application/json',
-        success: function(response) {
-            if (response['success']) {
-                for (i in response['sites']) {
-                    globalUnprodSites.push(response['sites'][i]);
-                    globalUnprodSitesOG = globalUnprodSites.slice(); // duplicate
-                }
-                drawUnprodSites();
-            } else {
-                // TODO
-            }
-        },
-        fail: function() {
-            // TODO
-        }
-    });
 
     $('#settings-icon').on('click', function(e) {
         if (!$('#quota-error').hasClass('hidden')) {
@@ -152,35 +129,32 @@ function initSettings() {
     });
 
     $('#settings-save').on('click', function(e) {
-        // send unprod sites
+        // get unprod sites
         readUnprodSites();
-        if (unprodSitesChanged()) {
-            var sites = [];
-            for (i in globalUnprodSites) {
-                var site = globalUnprodSites[i];
+        var sites = [];
+        for (i in globalUnprodSites) {
+            var site = globalUnprodSites[i];
 
-                // strip http:// and https://
-                if (site.startsWith('http://')) {
-                    site = site.replace('http://', '');
-                } else if (site.startsWith('https://')) {
-                    site = site.replace('https://', '');
-                }
-
-                // strip url path
-                let loc = site.indexOf('/');
-                if (loc != -1) {
-                    site = site.substring(0, loc);
-                }
-
-                if (site.length > 0) {
-                    sites.push(site);
-                }
+            // strip http:// and https://
+            if (site.startsWith('http://')) {
+                site = site.replace('http://', '');
+            } else if (site.startsWith('https://')) {
+                site = site.replace('https://', '');
             }
-            // TODO: reshow loading icon for line graph
-            postUnprodSites(sites);
-        }
 
-        // send quota
+            // strip url path
+            let loc = site.indexOf('/');
+            if (loc != -1) {
+                site = site.substring(0, loc);
+            }
+
+            if (site.length > 0) {
+                sites.push(site);
+            }
+        }
+        // TODO: reshow loading icon for line graph
+
+        // get quota
         if ($('#quota-toggle').is(':checked')) {
             var quotaType = $('#quota-type').val();
             var quotaUnit = $('#quota-unit').val();
@@ -202,10 +176,9 @@ function initSettings() {
             var quotaType = 'none';
             var quotaUnit = 'minutes'; // Just a default value, shouldn't really matter.
         }
-        postQuota(quota, quotaType, quotaUnit);
 
-    	// Update quota/streak data
-        requestMainData(false);
+        // send data
+        postSettings(sites, quota, quotaType, quotaUnit);
 
         // close settings modal
         $('#settings-container').addClass('hidden');

@@ -7,14 +7,14 @@ from summary_cache import recalc_unprod
 def set_unprod_sites(db, uid, sites, tz):
     if type(sites) not in [list, tuple] or len(sites) > 1000: # arbitrary limit
         # TODO log that we might be under attack
-        return False
+        return -1
 
     clean_sites = [clean_hostname(site) for site in sites]
 
     sites_json = json.dumps(clean_sites, separators=(',',':'))
     if len(sites_json) > 1000000: # arbitrary limit
         # TODO log that we might be under attack
-        return False
+        return -1
 
     # check that it's different
     c = db.cursor()
@@ -26,9 +26,11 @@ def set_unprod_sites(db, uid, sites, tz):
         c.execute('INSERT OR REPLACE INTO unprod_sites VALUES (?, ?)', (uid, sites_json))
         db.commit()
         recalc_unprod(db, uid, tz, clean_sites) # refresh cached unprod usage (see summary_cache.py)
+        c.close()
+        return 1 # changed
 
     c.close()
-    return True
+    return 0 # no change
 
 def get_unprod_sites(db, uid):
     c = db.cursor()

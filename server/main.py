@@ -240,10 +240,10 @@ def get_streak():
 """
 GET:
     params:
-        'quota': (bool) should return 'quota', 'quota_type', and 'quota_unit'
-        'unprod_sites': (bool) should return 'unprod_sites'
+        none
     returns:
-        depends on params
+        'quota','quota_type','quota_unit',
+        'unprod_sites'
 POST:
     params:
         'quota','quota_type','quota_unit': (optional) new quota values
@@ -262,8 +262,8 @@ def set_get_settings():
     else:
         return gen_fail('not authenticated')
 
-    req = request.get_json()
     if request.method == 'POST':
+        req = request.get_json()
         quota_changed = False
         unprod_changed = False
 
@@ -314,15 +314,14 @@ def set_get_settings():
         return gen_resp(True, ret)
 
     else: # get
-        ret = {}
-        if 'quota' in req and req['quota']:
-            cur_quota, quota_type, quota_unit = quota.get_quota(get_db(DATABASE_PATH), uid)
-            ret['quota'] = cur_quota
-            ret['quota_type'] = quota_type
-            ret['quota_unit'] = quota_unit
-        if 'unprod_sites' in req and req['unprod_sites']:
-            ret['sites'] = unproductive.get_unprod_sites(get_db(DATABASE_PATH), uid)
-        return gen_resp(True, ret)
+        cur_quota, quota_type, quota_unit = quota.get_quota(get_db(DATABASE_PATH), uid)
+        sites = unproductive.get_unprod_sites(get_db(DATABASE_PATH), uid)
+        return gen_resp(True, {
+            'quota': cur_quota,
+            'quota_type': quota_type,
+            'quota_unit': quota_unit,
+            'unprod_sites': sites
+        })
 
 
 @app.route('/api/debug/data', methods=['GET'])

@@ -76,7 +76,7 @@ def get_quota(db, uid):
 
 def set_quota(db, uid, new_quota, quota_type, quota_unit):
     if new_quota < 0 or new_quota > 2147483647:
-        return False
+        return -1
 
     if quota_type == 'none':
         qt = 0
@@ -85,17 +85,24 @@ def set_quota(db, uid, new_quota, quota_type, quota_unit):
     elif quota_type == 'unprod':
         qt = 2
     else:
-        return False
+        return -1
 
     if quota_unit == 'minutes':
         qu = 0
     elif quota_unit == 'hours':
         qu = 1
     else:
-        return False
+        return -1
 
     c = db.cursor()
-    c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?, ?)', (uid, new_quota, qt, qu))
-    db.commit()
+    c.execute('SELECT quota, quota_type, quota_unit FROM quotas WHERE uid = ?', (uid,))
+    result = c.fetchone()
+
+    if result is None or result[0] != new_quota or result[1] != qt or result[2] != qu:
+        c.execute('INSERT OR REPLACE INTO quotas VALUES (?, ?, ?, ?)', (uid, new_quota, qt, qu))
+        db.commit()
+        c.close()
+        return 1 # changed
+
     c.close()
-    return True
+    return 0 # no change

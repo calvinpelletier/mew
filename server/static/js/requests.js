@@ -70,46 +70,29 @@ function postBarGraphData(data, success, fail) {
     });
 }
 
-function postUnprodSites(sites) {
+function postSettings(sites, quota, quotaType, quotaUnit) {
     $.post({
-        url: '/api/unprodsites',
+        url: '/api/settings',
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify({
             'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
             'sites': sites,
-            'ret_linegraph': true
+            'quota': quota,
+            'quotaType': quotaType,
+            'quotaUnit': quotaUnit,
+            'ret_linegraph': true,
+            'ret_streak': true
         }),
         success: function(response) {
             if (response['success']) {
-                // TODO: set linegraph data
+                if ('linegraph' in response) {
+                    // TODO: set linegraph data
+                }
+                if ('streak' in response && 'percent_usage_today' in response) {
+                    // TODO
+                }
             } else {
-                // TODO
-            }
-        },
-        statusCode: {
-            500: function() {
-              this.fail();
-            }
-        },
-        fail: function() {
-            // TODO
-        }
-    });
-}
-
-function postQuota(quota, quotaType, quotaUnit) {
-    $.post({
-        url: '/api/quota',
-        contentType: 'application/json',
-        dataType: 'json',
-        data: JSON.stringify({
-            'quota': quota,
-            'quota_type': quotaType,
-            'quota_unit': quotaUnit
-        }),
-        success: function(response) {
-            if (!response['success']) {
                 // TODO
             }
         },
