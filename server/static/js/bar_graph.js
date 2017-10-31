@@ -71,6 +71,11 @@ function requestBarGraphData()
 }
 
 function drawBarGraph(labels, values, divId) {
+
+    // Show/hide relevant divs
+    $("#chart0").show();
+    $("#chart0-nodata").addClass('hidden');
+
     var scrollTop = $(window).scrollTop();
 
     if (labels.length == 0) {
