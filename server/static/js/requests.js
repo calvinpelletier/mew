@@ -13,7 +13,7 @@ function requestMainData(includeLineGraphData) {
 		success: function(response) {
             if (!response['success']) {
                 // TODO
-                return
+                return;
             }
 		    if (includeLineGraphData) {
 		        window.raw_line_graph_data = response['linegraph'];
@@ -77,10 +77,13 @@ function postUnprodSites(sites) {
         dataType: 'json',
         data: JSON.stringify({
             'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-            'sites': sites
+            'sites': sites,
+            'ret_linegraph': true
         }),
         success: function(response) {
-            if (!response['success']) {
+            if (response['success']) {
+                // TODO: set linegraph data
+            } else {
                 // TODO
             }
         },

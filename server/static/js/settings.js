@@ -1,6 +1,19 @@
 var _ENTER = 13;
 
 var globalUnprodSites = [];
+var globalUnprodSitesOG;
+
+function unprodSitesChanged() {
+    if (globalUnprodSites.length != globalUnprodSitesOG.length) {
+        return true;
+    }
+    for (i in globalUnprodSites) {
+        if (globalUnprodSites[i] != globalUnprodSitesOG[i]) {
+            return true;
+        }
+    }
+    return false;
+}
 
 function getQuotaMinutes() {
     var quota = parseFloat($('#quota-val').val());
@@ -93,6 +106,7 @@ function initSettings() {
             if (response['success']) {
                 for (i in response['sites']) {
                     globalUnprodSites.push(response['sites'][i]);
+                    globalUnprodSitesOG = globalUnprodSites.slice(); // duplicate
                 }
                 drawUnprodSites();
             } else {
@@ -140,28 +154,31 @@ function initSettings() {
     $('#settings-save').on('click', function(e) {
         // send unprod sites
         readUnprodSites();
-        var sites = [];
-        for (i in globalUnprodSites) {
-            var site = globalUnprodSites[i];
+        if (unprodSitesChanged()) {
+            var sites = [];
+            for (i in globalUnprodSites) {
+                var site = globalUnprodSites[i];
 
-            // strip http:// and https://
-            if (site.startsWith('http://')) {
-                site = site.replace('http://', '');
-            } else if (site.startsWith('https://')) {
-                site = site.replace('https://', '');
-            }
+                // strip http:// and https://
+                if (site.startsWith('http://')) {
+                    site = site.replace('http://', '');
+                } else if (site.startsWith('https://')) {
+                    site = site.replace('https://', '');
+                }
 
-            // strip url path
-            let loc = site.indexOf('/');
-            if (loc != -1) {
-                site = site.substring(0, loc);
-            }
+                // strip url path
+                let loc = site.indexOf('/');
+                if (loc != -1) {
+                    site = site.substring(0, loc);
+                }
 
-            if (site.length > 0) {
-                sites.push(site);
+                if (site.length > 0) {
+                    sites.push(site);
+                }
             }
+            // TODO: reshow loading icon for line graph
+            postUnprodSites(sites);
         }
-        postUnprodSites(sites);
 
         // send quota
         if ($('#quota-toggle').is(':checked')) {
