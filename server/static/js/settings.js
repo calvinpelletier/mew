@@ -72,6 +72,7 @@ function initSettings() {
                 if (response['quota_type'] == 'none') {
                     $('#quota-val').attr('disabled', true);
                     $('#quota-type').attr('disabled', true);
+                    $('#quota-unit').attr('disabled', true);
                     $('#quota-label').addClass('disabled');
                 } else {
                     $('#quota-toggle').attr('checked', true);
@@ -114,6 +115,7 @@ function initSettings() {
             $('#body-container').removeClass('blur');
             $('#body-container').removeClass('no-scrolling');
         } else if (event.target == document.getElementById('quota-val')
+                || event.target == document.getElementById('quota-unit')
                 || event.target == document.getElementById('quota-type')) {
             // hint the user about the toggle
             if (!$('#quota-toggle').is(':checked')) {
@@ -190,6 +192,7 @@ function initSettings() {
         if ($('#quota-toggle').is(':checked')) {
             $('#quota-val').removeAttr('disabled');
             $('#quota-type').removeAttr('disabled');
+            $('#quota-unit').removeAttr('disabled');
             $('#quota-label').removeClass('disabled');
             if (!$('#quota-enable-msg').hasClass('hidden')) {
                 $('#quota-enable-msg').addClass('hidden');
@@ -197,6 +200,7 @@ function initSettings() {
         } else {
             $('#quota-val').attr('disabled', true);
             $('#quota-type').attr('disabled', true);
+            $('#quota-unit').attr('disabled', true);
             $('#quota-label').addClass('disabled');
         }
     });
