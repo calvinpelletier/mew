@@ -9,7 +9,7 @@ import summary_cache
 import unproductive
 from log import *
 from util import clean_hostname
-from timezones import get_date_in_tz
+from timezones import *
 
 # None/null means the user wasn't in chrome
 IGNORED_HOSTNAMES = [None, "newtab"]
@@ -73,18 +73,17 @@ def get_daily_summary(db, uid, timezone_name, max_sites=None):
         # no events
         return None
 
+    tz_obj = pytz.timezone(timezone_name)
 
-    last_non_cached_day = calendar.timegm(datetime.datetime.now(pytz.timezone(timezone_name)).date().timetuple())
+    last_non_cached_day = cur_unixdate_for_tz(tz_obj)
 
     # Initialize a list of datetimes, one for each day
-    # Map from unixtime -> {hostname: time spent} (which is a defaultdict(int)
+    # Map from utc unixdate -> {hostname: time spent} (which is a defaultdict(int)
     new_data = {
         ut: defaultdict(int) for ut in range(first_non_cached_day, last_non_cached_day + 1, 86400)
     }
 
     if len(events) != 0:
-        tz_obj = pytz.timezone(timezone_name)
-
         unprod_sites = frozenset(unproductive.get_unprod_sites(db, uid)) # list -> frozenset for performance gain
 
         # insert null event at current time to capture last event and avoid an edge case in quota
@@ -92,83 +91,66 @@ def get_daily_summary(db, uid, timezone_name, max_sites=None):
         cur_time = time.time() * 1000.
         if events[-1][1] > cur_time:
             # TODO: proper way to handle this?
-            cur_time = events[-1][1]
+            cur_time = events[-1][1] + 1
         events.append([None, cur_time])
 
         # summarize non cached events
         prev_ts = None
         prev_hostname = None
-        prev_utc_day_start = None
+        prev_unixdate = None
         total = 0.
         for event in events:
             hostname = clean_hostname(event[0])
-            ts = event[1]
-
-            # Event timestamp, in user's local timezone
-            ts_sec = ts / 1000
-            user_ts = datetime.datetime.utcfromtimestamp(ts_sec).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
-            user_day = user_ts.date()
-
-            start = get_date_in_tz(tz_obj, 1478390400)
-            end = get_date_in_tz(tz_obj, 1478390400 + 86400)
-            if ts / 1000 >= start and ts / 1000 <= end:
-                print '1478390400', hostname, ts / 1000
+            ts = event[1] / 1000
 
             # A unixtime for midnight (in UTC!) of the day of this timestamp,
             # ***where the date is determined by the local time, NOT by UTC***
-            utc_day_start = calendar.timegm(user_day.timetuple())
+            unixdate = get_unixdate_for_local_time(tz_obj, ts)
 
             # Ignore nulls, they mean the user wasn't even in Chrome.
             if prev_ts is not None and prev_hostname not in IGNORED_HOSTNAMES:
-                day_diff = utc_day_start - prev_utc_day_start
+                day_diff = unixdate - prev_unixdate
                 if day_diff % 86400 != 0:
                     # there is fuckery about
                     # possibly leap seconds
-                    error("utc_day_start is %s and prev_utc_day_start is %s which is not a multiple of 86400",
-                        str(utc_day_start), str(prev_utc_day_start))
+                    error("unixdate is %s and prev_unixdate is %s which is not a multiple of 86400",
+                        str(unixdate), str(prev_unixdate))
                     raise
 
                 # if this event is in one day
                 if day_diff == 0:
-                    mins_elapsed = (ts - prev_ts) / (1000. * 60.)  # ms to min
-                    _add_to_summary(new_data, durations_per_host, unprod_sites, prev_utc_day_start, prev_hostname, mins_elapsed)
+                    mins_elapsed = (ts - prev_ts) / 60.
+                    _add_to_summary(new_data, durations_per_host, unprod_sites, prev_unixdate, prev_hostname, mins_elapsed)
 
                 # if this event overlaps two days
                 elif day_diff == 86400:
-                    print '!'
-                    # day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
-                    day_division = get_date_in_tz(tz_obj, utc_day_start) # unixtime of local day (not utc)
-                    min_pre_division = (day_division - prev_ts / 1000.) / 60.
-                    min_post_division = (ts / 1000. - day_division) / 60.
-                    _add_to_summary(new_data, durations_per_host, unprod_sites, prev_utc_day_start, prev_hostname, min_pre_division)
-                    _add_to_summary(new_data, durations_per_host, unprod_sites, utc_day_start, prev_hostname, min_post_division)
+                    day_division = local_unixdate_from_utc_unixdate(tz_obj, unixdate) # unixtime of local day (not utc)
+                    min_pre_division = (day_division - prev_ts) / 60.
+                    min_post_division = (ts - day_division) / 60.
+                    _add_to_summary(new_data, durations_per_host, unprod_sites, prev_unixdate, prev_hostname, min_pre_division)
+                    _add_to_summary(new_data, durations_per_host, unprod_sites, unixdate, prev_hostname, min_post_division)
 
                 # this event overlaps more than two days
                 else:
-                    print '!!'
                     # first day (partial)
-                    # this could be faster by storing a prev_user_day but this will pretty much never occur so fuck it
-                    # _y, _m, _d = [int(x) for x in datetime.datetime.utcfromtimestamp(prev_utc_day_start + 86400).date().isoformat().split('-')]
-                    # day_division = time.mktime(datetime.datetime(_y, _m, _d, tzinfo=tz_obj).date().timetuple()) # unix time of local day
-                    day_division = get_date_in_tz(tz_obj, prev_utc_day_start + 86400) # unixtime of local day (not utc)
-                    min_pre_division = (day_division - prev_ts / 1000.) / 60.
-                    _add_to_summary(new_data, durations_per_host, unprod_sites, prev_utc_day_start, prev_hostname, min_pre_division)
+                    day_division = local_unixdate_from_utc_unixdate(tz_obj, prev_unixdate + 86400) # unixtime of local day (not utc)
+                    min_pre_division = (day_division - prev_ts) / 60.
+                    _add_to_summary(new_data, durations_per_host, unprod_sites, prev_unixdate, prev_hostname, min_pre_division)
 
                     # middle days (full)
-                    cur_day = prev_utc_day_start + 86400
-                    while cur_day < utc_day_start:
+                    cur_day = prev_unixdate + 86400
+                    while cur_day < unixdate:
                         _add_to_summary(new_data, durations_per_host, unprod_sites, cur_day, prev_hostname, 1440) # min in day
                         cur_day += 86400
 
                     # last day (partial)
-                    # day_division = time.mktime(user_day.timetuple()) # unixtime of local day (not utc)
-                    day_division = get_date_in_tz(tz_obj, utc_day_start) # unixtime of local day (not utc)
-                    min_post_division = (ts / 1000. - day_division) / 60.
-                    _add_to_summary(new_data, durations_per_host, unprod_sites, utc_day_start, prev_hostname, min_post_division)
+                    day_division = local_unixdate_from_utc_unixdate(tz_obj, unixdate) # unixtime of local day (not utc)
+                    min_post_division = (ts - day_division) / 60.
+                    _add_to_summary(new_data, durations_per_host, unprod_sites, unixdate, prev_hostname, min_post_division)
 
             prev_ts = ts
             prev_hostname = hostname
-            prev_utc_day_start = utc_day_start
+            prev_unixdate = unixdate
 
         # cache new findings
         cur_day = datetime.datetime.utcfromtimestamp(time.time()).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date()
@@ -193,11 +175,6 @@ def get_daily_summary(db, uid, timezone_name, max_sites=None):
     if max_sites is not None and max_sites >= 1 and max_sites < len(hostnames):
         hostnames = hostnames[:max_sites]
 
-    # debug
-    # for i in range(1, len(final_data) - 1):
-        # if final_data[i]['summary']['_total'] != 1440.0:
-        # print final_data[i]['date'], final_data[i]['summary']['_total']
-
     return {
         "data": final_data,
         "hostnames": hostnames
@@ -206,10 +183,6 @@ def get_daily_summary(db, uid, timezone_name, max_sites=None):
 
 # helper for get_daily_summary
 def _add_to_summary(summary, dur_per_host, unprod_sites, day, site, duration):
-    # debug
-    if summary[day]['_total'] + duration >= 1440.00000001:
-        print '~~~~', day, site, duration, summary[day]['_total'] + duration
-
     summary[day][site] += duration
     dur_per_host[site] += duration
     summary[day]['_total'] += duration

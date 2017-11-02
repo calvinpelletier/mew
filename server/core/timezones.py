@@ -7,14 +7,22 @@ from log import *
 
 DATE_FMT = "%Y-%m-%d %H:%M:%S"
 
+"""
+TERMINOLOGY
+utc unixdate:
+    unixtime for midnight on that date (utc)
+    generally used for encoding dates (i.e. summary cache uses this to represent the day even though the day divisions are timezone dependent)
+local unixdate:
+    unixtime for midnight on that date according to a specific timezone
+"""
 
-def get_date_in_tz(tz_obj, utc_unixday):
+def local_unixdate_from_utc_unixdate(tz_obj, utc_unixdate):
     """
     Takes a utc date, at midnight. (either a unixtime or actual datetime) Converts that into the same date, but in the
     users timezone, and returns the unixtime representation of that date.
 
     :param tz_obj: pytz timezone object, the user's timezone
-    :param utc_unixday: either a timezone-naive datetime object, or a unixtime. It's a UTC-based representation of the LOCAL
+    :param utc_unixdate: either a timezone-naive datetime object, or a unixtime. It's a UTC-based representation of the LOCAL
         date.
 
         Example:
@@ -22,17 +30,17 @@ def get_date_in_tz(tz_obj, utc_unixday):
             this input will be 3/4/2017 00:00:00 in UTC.
     """
 
-    if isinstance(utc_unixday, datetime.datetime):
+    if isinstance(utc_unixdate, datetime.datetime):
         pass
-    elif type(utc_unixday) == int:
-        utc_unixday = datetime.datetime.utcfromtimestamp(utc_unixday)
+    elif type(utc_unixdate) == int:
+        utc_unixdate = datetime.datetime.utcfromtimestamp(utc_unixdate)
     else:
-        error("Invalid parameter type for utc_date: ", type(utc_unixday))
+        error("Invalid parameter type for utc_unixdate: ", type(utc_unixdate))
         return None
 
-    loc_datetime = tz_obj.localize(datetime.datetime(utc_unixday.year, utc_unixday.month, utc_unixday.day, 0, 0, 0, 0))
-    loc_unixday = calendar.timegm(loc_datetime.utctimetuple())
-    return loc_unixday
+    loc_datetime = tz_obj.localize(datetime.datetime(utc_unixdate.year, utc_unixdate.month, utc_unixdate.day, 0, 0, 0, 0))
+    loc_unixdate = calendar.timegm(loc_datetime.utctimetuple())
+    return loc_unixdate
 
 
 def get_unixdate_for_local_time(tz_obj, unixtime):
@@ -51,9 +59,17 @@ def get_unixdate_for_local_time(tz_obj, unixtime):
     return calendar.timegm(first_timestamp.date().timetuple())
 
 
+def cur_unixdate_for_tz(tz_obj):
+    """
+    Returns current date (according to user's timezone) encoded as a unixdate
+    """
+    return calendar.timegm(datetime.datetime.now(tz_obj).date().timetuple())
+
+
 def get_user_string(tz_obj, unixtime):
     user_time = datetime.datetime.utcfromtimestamp(unixtime).replace(tzinfo=pytz.UTC).astimezone(tz_obj)
     return user_time.strftime(DATE_FMT)
+
 
 def get_utc_string(unixtime):
     return get_user_string(pytz.UTC, unixtime)
