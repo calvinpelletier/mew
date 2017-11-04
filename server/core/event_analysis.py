@@ -1,8 +1,5 @@
-import calendar
-import datetime
 import time
 from collections import defaultdict
-import pytz
 
 import event_storage
 import summary_cache
@@ -153,8 +150,7 @@ def get_daily_summary(db, uid, timezone_name, max_sites=None):
             prev_unixdate = unixdate
 
         # cache new findings
-        cur_day = datetime.datetime.utcfromtimestamp(time.time()).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date()
-        cur_day_utc = calendar.timegm(cur_day.timetuple())
+        cur_day_utc = cur_unixdate_for_tz(tz_obj)
         summary_cache.update(db, uid, timezone_name, cur_day_utc, new_data)
 
     else:
