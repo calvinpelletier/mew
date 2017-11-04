@@ -140,7 +140,6 @@ function initSettings() {
                 sites.push(site);
             }
         }
-        // TODO: reshow loading icon for line graph
 
         // get quota
         if ($('#quota-toggle').is(':checked')) {

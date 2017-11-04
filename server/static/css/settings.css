@@ -140,3 +140,15 @@
     color: red;
     margin: 0px;
 }
+
+@media only screen
+and (max-width : 850px) {
+    #settings-content {
+        margin: 0px;
+        width: 100%;
+        border: none;
+    }
+    #settings-container {
+        background-color: #fff;
+    }
+}
