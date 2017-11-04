@@ -80,7 +80,7 @@ def load(db, uid, tz):
             first_non_cached_day = (latest_cached + 86400) # unixtime of first non-cached utc day
 
             # unixtime of first non-cached LOCAL day:
-            start_time = get_date_in_tz(tz_obj, first_non_cached_day)
+            start_time = local_unixdate_from_utc_unixdate(tz_obj, first_non_cached_day)
 
             info("For user %d, the first non-cached day start is %s (%s)" % (
             uid, get_user_string(tz_obj, start_time), str(tz_obj)))
