@@ -1,13 +1,15 @@
 // Map from checkbox id to duration, in minutes
-var MINUTE_DURATIONS = {
+var BAR_GRAPH_DURATIONS = {
   "last-hour" : 60,
   "last-24" : 1440,
   "last-week" : 10080,
-  "last-month" : 44640,
-  "last-3-months" : 132480,
   "last-year": 525600,
   "all": null
 }
+
+var MINUTE_DURATIONS = BAR_GRAPH_DURATIONS;
+MINUTE_DURATIONS["last-month"] = 44640;
+MINUTE_DURATIONS["last-3-months"] = 132480;
 
 var MS_PER_MINUTE = 60000;
 var MS_PER_DAY = MS_PER_MINUTE * 60 * 24;

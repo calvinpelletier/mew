@@ -166,8 +166,8 @@ def add_event():
 @app.route('/api/bargraph', methods=['POST'])
 def get_bar_graph_data():
     req_data = request.get_json()
-    num_minutes = req_data['minutes']
     max_sites = req_data['max_sites']
+    durations = req_data['durations']
 
     if 'uid' in session:
         uid = session['uid']
@@ -175,8 +175,11 @@ def get_bar_graph_data():
         # not logged in
         return gen_resp(False, {"reason": "No uid found."})
 
-    summary = event_analysis.get_last_x_min_summary(get_db(DATABASE_PATH), uid, num_minutes, max_sites)
-    return gen_resp(True, summary)
+    res = {}
+    for name, num_minutes in durations.items():
+        res[name] = event_analysis.get_last_x_min_summary(get_db(DATABASE_PATH), uid, num_minutes, max_sites)
+    debug(res)
+    return gen_resp(True, res)
 
 
 @app.route('/api/getmaindata', methods=['POST'])

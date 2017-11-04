@@ -45,19 +45,26 @@ function requestMainData(includeLineGraphData) {
 }
 
 function postBarGraphData(data, success, fail) {
+    CARD1_DATA_ELEMENT.showLoader();
     // Get graph data from server.
     $.post({
         url: '/api/bargraph',
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(data),
-        success: success,
+        success: function(response) {
+            CARD1_DATA_ELEMENT.hideLoader();
+            success(response);
+        },
         statusCode: {
             500: function() {
                 this.fail();
             }
         },
-        fail: fail
+        fail: function(response) {
+            CARD1_DATA_ELEMENT.showLoader();
+            fail(response);
+        }
     });
 }
 

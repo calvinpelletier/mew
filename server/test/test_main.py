@@ -28,7 +28,9 @@ class TestMain(TestBase):
         self._gen_token()
         self._post_10_events()
         post_data = {
-            "minutes": 20000,
+            "durations": {
+                "custom-dur-name" : 20000
+            },
             "max_sites": 2
         }
 
@@ -36,23 +38,25 @@ class TestMain(TestBase):
         response_data = loads(rv.data)
         self.assertTrue(response_data["success"])
         for domain in ['test.com', 'test2.com', 'other']:
-            self.assertIn(domain, response_data['labels'])
-        self.assertEqual(len(response_data['values']), 3)
+            self.assertIn(domain, response_data["custom-dur-name"]['labels'])
+        self.assertEqual(len(response_data["custom-dur-name"]['values']), 3)
 
     def test_no_bg_data(self):
         self._gen_token()
         self._post_10_events()
         post_data = {
-            "minutes": 5,
+            "durations": {
+                "custom-dur-name" : 5
+            },
             "max_sites": 2
         }
 
         rv = self.app.post('/api/bargraph', data=dumps(post_data), headers={"content-type": "application/json"})
         response_data = loads(rv.data)
         self.assertTrue(response_data["success"])
-        self.assertEqual(response_data['labels'], [])
-        self.assertEqual(response_data['values'], [])
-        self.assertEqual(response_data['total'], 0)
+        self.assertEqual(response_data["custom-dur-name"]['labels'], [])
+        self.assertEqual(response_data["custom-dur-name"]['values'], [])
+        self.assertEqual(response_data["custom-dur-name"]['total'], 0)
 
     def test_streak(self):
         self._gen_token()
