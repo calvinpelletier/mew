@@ -66,3 +66,20 @@ function validateNumeric(event) {
     return (event.charCode >= _KEY_0 && event.charCode <= _KEY_9) || event.charCode == _KEY_DOT;
 }
 
+// Shows the loader inside `loaderParent`, and hides any selectors in dataElements
+function showLoader(loaderParent, dataElements) {
+    $(loaderParent + ' .loader').removeClass('hidden');
+
+    dataElements.forEach(function(selector) {
+        $(selector).addClass('hidden');
+    });
+}
+
+// Hides the loader inside `loaderParent`, and shows any selectors in dataElements
+function hideLoader(loaderParent, dataElements) {
+    $(loaderParent + ' .loader').addClass('hidden');
+
+    dataElements.forEach(function(selector) {
+        $(selector).removeClass('hidden');
+    });
+}

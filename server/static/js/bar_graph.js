@@ -29,12 +29,8 @@ function getBarGraphConfig() {
     }
 }
 
-function hideBarGraphLoader() {
-	$("#card1 .loader").hide();
-}
-
 function drawBarGraphFailure(message) {
-    hideBarGraphLoader();
+    hideLoader('div#card1', []);
     $("#chart0").hide();
     $("#chart0-nodata").text(message);
     $("#chart0-nodata").removeClass('hidden');
@@ -56,7 +52,7 @@ function requestBarGraphData()
             $('#card1-title').text(graphConfig.timespanName);
             $('#card1-subtitle').text("Total Time: " + formatTime(response.total, true));
             drawBarGraph(response.labels, response.values, "chart0");
-            hideBarGraphLoader();
+            hideLoader('div#card1', []);
 
     };
 

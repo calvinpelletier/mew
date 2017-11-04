@@ -1,6 +1,8 @@
 // Bundles a bunch of api calls into one
 // TODO: include bar graph data
 function requestMainData(includeLineGraphData) {
+    // Show the loader over card0 (the stats at the top of the page)
+    showLoader('#card0', ['div.sub-today'])
     $.post({
 		url: '/api/getmaindata',
 		contentType: 'application/json',
@@ -25,6 +27,8 @@ function requestMainData(includeLineGraphData) {
 				showStreak(response['streak']);
 				showQuotaPercent(response['quota-percent']);
 			}
+
+			hideLoader('#card0', ['div.sub-today'])
 		},
 		statusCode: {
             500: function() {
@@ -33,8 +37,6 @@ function requestMainData(includeLineGraphData) {
         },
 		fail: function() {
 			toastr.error('Request for line graph data failed.');
-			// TODO: create some sort of "loading failed graphic"
-            // temporary solution - just hide the whole thing
             drawLineGraphFailure(LG_FAIL_PLACEHOLDER);
 		}
 	});
@@ -58,6 +60,10 @@ function postBarGraphData(data, success, fail) {
 }
 
 function postSettings(sites, quota, quotaType, quotaUnit) {
+    // Show the loader over card0 and card2
+    showLoader('#card0', ['div.sub-today']);
+    showLoader('#card2', ['#chart1']);
+
     $.post({
         url: '/api/settings',
         contentType: 'application/json',
@@ -72,6 +78,8 @@ function postSettings(sites, quota, quotaType, quotaUnit) {
             'ret_streak': true
         }),
         success: function(response) {
+            hideLoader('#card0', ['div.sub-today']);
+            hideLoader('#card2', ['#chart1']);
             if (response['success']) {
                 if ('linegraph' in response) {
                     window.raw_line_graph_data = response['linegraph'];

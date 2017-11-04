@@ -17,7 +17,7 @@ function filterAndDrawLineGraph() {
     } else {
         drawLineGraphFailure(LG_NO_DATA_PLACEHOLDER);
     }
-	hideLineGraphLoader();
+	hideLoader('div#card2', []);
 }
 
 function getLineGraphMinutes() {
@@ -31,12 +31,8 @@ function getLineGraphMinutes() {
 	return minutes;
 }
 
-function hideLineGraphLoader() {
-	$("#card2 .loader").hide();
-}
-
 function drawLineGraphFailure(message) {
-	hideLineGraphLoader();
+	hideLoader('div#card2', []);
     $("#chart1").hide();
     $("#chart1-nodata").text(message);
     $("#chart1-nodata").removeClass('hidden');
