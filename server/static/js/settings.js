@@ -57,7 +57,7 @@ function addUnprodSite() {
 }
 
 function initSettings() {
-    showLoader('div#settings-content', ['.settings-section-a', '.settings-section-b'])
+    SETTINGS_DATA_ELEMENT.showLoader();
     $.get({
 		url: '/api/settings',
 		contentType: 'application/json',
@@ -88,7 +88,7 @@ function initSettings() {
                 }
 
                 // TODO remove loading icon from settings
-                hideLoader('div#settings-content', ['.settings-section-a', '.settings-section-b'])
+                SETTINGS_DATA_ELEMENT.hideLoader();
             } else {
                 // TODO
             }

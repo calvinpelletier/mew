@@ -30,7 +30,7 @@ function getBarGraphConfig() {
 }
 
 function drawBarGraphFailure(message) {
-    hideLoader('div#card1', []);
+    CARD1_DATA_ELEMENT.hideLoader();
     $("#chart0").hide();
     $("#chart0-nodata").text(message);
     $("#chart0-nodata").removeClass('hidden');
@@ -52,7 +52,7 @@ function requestBarGraphData()
             $('#card1-title').text(graphConfig.timespanName);
             $('#card1-subtitle').text("Total Time: " + formatTime(response.total, true));
             drawBarGraph(response.labels, response.values, "chart0");
-            hideLoader('div#card1', []);
+            CARD1_DATA_ELEMENT.hideLoader();
 
     };
 

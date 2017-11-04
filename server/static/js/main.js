@@ -8,7 +8,9 @@ window.onload = function() {
 	});
 
 	$('#chart1-options input.timeframe-choice').on('change', function (e) {
-		filterAndDrawLineGraph();
+	    if (!CARD2_DATA_ELEMENT.isLoading()) {
+            filterAndDrawLineGraph();
+	    }
 	});
 
 	$('#logout-link').on('click', function(e) {
