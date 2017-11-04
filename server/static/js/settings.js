@@ -108,22 +108,6 @@ function initSettings() {
         $('#body-container').addClass('no-scrolling');
     });
 
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('settings-container')) {
-            $('#settings-container').addClass('hidden');
-            $('#body-container').removeClass('blur');
-            $('#body-container').removeClass('no-scrolling');
-        } else if (event.target == document.getElementById('quota-val')
-                || event.target == document.getElementById('quota-unit')
-                || event.target == document.getElementById('quota-type')) {
-            // hint the user about the toggle
-            if (!$('#quota-toggle').is(':checked')) {
-                $('#quota-enable-msg').removeClass('hidden');
-            }
-        }
-    }
-
     $('#settings-cancel').on('click', function(e) {
         $('#settings-container').addClass('hidden');
         $('#body-container').removeClass('blur');

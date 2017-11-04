@@ -78,6 +78,18 @@
     position: fixed;
 }
 
+.center-parent {
+    text-align: center;
+}
+
+.center-child {
+    display: inline-block;
+}
+
+.auth-error {
+    color: red;
+}
+
 /* switch from https://www.w3schools.com/howto/howto_css_switch.asp */
 .switch {
     position: relative;

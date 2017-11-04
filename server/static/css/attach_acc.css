@@ -1,0 +1,103 @@
+h6 {
+    font-family: Sinkin-Sans200XLight;
+    font-size: 25px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+h6.selected {
+    color: #fff;
+    border-bottom: 2px solid white;
+}
+
+h6:hover {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 2px solid white;
+}
+
+#attach-acc-container {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+#attach-acc-content {
+    position: relative;
+    background-color: #303038;
+    text-align: center;
+    margin: 10% auto;
+    border: 1px solid #888;
+    width: 800px;
+    padding: 10px 30px 20px 30px;
+}
+
+#close-attach-acc {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+#close-attach-acc:hover {
+    cursor: pointer;
+}
+
+input.auth {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid white;
+    color: #fff;
+    font-family: Sinkin-Sans300Light;
+    font-size: 20px;
+    margin: 20px 0px;
+}
+
+input.auth::placeholder {
+    color: #fff;
+    font-family: Sinkin-Sans300Light;
+    font-size: 15px;
+}
+
+input.auth:focus {
+    outline: none;
+}
+
+input[type=submit].auth {
+    font-family: Sinkin-Sans200XLight;
+    background-color: #aacfed;
+    color: #000;
+    border: none;
+    font-size: 25px;
+}
+
+input[type=submit].auth:hover {
+    color: #fff;
+    background-color: #26262E;
+}
+
+.attach-acc-main {
+    margin-top: 40px;
+}
+
+.attach-acc-auth {
+    padding-top: 15px;
+}
+
+.default-signup {
+    padding: 0px 20px;
+}
+
+.or {
+    margin-top: 20px;
+    color: #fff;
+}
+
+.google-auth {
+    margin-top: 20px;
+}

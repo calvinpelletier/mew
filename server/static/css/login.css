@@ -119,18 +119,6 @@ input[type=submit]:hover {
     margin-top: 95px;
 }
 
-.center-parent {
-    text-align: center;
-}
-
-.center-child {
-    display: inline-block;
-}
-
-.auth-error {
-    color: red;
-}
-
 .selected {
     color: #fff;
     border-bottom: 2px solid white;
