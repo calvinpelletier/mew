@@ -101,3 +101,15 @@ input[type=submit].auth:hover {
 .google-auth {
     margin-top: 20px;
 }
+
+@media only screen
+and (max-width : 850px) {
+    #attach-acc-content {
+        margin: 0px;
+        width: 100%;
+        border: none;
+    }
+    #attach-acc-container {
+        background-color: #303038;
+    }
+}
