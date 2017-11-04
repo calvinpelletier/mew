@@ -223,6 +223,18 @@ body {
     background-color: #31c4e9;
 }
 
+#settings-content .loader:before, #settings-content .loader:after {
+    background: #ffffff;
+}
+
+#card0 .loader {
+    color: #ffffff;
+}
+
+#card0 .loader:before, #card0 .loader:after {
+    background: #2d333c;
+}
+
 #card1 .loader:before, #card1 .loader:after {
     background: #ffffff;
 }

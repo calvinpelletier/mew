@@ -57,6 +57,7 @@ function addUnprodSite() {
 }
 
 function initSettings() {
+    SETTINGS_DATA_ELEMENT.showLoader();
     $.get({
 		url: '/api/settings',
 		contentType: 'application/json',
@@ -87,6 +88,7 @@ function initSettings() {
                 }
 
                 // TODO remove loading icon from settings
+                SETTINGS_DATA_ELEMENT.hideLoader();
             } else {
                 // TODO
             }

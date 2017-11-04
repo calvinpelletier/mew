@@ -4,11 +4,15 @@ window.onload = function() {
 	requestMainData(true);
 
 	$('#chart0-options input.timeframe-choice').on('change', function (e) {
-		requestBarGraphData();
+		if (!CARD2_DATA_ELEMENT.isLoading()) {
+		    requestBarGraphData();
+		}
 	});
 
 	$('#chart1-options input.timeframe-choice').on('change', function (e) {
-		filterAndDrawLineGraph();
+	    if (!CARD2_DATA_ELEMENT.isLoading()) {
+            filterAndDrawLineGraph();
+	    }
 	});
 
 	// tmp

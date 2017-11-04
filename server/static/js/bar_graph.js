@@ -4,37 +4,30 @@ var BG_NO_DATA_PLACEHOLDER = "No data found for bar graph.";
 function getBarGraphConfig() {
     var $timeframeObj = $('input.timeframe-choice:checked', '#chart0-options');
     var timeframeId = $timeframeObj.attr('id');
-    var minutes;
-    if (timeframeId in MINUTE_DURATIONS) {
-        minutes = MINUTE_DURATIONS[timeframeId];
-    } else if (timeframeId == "today") {
-        var now = new Date();
-        var beginningOfDay = new Date(now).setHours(0,0,0,0);
-        minutes = (now - beginningOfDay) / (1000 * 60);
-    } else {
-        console.log("Unknown timeframe ID: " + timeframeId);
-        minutes = 1440; // Just default to last 24 hours, I guess
-    }
+
+    var durations = $.extend({}, BAR_GRAPH_DURATIONS);
+    var now = new Date();
+    var beginningOfDay = new Date(now).setHours(0,0,0,0);
+    var minutes = (now - beginningOfDay) / (1000 * 60);
+    durations["today"] = minutes;
 
     var timespanName;
     if ($timeframeObj.length == 0) {
         timespanName = "Last 24 Hours";
+        timeframeId = "last-24";
     } else {
         timespanName = $.trim($timeframeObj.parent().text());
     }
 
     return {
         "timespanName": timespanName,
-        "minutes": minutes
+        "timespanId": timeframeId,
+        "durations": durations
     }
 }
 
-function hideBarGraphLoader() {
-	$("#card1 .loader").hide();
-}
-
 function drawBarGraphFailure(message) {
-    hideBarGraphLoader();
+    CARD1_DATA_ELEMENT.hideLoader();
     $("#chart0").hide();
     $("#chart0-nodata").text(message);
     $("#chart0-nodata").removeClass('hidden');
@@ -43,35 +36,50 @@ function drawBarGraphFailure(message) {
 
 function requestBarGraphData()
 {
-    var graphConfig = getBarGraphConfig();
-    // TODO: maybe customize this?
-    var maxSites = 5;
 
-    var postData = {
-        "minutes": graphConfig.minutes,
-        "max_sites": maxSites
-    };
+    // tiny helper function to display the bar graph data
+    var _display = function() {
+        // Read the config upon displaying - that way, if the user alters the timespan (or other settings) while
+        // the request is taking place, the final data will reflect the most recent config chosen by the user, not the
+        // config chosen when the request was initialized.
+        let graphConfig = getBarGraphConfig();
 
-    success = function(response) {
-            $('#card1-title').text(graphConfig.timespanName);
-            $('#card1-subtitle').text("Total Time: " + formatTime(response.total, true));
-            drawBarGraph(response.labels, response.values, "chart0");
-            hideBarGraphLoader();
+        let chosenData = window.raw_bar_graph_data[graphConfig.timespanId];
+        $('#card1-title').text(graphConfig.timespanName);
+        $('#card1-subtitle').text("Total Time: " + formatTime(chosenData.total, true));
 
-    };
+        drawBarGraph(chosenData.labels, chosenData.values);
+        CARD1_DATA_ELEMENT.hideLoader();
+    }
 
-    fail = function() {
-        toastr.error('Request for bar graph data failed.');
-        // TODO: create some sort of "loading failed graphic"
-        // temporary solution - just hide the whole thing
-        drawBarGraphFailure(BG_FAIL_PLACEHOLDER);
-    };
+    if (window.raw_bar_graph_data) {
+        _display();
+    } else {
+        let graphConfig = getBarGraphConfig();
+        // TODO: maybe customize this?
+        var maxSites = 5;
+        var postData = {
+            "max_sites": maxSites,
+            "durations" : graphConfig.durations
+        };
 
-    postBarGraphData(postData, success, fail);
+        success = function(response) {
+            window.raw_bar_graph_data = response;
+            _display();
+        };
+
+        fail = function() {
+            toastr.error('Request for bar graph data failed.');
+            // TODO: create some sort of "loading failed graphic"
+            // temporary solution - just hide the whole thing
+            drawBarGraphFailure(BG_FAIL_PLACEHOLDER);
+        };
+
+        postBarGraphData(postData, success, fail);
+    }
 }
 
-function drawBarGraph(labels, values, divId) {
-
+function drawBarGraph(labels, values) {
     // Show/hide relevant divs
     $("#chart0").show();
     $("#chart0-nodata").addClass('hidden');
@@ -82,7 +90,7 @@ function drawBarGraph(labels, values, divId) {
         console.log("Bar graph endpoint returned no data.");
         drawBarGraphFailure(BG_NO_DATA_PLACEHOLDER);
     } else {
-        Highcharts.chart(divId, {
+        Highcharts.chart("chart0", {
             chart: {
                 type: 'bar',
                 backgroundColor: null,

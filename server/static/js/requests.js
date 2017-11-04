@@ -1,6 +1,9 @@
 // Bundles a bunch of api calls into one
 // TODO: include bar graph data
 function requestMainData(includeLineGraphData) {
+    // Show the loader over card0 (the stats at the top of the page)
+    CARD0_DATA_ELEMENT.showLoader();
+    CARD2_DATA_ELEMENT.showLoader();
     $.post({
 		url: '/api/getmaindata',
 		contentType: 'application/json',
@@ -25,6 +28,9 @@ function requestMainData(includeLineGraphData) {
 				showStreak(response['streak']);
 				showQuotaPercent(response['quota-percent']);
 			}
+
+			CARD0_DATA_ELEMENT.hideLoader();
+			CARD2_DATA_ELEMENT.hideLoader();
 		},
 		statusCode: {
             500: function() {
@@ -33,31 +39,39 @@ function requestMainData(includeLineGraphData) {
         },
 		fail: function() {
 			toastr.error('Request for line graph data failed.');
-			// TODO: create some sort of "loading failed graphic"
-            // temporary solution - just hide the whole thing
             drawLineGraphFailure(LG_FAIL_PLACEHOLDER);
 		}
 	});
 }
 
 function postBarGraphData(data, success, fail) {
+    CARD1_DATA_ELEMENT.showLoader();
     // Get graph data from server.
     $.post({
         url: '/api/bargraph',
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(data),
-        success: success,
+        success: function(response) {
+            CARD1_DATA_ELEMENT.hideLoader();
+            success(response);
+        },
         statusCode: {
             500: function() {
                 this.fail();
             }
         },
-        fail: fail
+        fail: function(response) {
+            CARD1_DATA_ELEMENT.showLoader();
+            fail(response);
+        }
     });
 }
 
 function postSettings(sites, quota, quotaType, quotaUnit) {
+    CARD0_DATA_ELEMENT.showLoader();
+    CARD2_DATA_ELEMENT.showLoader();
+
     $.post({
         url: '/api/settings',
         contentType: 'application/json',
@@ -72,6 +86,8 @@ function postSettings(sites, quota, quotaType, quotaUnit) {
             'ret_streak': true
         }),
         success: function(response) {
+            CARD0_DATA_ELEMENT.hideLoader();
+            CARD2_DATA_ELEMENT.hideLoader();
             if (response['success']) {
                 if ('linegraph' in response) {
                     window.raw_line_graph_data = response['linegraph'];
