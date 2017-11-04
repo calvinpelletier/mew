@@ -14,9 +14,6 @@ window.onload = function() {
             filterAndDrawLineGraph();
 	    }
 	});
-
-	// tmp
-	openAttachAcc();
 };
 
 // generic onclick function for capturing clicks that should close a modal
