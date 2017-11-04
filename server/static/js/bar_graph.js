@@ -36,9 +36,14 @@ function drawBarGraphFailure(message) {
 
 function requestBarGraphData()
 {
-    var graphConfig = getBarGraphConfig();
+
     // tiny helper function to display the bar graph data
     var _display = function() {
+        // Read the config upon displaying - that way, if the user alters the timespan (or other settings) while
+        // the request is taking place, the final data will reflect the most recent config chosen by the user, not the
+        // config chosen when the request was initialized.
+        let graphConfig = getBarGraphConfig();
+
         let chosenData = window.raw_bar_graph_data[graphConfig.timespanId];
         $('#card1-title').text(graphConfig.timespanName);
         $('#card1-subtitle').text("Total Time: " + formatTime(chosenData.total, true));
@@ -50,7 +55,7 @@ function requestBarGraphData()
     if (window.raw_bar_graph_data) {
         _display();
     } else {
-
+        let graphConfig = getBarGraphConfig();
         // TODO: maybe customize this?
         var maxSites = 5;
         var postData = {
