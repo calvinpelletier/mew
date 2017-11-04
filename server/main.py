@@ -377,6 +377,16 @@ def get_user_website_data():
     return gen_resp(True, {'data': result})
 
 
+# Landing page for new installs of the chrome extension.
+@app.route('/landing/<token>', methods=['GET'])
+def extension_landing_page(token):
+    # TODO: create a landing page.
+    # For now, we're just uselessly redirecting to the login page
+    uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
+    session['uid'] = uid
+    return redirect('/graph')
+
+
 #########################################
 # HELPER METHODS
 #########################################
