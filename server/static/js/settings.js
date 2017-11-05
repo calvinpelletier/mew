@@ -56,6 +56,24 @@ function addUnprodSite() {
     drawUnprodSites();
 }
 
+function openSettings() {
+    if (!$('#quota-error').hasClass('hidden')) {
+        $('#quota-error').addClass('hidden');
+    }
+    if (!$('#quota-enable-msg').hasClass('hidden')) {
+        $('#quota-enable-msg').addClass('hidden');
+    }
+    $('#settings-container').removeClass('hidden');
+    $('#body-container').addClass('blur');
+    $('#body-container').addClass('no-scrolling');
+}
+
+function closeSettings() {
+    $('#settings-container').addClass('hidden');
+    $('#body-container').removeClass('blur');
+    $('#body-container').removeClass('no-scrolling');
+}
+
 function initSettings() {
     SETTINGS_DATA_ELEMENT.showLoader();
     $.get({
@@ -99,21 +117,15 @@ function initSettings() {
 	});
 
     $('#settings-icon').on('click', function(e) {
-        if (!$('#quota-error').hasClass('hidden')) {
-            $('#quota-error').addClass('hidden');
-        }
-        if (!$('#quota-enable-msg').hasClass('hidden')) {
-            $('#quota-enable-msg').addClass('hidden');
-        }
-        $('#settings-container').removeClass('hidden');
-        $('#body-container').addClass('blur');
-        $('#body-container').addClass('no-scrolling');
+        openSettings();
+    });
+
+    $('#mobile-settings-icon').on('click', function(e) {
+        openSettings();
     });
 
     $('#settings-cancel').on('click', function(e) {
-        $('#settings-container').addClass('hidden');
-        $('#body-container').removeClass('blur');
-        $('#body-container').removeClass('no-scrolling');
+        closeSettings();
     });
 
     $('#settings-save').on('click', function(e) {
@@ -167,10 +179,7 @@ function initSettings() {
         // send data
         postSettings(sites, quota, quotaType, quotaUnit);
 
-        // close settings modal
-        $('#settings-container').addClass('hidden');
-        $('#body-container').removeClass('blur');
-        $('#body-container').removeClass('no-scrolling');
+        closeSettings();
     });
 
     $('#quota-toggle').on('change', function(e) {

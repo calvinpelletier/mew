@@ -46,18 +46,23 @@ body {
 /* ~~~ FIRST CARD ~~~ */
 #card0 {
     background-color: #2d333c;
-    height: 350px;
-    padding: 10px 20px 20px 20px;
-
+    /*height: 350px;*/
+    /*padding: 10px 20px 20px 20px;*/
+    width: 100%;
 }
 
 #header {
-    height: 50px;
+    padding: 10px 20px 20px 20px;
+    /*height: 50px;*/
     /*line-height: 50px;*/
     /*text-align: left;*/
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+#mobile-header {
+    display: none;
 }
 
 #nav {
@@ -66,20 +71,26 @@ body {
 }
 
 #today {
+    padding: 10px 20px 20px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
+#today-wrapper {
+    padding: 50px 0px 20px;
+}
+
 .today {
-    margin: 50px 20% 20px;
+    margin: 0px 20%;
 }
 
 .today-no-quota {
-    margin: 50px 35% 20px;
+    margin: 0px 35%;
 }
 
 .nav-part {
+    display: inline;
     margin: 0px 20px;
 }
 
@@ -141,7 +152,8 @@ body {
     font-size: 30px;
 }
 
-.vert-divider {
+.nav-divider {
+    display: inline;
     width: 2px;
     height: 20px;
     border-width: 0px 1px 0px 0px;
@@ -150,7 +162,7 @@ body {
 
 }
 
-#settings-icon {
+.settings-icon {
     height: 24px;
     cursor: pointer;
 }
@@ -255,4 +267,46 @@ body {
 
 #chart1-nodata {
     color: #bbbbbb;
+}
+
+@media only screen
+and (max-width : 1300px) {
+    .today {
+        margin: 0px 10%;
+    }
+}
+
+@media only screen
+and (max-width : 950px) {
+    #mobile-header {
+        display: block;
+    }
+
+    #header {
+        display: none;
+    }
+
+    .today {
+        margin: 0px 10px;
+    }
+
+    /* BOOTSTRAP COLLAPSING MENU SHIT */
+    .navbar-header {float: none;}
+    .navbar-left,.navbar-right {float: none !important;}
+    .navbar-toggle {display: block;}
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .navbar-fixed-top {top: 0; border-width: 0 0 1px;}
+    .navbar-collapse.collapse {display: none !important;}
+    .navbar-nav {float: none!important; margin-top: 7.5px;}
+    .navbar-nav>li {float: none;}
+    .navbar-nav>li>a {padding-top: 10px; padding-bottom: 10px;}
+    .collapse.in{display:block !important;}
+}
+
+@media only screen
+and (max-width : 700px) {
+
 }

@@ -20,9 +20,7 @@ window.onload = function() {
 window.onclick = function(event) {
 	var attach_acc = document.getElementById('attach-acc-container');
 	if (event.target == document.getElementById('settings-container')) {
-		$('#settings-container').addClass('hidden');
-		$('#body-container').removeClass('blur');
-		$('#body-container').removeClass('no-scrolling');
+		closeSettings();
 	} else if (attach_acc != null && event.target == attach_acc) {
 		closeAttachAcc();
 	} else if (event.target == document.getElementById('quota-val')

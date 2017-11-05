@@ -52,7 +52,7 @@ def redirect_guest(token):
 
 @app.route('/graph/')
 def graph():
-    uid = session['uid']
+    uid = session.get('uid', None)
     if uid:
         try:
             user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
@@ -74,7 +74,7 @@ def graph():
             email=user_email, today_section_class=today_section_class, quota_streak_section=quota_streak_section)
     else:
         warn("uid cookie is None when requesting graph page...")
-        return make_response(redirect('/graph'))
+        return make_response(redirect('/'))
 
 
 @app.route('/api/login', methods=['POST'])

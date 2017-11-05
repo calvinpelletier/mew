@@ -157,14 +157,14 @@
 
     <!-- MAIN -->
     <div id="body-container">
-        <div id="card0" class="full-width">
+        <div id="card0">
             <div id="header">
-                <div id="logo" class="inline">
-                    <h1 id="logo1" class="inline">see</h1>
-                    <h1 id="logo2" class="inline">progress</h1>
+                <div class="logo">
+                    <h1 class="logo1 inline">see</h1>
+                    <h1 class="logo2 inline">progress</h1>
                 </div>
-                <div id="nav" class="inline">
-                    <div class="nav-part inline">
+                <div id="nav">
+                    <div class="nav-part">
                         <h5>logged in as:
                             {% if email %}
                             {{ email }}
@@ -173,21 +173,65 @@
                             {% endif %}
                         </h5>
                     </div>
-                    <div class="vert-divider inline"></div>
-                    <div class="nav-part inline">
+                    <div class="nav-divider"></div>
+                    <div class="nav-part">
                         <a href="javascript:logout();"><h5>log out<h5></a>
                     </div>
                     {% if not email %}
-                    <div class="vert-divider inline"></div>
-                    <div class="nav-part inline">
+                    <div class="nav-divider"></div>
+                    <div class="nav-part">
                         <a href="javascript:openAttachAcc();"><h5>create/attach an account<h5></a>
                     </div>
                     {% endif %}
-                    <div class="vert-divider inline"></div>
-                    <div class="nav-part inline">
-                        <img id="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
+                    <div class="nav-divider"></div>
+                    <div class="nav-part">
+                        <img id="settings-icon" class="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
                     </div>
                 </div>
+            </div>
+            <div id="mobile-header">
+                <nav class="navbar navbar-inverse">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <div class="logo inline">
+                                <h2 class="logo1 inline">see</h2>
+                                <h2 class="logo2 inline">progress</h2>
+                            </div>
+                            <div class="inline" style="float: right; margin: 13px 20px 0px 0px">
+                                <img id="mobile-settings-icon" class="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
+                            </div>
+                        </div>
+                        <div class="collapse navbar-collapse" id="myNavbar">
+                            <h5>logged in as:
+                                {% if email %}
+                                {{ email }}
+                                {% else %}
+                                guest
+                                {% endif %}
+                            </h5>
+                            <a href="javascript:logout();"><h5>log out<h5></a>
+                            <a href="javascript:openAttachAcc();"><h5>create/attach an account<h5></a>
+                            <!-- <ul class="nav navbar-nav">
+                                <li><a href="#">
+                                    logged in as:
+                                    {% if email %}
+                                    {{ email }}
+                                    {% else %}
+                                    guest
+                                    {% endif %}
+                                </a></li>
+                                <li><a href="#">Page 1</a></li>
+                                <li><a href="#">Page 2</a></li>
+                                <li><a href="#">Page 3</a></li>
+                            </ul> -->
+                        </div>
+                    </div>
+                </nav>
             </div>
             <div id="today-wrapper">
                 <div class="loader">Loading...</div>
