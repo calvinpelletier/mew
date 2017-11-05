@@ -52,13 +52,12 @@ def redirect_guest(token):
 
 @app.route('/graph/')
 def graph():
-    uid = session.get('uid', None)
-    if uid:
+    if 'uid' in session:
+        uid = session['uid']
         try:
             user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
         except:
             # the user somehow got deleted from the db
-            print 'check'
             session.pop('uid')
             return make_response(redirect('/'))
 
@@ -81,6 +80,12 @@ def graph():
 def login():
     req_data = request.get_json()
     email = req_data['email']
+
+    prev_uid = None
+    if 'uid' in session:
+        # The user is attaching an account
+        prev_uid = session['uid']
+
     if 'google_token' in req_data:
         token = req_data['google_token']
         try:
@@ -96,10 +101,17 @@ def login():
     else:
         password = req_data['password']
         uid = authentication.authenticate(get_db(DATABASE_PATH), email, password)
+
     if uid is None:
         return gen_resp(False)
     else:
         session['uid'] = uid
+
+        if prev_uid:
+            info("User with uid %d is attaching an account with email %s and uid %s" % (prev_uid, email, uid))
+            authentication.replace_uid(get_db(DATABASE_PATH), prev_uid, uid)
+            event_storage.replace_events_with_uid(get_db(DATABASE_PATH), prev_uid, uid)
+
         return gen_resp(True)
 
 
@@ -113,9 +125,17 @@ def logout():
 def signup():
     email = request.form['email']
     password = request.form['password']
-    uid = authentication.add_user(get_db(DATABASE_PATH), email, password)
+
+    prev_uid = None
+    if 'uid' in session:
+        # The user is attaching an account
+        prev_uid = session['uid']
+
+    uid = authentication.add_user(get_db(DATABASE_PATH), email, password, prev_uid)
+
     if uid is None:
         # TODO: unique response for each error
+        error("UID is none after calling add_user.")
         pass
     else:
         session['uid'] = uid
@@ -354,6 +374,16 @@ def get_user_website_data():
         })
 
     return gen_resp(True, {'data': result})
+
+
+# Landing page for new installs of the chrome extension.
+@app.route('/landing/<token>', methods=['GET'])
+def extension_landing_page(token):
+    # TODO: create a landing page.
+    # For now, we're just uselessly redirecting to the login page
+    uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
+    session['uid'] = uid
+    return redirect('/graph')
 
 
 #########################################

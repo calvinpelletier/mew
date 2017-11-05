@@ -5,7 +5,7 @@ import uuid
 from log import *
 
 
-def add_user(db, email, password):
+def add_user(db, email, password, existing_uid=None):
     # TODO: check if email already in use
     # TODO: check that email is valid
     # TODO: raise exception when email is > 255 characters
@@ -14,8 +14,14 @@ def add_user(db, email, password):
     password_hash = hashlib.sha512(password + password_salt).hexdigest()
 
     c = db.cursor()
-    c.execute('INSERT INTO users VALUES (NULL, ?, ?, ?)', (email, password_hash, password_salt))
-    uid = c.lastrowid
+    if existing_uid:
+        # The user is making an account to replace their guest account.
+        info("UID %d is making an account with email=%s" % (existing_uid, email))
+        c.execute('UPDATE users SET email=?,password_hash=?,password_salt=? where uid=?', (email, password_hash, password_salt, existing_uid))
+        uid = existing_uid
+    else:
+        c.execute('INSERT INTO users VALUES (NULL, ?, ?, ?)', (email, password_hash, password_salt))
+        uid = c.lastrowid
     db.commit()
     c.close()
 
@@ -35,6 +41,13 @@ def add_guest(db, token):
     return uid
 
 
+def replace_uid(db, old_uid, active_uid):
+    c = db.cursor()
+    c.execute('UPDATE tokens SET uid=? WHERE uid=?', (active_uid, old_uid))
+    db.commit()
+    c.close()
+
+
 # return uid for success and None for fail
 def authenticate(db, email, password):
     c = db.cursor()
@@ -46,7 +59,7 @@ def authenticate(db, email, password):
         return None  # incorrect username
 
     # TODO: find a way to access columns by name so we dont have to update this every time we change the table schema
-    uid = user[1]
+    uid = user[0]
     password_hash = user[2]
     password_salt = user[3]
 

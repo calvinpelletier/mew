@@ -1,4 +1,5 @@
 import authentication
+from log import *
 
 
 def insert(db, web_event):
@@ -30,3 +31,10 @@ def select(db, uid, start_time=None, end_time=None):
     c.close()
 
     return events
+
+def replace_events_with_uid(db, old_uid, active_uid):
+    c = db.cursor()
+    c.execute('UPDATE events SET uid=? WHERE uid=?', (active_uid, old_uid))
+    db.commit()
+    info("For %d events, changed uid from %d to %d" % (c.rowcount, old_uid, active_uid))
+    c.close()

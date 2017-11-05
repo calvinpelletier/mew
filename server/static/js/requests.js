@@ -62,7 +62,7 @@ function postBarGraphData(data, success, fail) {
             }
         },
         fail: function(response) {
-            CARD1_DATA_ELEMENT.showLoader();
+            CARD1_DATA_ELEMENT.hideLoader();
             fail(response);
         }
     });
