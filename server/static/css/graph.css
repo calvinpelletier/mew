@@ -285,6 +285,24 @@ body {
     background-color: #2d333c;
 }
 
+.m-h2 {
+    font-size: 20px;
+}
+
+.m-h3 {
+    font-size: 60px;
+}
+
+.m-h4 {
+    font-size: 16px;
+}
+
+.m-label-part {
+    text-align: center;
+    padding: 0px 17px;
+    margin-left: 10px;
+}
+
 /* BOOTSTRAP COLLAPSING MENU SHIT */
 .navbar-header {float: none;}
 .navbar-left,.navbar-right {float: none !important;}
