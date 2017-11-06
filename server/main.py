@@ -67,7 +67,7 @@ def graph():
             today_section_class = 'today-no-quota'
         else:
             quota_streak_section = ''
-            today_section_class = 'today'
+            today_section_class = 'today-w-quota'
 
         if is_mobile():
             template = 'm_graph.html'

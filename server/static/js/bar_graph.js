@@ -1,23 +1,29 @@
 var BG_FAIL_PLACEHOLDER = "Failed to load bar graph data.";
-var BG_NO_DATA_PLACEHOLDER = "No data found for bar graph.";
+var BG_NO_DATA_PLACEHOLDER = "No data.";
 
 function getBarGraphConfig() {
-    var $timeframeObj = $('input.timeframe-choice:checked', '#chart0-options');
-    var timeframeId = $timeframeObj.attr('id');
+    if ($('#chart0-options').hasClass('m-chart-options')) {
+        // mobile version
+        var timeframeId = $('#chart0-options').val();
+        var timespanName = $('#chart0-options').children("option[value='" + timeframeId + "']").text();
+    } else {
+        var $timeframeObj = $('input.timeframe-choice:checked', '#chart0-options');
+        var timeframeId = $timeframeObj.attr('id');
+
+        var timespanName;
+        if ($timeframeObj.length == 0) {
+            timespanName = "Last 24 Hours";
+            timeframeId = "last-24";
+        } else {
+            timespanName = $.trim($timeframeObj.parent().text());
+        }
+    }
 
     var durations = $.extend({}, BAR_GRAPH_DURATIONS);
     var now = new Date();
     var beginningOfDay = new Date(now).setHours(0,0,0,0);
     var minutes = (now - beginningOfDay) / (1000 * 60);
     durations["today"] = minutes;
-
-    var timespanName;
-    if ($timeframeObj.length == 0) {
-        timespanName = "Last 24 Hours";
-        timeframeId = "last-24";
-    } else {
-        timespanName = $.trim($timeframeObj.parent().text());
-    }
 
     return {
         "timespanName": timespanName,

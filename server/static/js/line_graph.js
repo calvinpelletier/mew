@@ -21,13 +21,20 @@ function filterAndDrawLineGraph() {
 }
 
 function getLineGraphMinutes() {
-	timeframeId = $('input.timeframe-choice:checked', '#chart1-options').attr('id');
-	if (timeframeId in MINUTE_DURATIONS) {
-		minutes = MINUTE_DURATIONS[timeframeId];
+    if ($('#chart0-options').hasClass('m-chart-options')) {
+        // mobile version
+        var timeframeId = $('#chart1-options').val();
+    } else {
+    	var timeframeId = $('input.timeframe-choice:checked', '#chart1-options').attr('id');
+    }
+
+    if (timeframeId in MINUTE_DURATIONS) {
+		var minutes = MINUTE_DURATIONS[timeframeId];
 	} else {
 		console.log("ERROR IN DURATION: " + timeframeId);
-		minutes = 0;
+		var minutes = 0;
 	}
+    console.log(minutes);
 	return minutes;
 }
 

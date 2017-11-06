@@ -161,7 +161,6 @@ function initSettings() {
             // validate quota
             var quota = getQuotaMinutes();
             if (!quota || isNaN(quota)) {
-                console.log('check');
                 $('#quota-error').removeClass('hidden');
                 return;
             } else {

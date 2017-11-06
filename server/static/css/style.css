@@ -226,7 +226,7 @@
     font-size: 40px;
 }
 
-.logo h2 {
+.m-logo h1 {
     font-family: Sinkin-Sans300Light;
     font-size: 30px;
     margin: 8px 0px 0px 5px;
@@ -237,11 +237,6 @@
 }
 
 h1.logo2 {
-    margin-left: -4px;
-    color: #31c4e9;
-}
-
-h2.logo2 {
     margin-left: -4px;
     color: #31c4e9;
 }

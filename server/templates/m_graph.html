@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- FAVICON SHIT -->
     <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon.ico/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon.ico/favicon-32x32.png">
@@ -29,8 +30,8 @@
 <body>
 
     <!-- SETTINGS -->
-    <div id="settings-container" class="hidden">
-        <div id="settings-content">
+    <div id="settings-container" class="m-settings-container hidden">
+        <div id="settings-content" class="m-settings-content">
             <div id="settings-title">
                 <h1>Settings</h1>
             </div>
@@ -84,8 +85,8 @@
 
     <!-- CREATE/ATTACH ACCOUNT -->
     {% if not email %}
-    <div id="attach-acc-container" class="hidden">
-        <div id="attach-acc-content">
+    <div id="attach-acc-container" class="m-attach-acc-container hidden">
+        <div id="attach-acc-content" class="m-attach-acc-content">
             <div id="close-attach-acc" onclick="closeAttachAcc();">
                 <img height=40 width=40 src="{{ url_for('static', filename='img/x-white.png') }}"/>
             </div>
@@ -156,40 +157,9 @@
     {% endif %}
 
     <!-- MAIN -->
-    <div id="body-container">
+    <div id="m-body-container">
         <div id="card0">
-            <div id="header">
-                <div class="logo">
-                    <h1 class="logo1 inline">see</h1>
-                    <h1 class="logo2 inline">progress</h1>
-                </div>
-                <div id="nav">
-                    <div class="nav-part">
-                        <h5>logged in as:
-                            {% if email %}
-                            {{ email }}
-                            {% else %}
-                            guest
-                            {% endif %}
-                        </h5>
-                    </div>
-                    <div class="nav-divider"></div>
-                    <div class="nav-part">
-                        <a href="javascript:logout();"><h5>log out<h5></a>
-                    </div>
-                    {% if not email %}
-                    <div class="nav-divider"></div>
-                    <div class="nav-part">
-                        <a href="javascript:openAttachAcc();"><h5>create/attach an account<h5></a>
-                    </div>
-                    {% endif %}
-                    <div class="nav-divider"></div>
-                    <div class="nav-part">
-                        <img id="settings-icon" class="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
-                    </div>
-                </div>
-            </div>
-            <div id="mobile-header">
+            <div id="m-header">
                 <nav class="navbar navbar-inverse">
                     <div class="container-fluid">
                         <div class="navbar-header">
@@ -198,12 +168,12 @@
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
                             </button>
-                            <div class="logo inline">
-                                <h2 class="logo1 inline">see</h2>
-                                <h2 class="logo2 inline">progress</h2>
+                            <div class="m-logo inline">
+                                <h1 class="logo1 inline">see</h1>
+                                <h1 class="logo2 inline">progress</h1>
                             </div>
                             <div class="inline" style="float: right; margin: 13px 20px 0px 0px">
-                                <img id="mobile-settings-icon" class="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
+                                <img id="mobile-settings-icon" class="m-settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
                             </div>
                         </div>
                         <div class="collapse navbar-collapse" id="myNavbar">
@@ -216,84 +186,74 @@
                             </h5>
                             <a href="javascript:logout();"><h5>log out<h5></a>
                             <a href="javascript:openAttachAcc();"><h5>create/attach an account<h5></a>
-                            <!-- <ul class="nav navbar-nav">
-                                <li><a href="#">
-                                    logged in as:
-                                    {% if email %}
-                                    {{ email }}
-                                    {% else %}
-                                    guest
-                                    {% endif %}
-                                </a></li>
-                                <li><a href="#">Page 1</a></li>
-                                <li><a href="#">Page 2</a></li>
-                                <li><a href="#">Page 3</a></li>
-                            </ul> -->
                         </div>
                     </div>
                 </nav>
             </div>
-            <div id="today-wrapper">
+            <div id="today-wrapper" class="m-today-wrapper">
                 <div class="loader">Loading...</div>
-                <div id="today" class="{{ today_section_class }} hidden">
-                    <div class="sub-today inline">
-                        <div class="center-text">
-                            <h2>time online today</h2>
-                        </div>
-                        <div class="center-text">
-                            <div class="inline">
-                                <div class="time-part inline"><h3 id="total-hours"></h3></div>
-                                <div class="time-part inline"><h3 id="total-minutes"></h3></div>
+                <div id="today" class="m-today hidden">
+                    <div class="sub-today-wrapper" style="margin-bottom: 20px;">
+                        <div class="sub-today">
+                            <div class="center-text">
+                                <h2>time online today</h2>
                             </div>
-                        </div>
-                        <div class="center-text">
-                            <div class="inline">
-                                <div class="label-part inline"><h4>hours</h4></div>
-                                <div class="label-part inline"><h4>minutes</h4></div>
+                            <div class="center-text">
+                                <div class="inline">
+                                    <div class="time-part inline"><h3 id="total-hours"></h3></div>
+                                    <div class="time-part inline"><h3 id="total-minutes"></h3></div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- <div class="vert-divider inline"></div> -->
-                    <div class="sub-today inline">
-                        <div class="center-text">
-                            <h2>unproductive time today</h2>
-                        </div>
-                        <div class="center-text">
-                            <div class="inline">
-                                <div class="time-part inline"><h3 id="unprod-hours"></h3></div>
-                                <div class="time-part inline"><h3 id="unprod-minutes"></h3></div>
-                            </div>
-                        </div>
-                        <div class="center-text">
-                            <div class="inline">
-                                <div class="label-part inline"><h4>hours</h4></div>
-                                <div class="label-part inline"><h4>minutes</h4></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- <div class="vert-divider inline"></div> -->
-                    <div id="quota-percent-section" class="sub-today inline {{ quota_streak_section }}">
-                        <div class="circle-container">
-                            <div id="quota-percent-border" class="circle-active-border">
-                                <div class="circle">
-                                    <span id="quota-percent" class="percent"></span>
+                            <div class="center-text">
+                                <div class="inline">
+                                    <div class="label-part inline"><h4>hours</h4></div>
+                                    <div class="label-part inline"><h4>minutes</h4></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="center-text">
-                            <h2>of quota</h2>
+                    </div>
+                    <div class="sub-today-wrapper" style="margin-bottom: 20px;">
+                        <div class="sub-today">
+                            <div class="center-text">
+                                <h2>unproductive time today</h2>
+                            </div>
+                            <div class="center-text">
+                                <div class="inline">
+                                    <div class="time-part inline"><h3 id="unprod-hours"></h3></div>
+                                    <div class="time-part inline"><h3 id="unprod-minutes"></h3></div>
+                                </div>
+                            </div>
+                            <div class="center-text">
+                                <div class="inline">
+                                    <div class="label-part inline"><h4>hours</h4></div>
+                                    <div class="label-part inline"><h4>minutes</h4></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <!-- <div class="vert-divider inline"></div> -->
-                    <div id="streak-section" class="sub-today inline {{ quota_streak_section }}">
-                        <div class="center-text">
-                            <h2>streak</h2>
+                    <div id="m-quota-streak-wrapper" class="sub-today-wrapper {{ quota_streak_section }}">
+                        <div id="quota-percent-section" class="sub-today inline">
+                            <div class="circle-container">
+                                <div id="quota-percent-border" class="circle-active-border">
+                                    <div class="circle">
+                                        <span id="quota-percent" class="percent"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center-text">
+                                <h2>of quota</h2>
+                            </div>
                         </div>
-                        <div class="center-text">
-                            <h3 id="streak-val"></h3>
-                        </div>
-                        <div class="center-text">
-                            <h4>days</h4>
+                        <div id="streak-section" class="sub-today inline" style="padding-left: 50px;">
+                            <div class="center-text">
+                                <h2>streak</h2>
+                            </div>
+                            <div class="center-text">
+                                <h3 id="streak-val"></h3>
+                            </div>
+                            <div class="center-text">
+                                <h4>days</h4>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -309,26 +269,15 @@
                 <div id="chart0-nodata" class="hidden nodata">
                     No data.
                 </div>
-                <div id="chart0-options" class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="last-hour" class="timeframe-choice" autocomplete="off">Last Hour
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="today" class="timeframe-choice" autocomplete="off">Today
-                    </label>
-                    <label class="btn btn-primary active">
-                        <input type="radio" name="options" id="last-24" class="timeframe-choice" autocomplete="off" checked>Last 24
-                        Hours
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off">Last Week
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
-                    </label>
+                <div class="form-group inline full-width">
+                    <select class="form-control m-chart-options" id="chart0-options">
+                        <option value="last-hour">Last Hour</option>
+                        <option value="today">Today</option>
+                        <option value="last-24">Last 24 Hours</option>
+                        <option value="last-week">Last Week</option>
+                        <option value="last-year">Last Year</option>
+                        <option value="all">All</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -341,23 +290,14 @@
                 <div id="chart1-nodata" class="hidden nodata">
                     No data.
                 </div>
-                <div id="chart1-options" class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-primary active">
-                        <input type="radio" name="options" id="last-week" class="timeframe-choice" autocomplete="off" checked>Last Week
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="last-month" class="timeframe-choice" autocomplete="off">Last Month
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="last-3-months" class="timeframe-choice" autocomplete="off">Last 3
-                        Months
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="last-year" class="timeframe-choice" autocomplete="off">Last Year
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="options" id="all" class="timeframe-choice" autocomplete="off">All
-                    </label>
+                <div class="form-group inline full-width">
+                    <select class="form-control m-chart-options" id="chart1-options">
+                        <option value="last-week">Last Week</option>
+                        <option value="last-month">Last Month</option>
+                        <option value="last-3-months">Last 3 Months</option>
+                        <option value="last-year">Last Year</option>
+                        <option value="all">All</option>
+                    </select>
                 </div>
             </div>
         </div>

@@ -22,25 +22,35 @@ function showTotalAndUnprodUsage() {
     _showUsage('#unprod-hours', '#unprod-minutes', unprod);
 }
 
-function showQuotaPercent(percent) {
-    if (percent == -1) {
-        // there's no quota
-        if ($('#today').attr('class') != 'today-no-quota') {
-            // #today can have either .today or .today-no-quota indicating whether there's a quota
-            $('#today').attr('class', 'today-no-quota');
+function _setQuotaStreakSectionVisibility(shouldBeVisible) {
+    var m_quota_wrapper = $('#m-quota-streak-wrapper'); // null if not on mobile site
+
+    if (shouldBeVisible) {
+        if (m_quota_wrapper.length && m_quota_wrapper.hasClass('hidden')) { // mobile
+            m_quota_wrapper.removeClass('hidden');
+        } else if (!$('#today').hasClass('today-w-quota')) { // desktop
+            // during the initial page load, there was no quota set
+            // so quota percent and streak are hidden but should be visible
+            $('#today').removeClass('today-no-quota');
+            $('#today').addClass('today-w-quota');
+            $('#quota-percent-section').removeClass('hidden');
+            $('#streak-section').removeClass('hidden');
+        }
+    } else {
+        if (m_quota_wrapper.length && !m_quota_wrapper.hasClass('hidden')) { // mobile
+            m_quota_wrapper.addClass('hidden');
+        } else if (!$('#today').hasClass('today-no-quota')) { // desktop
+            // #today can have either .today-w-quota or .today-no-quota indicating whether there's a quota
+            $('#today').removeClass('today-w-quota');
+            $('#today').addClass('today-no-quota');
             $('#quota-percent-section').addClass('hidden');
             $('#streak-section').addClass('hidden');
         }
-        return;
     }
+}
 
-    if ($('#today').attr('class') != 'today') {
-        // during the initial page load, there was no quota set
-        // so quota percent and streak are hidden but should be visible
-        $('#today').attr('class', 'today');
-        $('#quota-percent-section').removeClass('hidden');
-        $('#streak-section').removeClass('hidden');
-    }
+function showQuotaPercent(percent) {
+    _setQuotaStreakSectionVisibility(percent != -1);
 
     if (percent > 100) {
 		$('#quota-percent').text('>100%');
@@ -64,24 +74,6 @@ function showQuotaPercent(percent) {
 }
 
 function showStreak(streakDays) {
-    if (streakDays == -1) {
-        // there's no quota
-        if ($('#today').attr('class') != 'today-no-quota') {
-            // #today can have either .today or .today-no-quota indicating whether there's a quota
-            $('#today').attr('class', 'today-no-quota');
-            $('#quota-percent-section').addClass('hidden');
-            $('#streak-section').addClass('hidden');
-        }
-        return;
-    }
-
-    if ($('#today').attr('class') != 'today') {
-        // during the initial page load, there was no quota set
-        // so quota percent and streak are hidden but should be visible
-        $('#today').attr('class', 'today');
-        $('#quota-percent-section').removeClass('hidden');
-        $('#streak-section').removeClass('hidden');
-    }
-
+    _setQuotaStreakSectionVisibility(streakDays != -1);
     $('#streak-val').text(streakDays.toString());
 }

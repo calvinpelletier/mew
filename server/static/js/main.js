@@ -9,10 +9,24 @@ window.onload = function() {
 		}
 	});
 
+	// mobile version
+	$('#chart0-options').on('change', function (e) {
+		if (!CARD2_DATA_ELEMENT.isLoading()) {
+		    requestBarGraphData();
+		}
+	});
+
 	$('#chart1-options input.timeframe-choice').on('change', function (e) {
 	    if (!CARD2_DATA_ELEMENT.isLoading()) {
             filterAndDrawLineGraph();
 	    }
+	});
+
+	// mobile version
+	$('#chart1-options').on('change', function (e) {
+		if (!CARD2_DATA_ELEMENT.isLoading()) {
+			filterAndDrawLineGraph();
+		}
 	});
 };
 
