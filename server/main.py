@@ -69,8 +69,16 @@ def graph():
             quota_streak_section = ''
             today_section_class = 'today'
 
-        return render_template('graph.html',
-            email=user_email, today_section_class=today_section_class, quota_streak_section=quota_streak_section)
+        if is_mobile():
+            template = 'm_graph.html'
+        else:
+            template = 'graph.html'
+
+        return render_template(
+            template,
+            email=user_email,
+            today_section_class=today_section_class,
+            quota_streak_section=quota_streak_section)
     else:
         warn("uid cookie is None when requesting graph page...")
         return make_response(redirect('/'))

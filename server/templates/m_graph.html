@@ -189,6 +189,50 @@
                     </div>
                 </div>
             </div>
+            <div id="mobile-header">
+                <nav class="navbar navbar-inverse">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <div class="logo inline">
+                                <h2 class="logo1 inline">see</h2>
+                                <h2 class="logo2 inline">progress</h2>
+                            </div>
+                            <div class="inline" style="float: right; margin: 13px 20px 0px 0px">
+                                <img id="mobile-settings-icon" class="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
+                            </div>
+                        </div>
+                        <div class="collapse navbar-collapse" id="myNavbar">
+                            <h5>logged in as:
+                                {% if email %}
+                                {{ email }}
+                                {% else %}
+                                guest
+                                {% endif %}
+                            </h5>
+                            <a href="javascript:logout();"><h5>log out<h5></a>
+                            <a href="javascript:openAttachAcc();"><h5>create/attach an account<h5></a>
+                            <!-- <ul class="nav navbar-nav">
+                                <li><a href="#">
+                                    logged in as:
+                                    {% if email %}
+                                    {{ email }}
+                                    {% else %}
+                                    guest
+                                    {% endif %}
+                                </a></li>
+                                <li><a href="#">Page 1</a></li>
+                                <li><a href="#">Page 2</a></li>
+                                <li><a href="#">Page 3</a></li>
+                            </ul> -->
+                        </div>
+                    </div>
+                </nav>
+            </div>
             <div id="today-wrapper">
                 <div class="loader">Loading...</div>
                 <div id="today" class="{{ today_section_class }} hidden">
@@ -209,6 +253,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- <div class="vert-divider inline"></div> -->
                     <div class="sub-today inline">
                         <div class="center-text">
                             <h2>unproductive time today</h2>
@@ -226,6 +271,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- <div class="vert-divider inline"></div> -->
                     <div id="quota-percent-section" class="sub-today inline {{ quota_streak_section }}">
                         <div class="circle-container">
                             <div id="quota-percent-border" class="circle-active-border">
@@ -238,6 +284,7 @@
                             <h2>of quota</h2>
                         </div>
                     </div>
+                    <!-- <div class="vert-divider inline"></div> -->
                     <div id="streak-section" class="sub-today inline {{ quota_streak_section }}">
                         <div class="center-text">
                             <h2>streak</h2>

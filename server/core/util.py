@@ -1,6 +1,9 @@
 import sqlite3
 import log
-from flask import g, jsonify
+from flask import g, jsonify, request
+
+def is_mobile():
+    return request.user_agent.platform in ['iphone', 'android']
 
 def clean_hostname(hostname):
     if hostname is None:
