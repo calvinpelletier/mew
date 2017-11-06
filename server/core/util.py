@@ -6,6 +6,7 @@ def is_mobile():
     return request.user_agent.platform in ['iphone', 'android']
 
 def clean_hostname(hostname):
+    hostname = hostname.lower()
     if hostname is None:
         return hostname
     if hostname.startswith('www.'):
