@@ -14,20 +14,24 @@ function requestMainData(includeLineGraphData) {
 			"ignore_linegraph_data": !includeLineGraphData
 		}),
 		success: function(response) {
-            if (!response['success']) {
-                // TODO
-                return;
+            // If no data, show the user a dialog that tells them to install
+            // the Chrome extension.
+            if (!response['success'] || response['linegraph'].data.length == 0) {
+                $("#nodata-container").removeClass("hidden");
+                $('#body-container').addClass('blur');
+                $('#body-container').addClass('no-scrolling');
+            } else {
+                if (includeLineGraphData) {
+                    window.raw_line_graph_data = response['linegraph'];
+                    showTotalAndUnprodUsage();
+                    filterAndDrawLineGraph();
+    		    }
+                // Draw streak
+    			if (response['streak'] != -1) {
+    				showStreak(response['streak']);
+    				showQuotaPercent(response['quota-percent']);
+    			}
             }
-		    if (includeLineGraphData) {
-                window.raw_line_graph_data = response['linegraph'];
-                showTotalAndUnprodUsage();
-                filterAndDrawLineGraph();
-		    }
-            // Draw streak
-			if (response['streak'] != -1) {
-				showStreak(response['streak']);
-				showQuotaPercent(response['quota-percent']);
-			}
 
 			CARD0_DATA_ELEMENT.hideLoader();
 			CARD2_DATA_ELEMENT.hideLoader();
@@ -40,6 +44,8 @@ function requestMainData(includeLineGraphData) {
 		fail: function() {
 			toastr.error('Request for line graph data failed.');
             drawLineGraphFailure(LG_FAIL_PLACEHOLDER);
+            CARD0_DATA_ELEMENT.hideLoader();
+            CARD2_DATA_ELEMENT.hideLoader();
 		}
 	});
 }

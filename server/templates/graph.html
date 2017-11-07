@@ -28,10 +28,23 @@
 
 <body>
 
+    <div id="nodata-container" class="popup-container hidden">
+        <div id="nodata-content" class="popup-content">
+            <div id="nodata-title" class="popup-title">
+                No Data Found
+            </div>
+            <div id="nodata-section">
+                You don't have any data yet! You may need to install the Chrome extension <a href="#">here</a>.
+                <br /><br />
+                Alternatively, you can create an account or log in <a href="/?ignore_token=true">here</a>.
+            </div>
+        </div>
+    </div>
+
     <!-- SETTINGS -->
-    <div id="settings-container" class="settings-container hidden">
-        <div id="settings-content" class="settings-content">
-            <div id="settings-title">
+    <div id="settings-container" class="popup-container hidden">
+        <div id="settings-content" class="popup-content">
+            <div id="settings-title" class="popup-title">
                 <h1>Settings</h1>
             </div>
             <div class="loader">Loading...</div>

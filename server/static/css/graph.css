@@ -323,3 +323,16 @@ body {
         width: 960px;
     }
 }
+
+#nodata-title {
+    font-family: Sinkin-Sans300Light;
+    color: white;
+    font-size: 36px;
+    padding: 10px;
+}
+
+#nodata-section {
+    padding: 20px;
+    font-family: Sinkin-Sans300Light;
+    font-size: 24px;
+}

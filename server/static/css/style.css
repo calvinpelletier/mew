@@ -240,3 +240,31 @@ h1.logo2 {
     margin-left: -4px;
     color: #31c4e9;
 }
+
+/* Style for popup dialogs */
+.popup-container {
+    /*non mobile only*/
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.popup-content {
+    /*non mobile only*/
+    background-color: #fefefe;
+    margin: 10% auto;
+    border: 1px solid #888;
+    width: 800px;
+}
+
+.popup-title {
+    padding: 10px 10px;
+    background-color: #2d333c;
+    text-align: center;
+}
+/* END popup dialog style */

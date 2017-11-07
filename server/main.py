@@ -32,7 +32,8 @@ with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
 #########################################
 @app.route('/')
 def get_landing_page():
-    if 'uid' in session:
+    ignore_token = request.args.get('ignore_token')
+    if 'uid' in session and not ignore_token:
         return make_response(redirect('/graph'))
     else:
         return render_template('login.html')
