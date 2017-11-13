@@ -34,3 +34,6 @@ def warn(msg, *args):
 
 def error(msg, *args):
     _lg.error(msg, *args)
+
+def set_verbose():
+    _lg.l

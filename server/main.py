@@ -1,16 +1,19 @@
 import argparse
-from os import environ, getcwd, path
 from collections import namedtuple
+from os import environ, path
 
-from flask import Flask, render_template, request, make_response, redirect, session
-from core.util import *
-
-from google.oauth2 import id_token
+from flask import Flask, render_template, make_response, redirect, session
 from google.auth.transport import requests
+from google.oauth2 import id_token
 
 from core import *
 from core import authentication, event_storage, event_analysis, ping, unproductive, quota, timezones
 from core.log import *
+from core.util import *
+
+OAUTH_URL = '385569473349-1192ich7o73apbpmu48c4lc32soqgqjk.apps.googleusercontent.com'
+
+DATABASE_PATH = None
 
 MEW_PATH = environ.get('MEW_PATH')
 if not MEW_PATH:
@@ -98,14 +101,16 @@ def login():
     if 'google_token' in req_data:
         token = req_data['google_token']
         try:
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), '385569473349-1192ich7o73apbpmu48c4lc32soqgqjk.apps.googleusercontent.com')
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), OAUTH_URL)
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 # someone is trying to fuck with us
-                return gen_resp(False) # TODO: log
+                warn('Invalid value for idinfo[\'iss\']: %s' % str(idinfo['iss']))
+                return gen_resp(False)
             google_uid = idinfo['sub']
         except ValueError:
             # invalid google token
-            return gen_resp(False) # TODO: log
+            warn('Invalid google token for email "%s": %s' % (email, token))
+            return gen_resp(False)
         uid = authentication.google_auth(get_db(DATABASE_PATH), email, google_uid)
     else:
         password = req_data['password']
@@ -185,7 +190,7 @@ def add_event():
     try:
         event = WebEvent(**req_data)
         event_storage.insert(get_db(DATABASE_PATH), event)
-        ping.rec(event.token, event.time) # in case they send an event then close chrome before a ping is sent
+        ping.rec(event.token, event.time)  # in case they send an event then close chrome before a ping is sent
         return 'Successfully added an event.', 200
     except Exception as ex:
         error("Failed to add an event '%s': %s", str(req_data), ex.message)
@@ -219,7 +224,7 @@ def get_main_data():
         return gen_resp(False)
 
     timezone = req_data['timezone']
-    max_sites = req_data.get('max_sites') # 'get' so it returns None if not there
+    max_sites = req_data.get('max_sites')  # 'get' so it returns None if not there
 
     # I'm so sorry
     include_linegraph_data = True
@@ -285,6 +290,8 @@ POST:
         'streak': if ret_streak is true and settings have changed
         'percent_usage_today': if ret_streak is true and settings have changed
 """
+
+
 @app.route('/api/settings', methods=['POST', 'GET'])
 def set_get_settings():
     if 'uid' in session:
@@ -296,6 +303,8 @@ def set_get_settings():
         req = request.get_json()
         quota_changed = False
         unprod_changed = False
+
+        tz = None
 
         if 'quota' in req:
             try:
@@ -310,7 +319,7 @@ def set_get_settings():
             elif result == 0:
                 # no change in quota
                 pass
-            else: # result == 1
+            else:  # result == 1
                 quota_changed = True
 
         if 'unprod_sites' in req:
@@ -325,7 +334,7 @@ def set_get_settings():
             elif result == 0:
                 # no change in unprod sites
                 pass
-            else: # result == 1
+            else:  # result == 1
                 unprod_changed = True
 
         ret_linegraph = 'ret_linegraph' in req and req['ret_linegraph'] and unprod_changed
@@ -343,7 +352,7 @@ def set_get_settings():
                 ret['percent_usage_today'] = percent_usage_today
         return gen_resp(True, ret)
 
-    else: # get
+    else:  # get
         cur_quota, quota_type, quota_unit = quota.get_quota(get_db(DATABASE_PATH), uid)
         sites = unproductive.get_unprod_sites(get_db(DATABASE_PATH), uid)
         return gen_resp(True, {
@@ -423,14 +432,5 @@ def setup():
 #########################################
 
 if __name__ == "__main__":
-    # Set up CLI args
-    parser = argparse.ArgumentParser(description='Mew Server')
-    parser.add_argument('-v', '--verbose', action='store_true', help="Verbose logging")
-    cli_args = parser.parse_args()
-
-    if cli_args.verbose:
-        info("Using verbose logging.")
-        level = logging.DEBUG
     setup()
-
     app.run(host='127.0.0.1', debug=True)
