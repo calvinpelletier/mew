@@ -34,9 +34,14 @@
                 No Data Found
             </div>
             <div id="nodata-section">
-                You don't have any data yet! You may need to install the Chrome extension <a href="#">here</a>.
+                You don't have any data yet! You may need to  <a href="#">install the Chrome extension</a>.
                 <br /><br />
-                Alternatively, you can create an account or log in <a href="/?ignore_token=true">here</a>.
+                Alternatively, you can
+                {% if email %}
+                    <a href="javascript:logout();">log out</a>.
+                {% else %}
+                    <a href="/?ignore_token=true">create an account or log in</a>.
+                {% endif %}
             </div>
         </div>
     </div>
