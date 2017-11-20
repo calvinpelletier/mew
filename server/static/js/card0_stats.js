@@ -1,7 +1,8 @@
 function _showUsage(hourDivId, minDivId, mins) {
     if (mins) {
-        $(hourDivId).text(Math.round(mins / 60).pad(2));
-        $(minDivId).text(Math.round(mins % 60).pad(2));
+        mins = Math.round(mins);
+        $(hourDivId).text(Math.floor(mins / 60).pad(2));
+        $(minDivId).text((mins % 60).pad(2));
     } else {
         $(hourDivId).text('00');
         $(minDivId).text('00');
