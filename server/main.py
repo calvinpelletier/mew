@@ -7,7 +7,7 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 
 from core import *
-from core import authentication, event_storage, event_analysis, ping, unproductive, quota, timezones
+from core import authentication, concurrency, event_analysis, event_storage, log, ping, quota, unproductive
 from core.log import *
 from core.util import *
 
@@ -290,8 +290,6 @@ POST:
         'streak': if ret_streak is true and settings have changed
         'percent_usage_today': if ret_streak is true and settings have changed
 """
-
-
 @app.route('/api/settings', methods=['POST', 'GET'])
 def set_get_settings():
     if 'uid' in session:
@@ -425,6 +423,8 @@ def setup():
         exit(1)
 
     ping.init(DATABASE_PATH, WebEvent)
+
+    concurrency.init()
 
 
 #########################################
