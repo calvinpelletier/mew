@@ -226,10 +226,7 @@ def get_main_data():
     timezone = req_data['timezone']
     max_sites = req_data.get('max_sites')  # 'get' so it returns None if not there
 
-    # I'm so sorry
-    include_linegraph_data = True
-    if req_data["ignore_linegraph_data"]:
-        include_linegraph_data = False
+    include_linegraph_data = not req_data["ignore_linegraph_data"]
 
     if 'uid' in session:
         uid = session['uid']

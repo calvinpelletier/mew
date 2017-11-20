@@ -7,10 +7,10 @@ import datetime
 import logging.config
 import unittest
 from json import loads, dumps
-
 import pytz
-
 from test.common import TestBase
+from multiprocessing.dummy import Pool
+import time
 
 logging.config.fileConfig("config/test_log.conf")
 lg = logging.getLogger("test")
@@ -131,6 +131,29 @@ class TestMain(TestBase):
             streak = self._post('/api/getstreak', {'timezone': self.tz})['streak']
             self.assertEqual(streak, 2)
 
+
+    def test_concurrent_requests(self):
+        self._gen_token()
+        self._post_10_events()
+        N_REQ = 5
+        pool = Pool(N_REQ)
+        futures = []
+
+        futures.append(pool.apply_async(self._post,
+            ['/api/getmaindata', {'timezone': 'America/Chicago', 'ignore_linegraph_data': False}]))
+        futures.append(pool.apply_async(self._post,
+            ['/api/addevent', {'token': self.token, 'hostname': 'test.com', 'time': int(time.time()) * 1000}]))
+        futures.append(pool.apply_async(self._post,
+            ['/api/getmaindata', {'timezone': 'America/Chicago', 'ignore_linegraph_data': False}]))
+        futures.append(pool.apply_async(self._post,
+            ['/api/addevent', {'token': self.token, 'hostname': 'test.com', 'time': (int(time.time()) + 1) * 1000}]))
+        futures.append(pool.apply_async(self._post,
+            ['/api/getmaindata', {'timezone': 'America/Chicago', 'ignore_linegraph_data': False}]))
+
+        for future in futures:
+            # TODO: check that the responses are correct
+            resp = future.get()
+            # print resp
 
 if __name__ == '__main__':
     unittest.main()

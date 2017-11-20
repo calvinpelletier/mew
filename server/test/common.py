@@ -83,9 +83,14 @@ class TestBase(unittest.TestCase):
             sess['uid'] = self.uid
 
     def _post(self, api, data):
-        resp = loads(self.app.post(api, data=dumps(data), headers={"content-type": "application/json"}).data)
-        self.assertTrue(resp['success'])
-        return resp
+        resp = self.app.post(api, data=dumps(data), headers={"content-type": "application/json"}).data
+        resp_json = None
+        try:
+            resp_json = loads(resp)
+        except:
+            return resp
+        self.assertTrue(resp_json['success'])
+        return resp_json
 
     def _clear_events(self):
         db = sqlite3.connect(self.db_path)
