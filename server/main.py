@@ -45,12 +45,32 @@ def get_landing_page():
 @app.route('/guest/<token>')
 def redirect_guest(token):
     uid = authentication.token_to_uid(get_db(DATABASE_PATH), token)
+
     if uid is None:
+        warn("No UID for token %s" % (token,))
         if 'uid' in session:
             session.pop('uid', None)
         return make_response(redirect('/'))
-    session['uid'] = uid
-    info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
+
+    if 'uid' in session:
+        # they're already signed in
+        guest_uid = uid
+        acc_uid = session['uid']
+        if acc_uid != guest_uid:
+            # they're signed in as someone else
+            if event_analysis.has_events(get_db(DATABASE_PATH), acc_uid):
+                info("Prompting for merge of signed-in uid %d with guest uid %d" % (acc_uid, guest_uid))
+                # TODO: prompt the user if they would like to merge accounts
+            else:
+                # the signed in account doesnt have any events
+                # auto merge
+                info("Auto-merging signed-in uid %d with guest uid %d" % (acc_uid, guest_uid))
+                authentication.replace_uid(get_db(DATABASE_PATH), guest_uid, acc_uid)
+                event_storage.replace_events_with_uid(get_db(DATABASE_PATH), guest_uid, acc_uid)
+    else:
+        info("Redirecting (and setting uid cookie for token %s to %d)" % (token, uid))
+        session['uid'] = uid
+
     return make_response(redirect('/graph'))
 
 

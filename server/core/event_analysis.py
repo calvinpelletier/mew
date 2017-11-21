@@ -9,8 +9,16 @@ from util import clean_hostname
 from timezones import *
 from concurrency import UserLock
 
+
 # None/null means the user wasn't in chrome
 IGNORED_HOSTNAMES = [None, "newtab"]
+
+
+def has_events(db, uid):
+    c = db.cursor()
+    c.execute('SELECT 1 FROM events WHERE uid = ?', (uid,))
+    result = c.fetchone()
+    return result is not None
 
 
 def get_last_x_min_summary(db, uid, x_min, max_sites):
