@@ -332,12 +332,19 @@
                 </div>
             </div>
         </div>
+
+        <div id="card3">
+            <h2 id="card3-title">Days Under Quota</h2>
+            <div id="chart2"></div>
+        </div>
     </div>
+
 
     <div id="settings-dialog" tabindex="-1">
     </div>
 
     <script src="{{ url_for('static', filename='js/highcharts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/heatmap.js') }}"></script>
     <script src="{{ url_for('static', filename='js/toastr.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/util.js') }}"></script>
     <script src="{{ url_for('static', filename='js/card0_stats.js') }}"></script>
@@ -348,6 +355,7 @@
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
     <script src="{{ url_for('static', filename='js/logout.js') }}"></script>
     <script src="{{ url_for('static', filename='js/attach_acc.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/days_under_quota.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="https://apis.google.com/js/platform.js?onload=onOAuthLoad" async defer></script>
 </body>

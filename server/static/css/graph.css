@@ -254,6 +254,19 @@ body {
     color: #bbbbbb;
 }
 
+/* FOURTH CARD */
+#card3 {
+  width: 100%;
+  text-align: center;
+  padding: 50px 5% 50px 5%;
+  background: #fff;
+}
+
+#card3-title {
+    color: #000;
+    font-size: 40px;
+}
+
 /* MOBILE */
 #m-body-container {
     width: 100%;

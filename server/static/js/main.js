@@ -2,6 +2,7 @@ window.onload = function() {
 	initSettings();
 	requestBarGraphData();
 	requestMainData(true);
+	drawDaysUnderQuota('chart2');
 
 	$('#chart0-options input.timeframe-choice').on('change', function (e) {
 		if (!CARD2_DATA_ELEMENT.isLoading()) {
