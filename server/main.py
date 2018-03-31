@@ -108,6 +108,30 @@ def graph():
         return make_response(redirect('/'))
 
 
+@app.route('/habits/')
+def habits():
+    if 'uid' in session:
+        uid = session['uid']
+        try:
+            user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+        except:
+            # the user somehow got deleted from the db
+            session.pop('uid')
+            return make_response(redirect('/'))
+
+        if is_mobile():
+            template = 'm_habits.html'
+        else:
+            template = 'habits.html'
+
+        return render_template(
+            template,
+            email=user_email)
+    else:
+        warn("uid cookie is None when requesting graph page...")
+        return make_response(redirect('/'))
+
+
 @app.route('/api/login', methods=['POST'])
 def login():
     req_data = request.get_json()
