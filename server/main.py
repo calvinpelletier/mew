@@ -7,7 +7,7 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 
 from core import *
-from core import authentication, concurrency, event_analysis, event_storage, log, ping, quota, unproductive
+from core import authentication, concurrency, event_analysis, event_storage, log, ping, quota, unproductive, tasks
 from core.log import *
 from core.util import *
 
@@ -106,6 +106,44 @@ def graph():
     else:
         warn("uid cookie is None when requesting graph page...")
         return make_response(redirect('/'))
+
+
+@app.route('/tasks/')
+def tasks_page():
+    if 'uid' in session:
+        uid = session['uid']
+        try:
+            user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+        except:
+            # the user somehow got deleted from the db
+            session.pop('uid')
+            return make_response(redirect('/'))
+
+        if is_mobile():
+            template = 'm_tasks.html'
+        else:
+            template = 'tasks.html'
+
+        return render_template(
+            template,
+            email=user_email)
+    else:
+        warn("uid cookie is None when requesting graph page...")
+        return make_response(redirect('/'))
+
+
+@app.route('/api/gettasks', methods=['POST'])
+def get_tasks():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    timezone = req['timezone']
+
+    week_tasks = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
+    return gen_resp(True, {})
 
 
 @app.route('/api/login', methods=['POST'])

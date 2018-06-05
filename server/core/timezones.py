@@ -73,3 +73,11 @@ def get_user_string(tz_obj, unixtime):
 
 def get_utc_string(unixtime):
     return get_user_string(pytz.UTC, unixtime)
+
+
+def local_current_week(tz_obj, unixtime):
+    """
+    Returns date obj for start of the current week according to the users local timezone
+    """
+    cur_day = datetime.datetime.utcfromtimestamp(unixtime).replace(tzinfo=pytz.UTC).astimezone(tz_obj).date()
+    return cur_day - datetime.timedelta(days=cur_day.weekday())

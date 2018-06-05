@@ -35,9 +35,61 @@
     font-style: normal;
 }
 
+/* ~~~~~ HEADER ~~~~~ */
+h5 {
+    font-family: Sinkin-Sans300Light;
+    font-size: 15px;
+    color: #fff;
+}
+
+a h5 {
+    text-decoration: underline;
+}
+
+#body-container {
+    width: 100%;
+}
+
+#card0 {
+    background-color: #2d333c;
+    width: 100%;
+}
+
+#header {
+    padding: 10px 20px 20px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#nav {
+    display: flex;
+    align-items: center;
+}
+
 .inline {
     display: inline-block;
 }
+
+.nav-part {
+    display: inline;
+    margin: 0px 20px;
+}
+
+.nav-divider {
+    display: inline;
+    width: 2px;
+    height: 20px;
+    border-width: 0px 1px 0px 0px;
+    border-color: #fff;
+    border-style: solid;
+}
+
+.settings-icon {
+    height: 24px;
+    cursor: pointer;
+}
+/* ~~~~~~~~~~~~~~~~~~ */
 
 .center-vertically {
     top: 50%;
