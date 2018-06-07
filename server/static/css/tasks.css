@@ -7,17 +7,6 @@
     display: inline-flex;
 }
 
-.day {
-    /*display: inline-block;*/
-    /*margin: 0px 5px;*/
-    width: 100%;
-    background-color: #fff;
-    /*min-height: 200px;*/
-    padding: 0;
-    /*flex-grow: 1;*/
-    /*flex-basis: auto;*/
-}
-
 .day-container {
     flex-basis: 12.5%;
     padding: 0 4px;
@@ -29,6 +18,7 @@
     font-size: 20px;
     color: #fff;
     background-color: #2d333c;
+    margin: 0 0 5px 0;
 }
 
 .today-container > .day-header {
@@ -46,20 +36,31 @@ hr {
     flex-basis: 25% !important;
 }
 
-.today {
-
-}
-
 .item {
     width: 100%;
     background-color: #fff;
     font-family: OpenSans-Regular;
     font-size: 15px;
     color: #333;
-    margin: 5px 0;
+    margin: 0 0 5px 0;
     padding: 3px;
 }
 
-.first {
-    /*margin-top: 0px !important;*/
+.new-item {
+    padding: 3px;
+    font-family: OpenSans-Regular;
+    font-size: 15px;
+    height: 27px;
+    border: 0px;
+    width: 100%;
+}
+
+.new-item::placeholder {
+    color: #aaa;
+    font-family: OpenSans-Regular;
+    font-size: 15px;
+}
+
+.new-item-container {
+
 }

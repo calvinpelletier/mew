@@ -1,3 +1,5 @@
+var _ENTER = 13;
+
 window.onload = function() {
     requestTasksCurWeek();
 }
@@ -29,4 +31,12 @@ function requestTasksCurWeek() {
             // TODO
 		}
 	});
+}
+
+function newTaskKeyPress(o, e, i) {
+    if (e.keyCode == _ENTER) {
+        var day = $('#day' + i);
+        day.append('<div class="item">' + o.value + '</div>');
+        o.value = '';
+    }
 }

@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     uid INTEGER,
     task VARCHAR(255),
     unixdate BIGINT, /* ts of day start aka unixdate or 0 */
-    category INTEGER,
+    category INTEGER, /* 0 for no category */
     completed TINYINT /* 0/1 */
 );
 
