@@ -34,6 +34,12 @@
     font-weight: normal;
     font-style: normal;
 }
+@font-face {
+    font-family: 'OpenSans-Regular';
+    src: url('fonts/OpenSans-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
 
 /* ~~~~~ HEADER ~~~~~ */
 h5 {
@@ -48,6 +54,7 @@ a h5 {
 
 #body-container {
     width: 100%;
+    min-width: 960px;
 }
 
 #card0 {
