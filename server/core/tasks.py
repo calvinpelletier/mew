@@ -26,15 +26,44 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
 
     ret = []
     for task in tasks:
-        # TODO dont forget to change this if we add the option for monday week starts
         dow = days.index(task[1])
-        print dow
         ret.append({
             'task': task[0],
             'dow': dow,
             'category': task[2],
             'completed': task[3]
         })
+
+    cur_dow = datetime.datetime.now(pytz.timezone(tz)).date().isoweekday() % 7
+
+    return ret, cur_dow
+
+def get_task_categories(db, uid):
+    c = db.cursor()
+    print uid
+    c.execute('SELECT ROWID, name FROM task_categories WHERE uid = ?', (uid,))
+    categories = c.fetchall()
+    c.execute('SELECT task, category, unixdate, completed FROM tasks WHERE uid = ? AND category != -1', (uid,))
+    tasks = c.fetchall()
+    c.close()
+
+    ret = [] # list of dicts
+    cid_to_idx = {} # category id to idx in ret of that category
+    for cid, category in categories:
+        cid_to_idx[cid] = len(ret)
+        ret.append({
+            'cid': cid,
+            'category': category,
+            'tasks': []
+        })
+
+    for task, cid, unixdate, completed in tasks:
+        ret[cid_to_idx[cid]]['tasks'].append({
+            'task': task,
+            'unixdate': unixdate,
+            'completed': completed
+        })
+
     return ret
 
 def add_task_by_dow(db, uid, tz, task, dow):

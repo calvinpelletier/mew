@@ -11,6 +11,8 @@ from core import authentication, concurrency, event_analysis, event_storage, log
 from core.log import *
 from core.util import *
 
+from time import sleep # for testing only
+
 OAUTH_URL = '385569473349-1192ich7o73apbpmu48c4lc32soqgqjk.apps.googleusercontent.com'
 
 DATABASE_PATH = None
@@ -143,8 +145,19 @@ def get_tasks_by_week():
     req = request.get_json()
     timezone = req['timezone']
 
-    week_tasks = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
-    return gen_resp(True, {'tasks': week_tasks})
+    week_tasks, cur_dow = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
+    return gen_resp(True, {'tasks': week_tasks, 'cur_dow': cur_dow})
+
+
+@app.route('/api/tasks/getcategories', methods=['POST'])
+def get_task_categories():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid)
+    return gen_resp(True, {'categories': categories})
 
 
 @app.route('/api/tasks/add', methods=['POST'])

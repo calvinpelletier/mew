@@ -5,7 +5,8 @@ import os
 import sqlite3
 import subprocess
 import time
-from random import randint, choice
+import calendar
+from random import randint, choice, random
 
 HEAVY = True # create a fuck ton of data
 LOTS_O_SITES = False # use a fuck ton of sites
@@ -104,5 +105,50 @@ else:
             insert(c, hostname, timestamp)
     db.commit()
     c.close()
+
+# ~~~~~ TASK TEST DATA ~~~~~
+lorem_ipsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis arcu sapien, fermentum pulvinar nunc euismod in. Praesent auctor euismod pellentesque. Aliquam feugiat ultrices augue, sed placerat sapien elementum ultricies. Aliquam sapien elit, molestie ac congue in, vestibulum a diam. Nunc vel accumsan elit. Nulla eget mauris ante. Aliquam commodo tellus turpis, sit amet tempus nibh mollis et. Sed pharetra nunc eu mi aliquam aliquam. Nulla in mi quis dolor venenatis vestibulum a posuere ex. Phasellus eu consequat augue. Quisque id mauris imperdiet, dapibus odio nec, rhoncus odio. Nunc vitae convallis nibh. Cras elementum maximus magna quis fermentum.'
+lorem_ipsum = lorem_ipsum.replace('.', '')
+lorem_ipsum = lorem_ipsum.replace(',', '')
+lorem_ipsum = lorem_ipsum.lower()
+
+def gen_task_name():
+    length = randint(5, 40)
+    start = randint(0, len(lorem_ipsum) - length)
+    return lorem_ipsum[start:start+length]
+
+cur_day = datetime.date.today()
+dow = cur_day.isoweekday() % 7
+week_start = cur_day - datetime.timedelta(days=dow)
+days = [calendar.timegm((week_start + datetime.timedelta(days=i)).timetuple()) for i in range(7)]
+
+c = db.cursor()
+
+# create task categories
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'etc'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'mew'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'art project'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'guitar'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'unnamed0'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'unnamed1'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'unnamed2'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'unnamed3'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'unnamed4'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'unnamed5'))
+c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'unnamed6'))
+
+# create tasks assigned to days
+for i in range(10):
+    category = choice([-1, randint(1, 10)])
+    completed = choice([0, 1])
+    c.execute('INSERT INTO tasks VALUES (?, ?, ?, ?, ?)', (1, gen_task_name(), choice(days), category, completed))
+
+# create tasks not assigned to days
+for i in range(50):
+    c.execute('INSERT INTO tasks VALUES (?, ?, ?, ?, ?)', (1, gen_task_name(), 0, randint(1, 10), 0))
+
+db.commit()
+c.close()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 print 'Login url: 127.0.0.1:5000/guest/11111111111111111111111111111111'

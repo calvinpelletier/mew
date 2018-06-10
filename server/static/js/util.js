@@ -108,8 +108,3 @@ var DataElement = (function() {
 
     return DataElement;
 })();
-
-var CARD0_DATA_ELEMENT = new DataElement('#card0', ['#today']);
-var CARD1_DATA_ELEMENT = new DataElement('#card1', ['#chart0']);
-var CARD2_DATA_ELEMENT = new DataElement('#card2', ['#chart1']);
-var SETTINGS_DATA_ELEMENT = new DataElement('div#settings-content', ['.settings-section-a', '.settings-section-b']);

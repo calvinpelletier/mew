@@ -1,7 +1,12 @@
 var _ENTER = 13;
+var TASKS_CARD1_DATA_ELEMENT = new DataElement('#card1', ['.day-container']);
+var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper']);
 
 window.onload = function() {
+    TASKS_CARD1_DATA_ELEMENT.showLoader();
+    TASKS_CARD2_DATA_ELEMENT.showLoader();
     requestTasksCurWeek();
+    requestTaskCategories();
 }
 
 function onOAuthLoad() {
@@ -19,12 +24,48 @@ function requestTasksCurWeek() {
 		data: JSON.stringify({
 			'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
 		}),
-		success: function(response) {
-            console.log(response);
-            if (response['success']) {
-                for (var task of response['tasks']) {
+		success: function(resp) {
+            if (resp['success']) {
+                $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
+
+                for (var task of resp['tasks']) {
                     $('#day' + task['dow']).append('<div class="item">' + task['task'] + '</div>');
                 }
+
+                TASKS_CARD1_DATA_ELEMENT.hideLoader();
+            }
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+            // TODO
+		}
+	});
+}
+
+function requestTaskCategories() {
+    $.post({
+		url: '/api/tasks/getcategories',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify({}),
+		success: function(resp) {
+            if (resp['success']) {
+                for (var i = 0; i < resp['categories'].length; i++) {
+                    var category = resp['categories'][i];
+                    var html = '<div class="category" id="cat' + category['cid'] + '">'
+                        + '<div class="category-name">' + category['category'] + '</div>';
+                    for (var task of category['tasks']) {
+                        html += '<div class="category-task">' + task['task'] + '</div>'
+                    }
+                    html += '</div>';
+                    $('#col' + (i % 4).toString()).append(html);
+                }
+
+                TASKS_CARD2_DATA_ELEMENT.hideLoader();
             }
 		},
 		statusCode: {

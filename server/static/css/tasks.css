@@ -1,5 +1,4 @@
-
-
+/* ~~~~~ CARD1 ~~~~~ */
 #card1 {
     width: 100%;
     background-color: #F0F0F0;
@@ -64,3 +63,59 @@ hr {
 .new-item-container {
 
 }
+
+#card1 .loader:before, #card1 .loader:after {
+    background: #F0F0F0;
+}
+/* ~~~~~~~~~~~ */
+
+/* ~~~~~ CARD2 ~~~~~ */
+#card2 {
+    width: 100%;
+    padding: 20px 20px;
+    background-color: #fff;
+}
+
+#card2 .loader:before, #card2 .loader:after {
+    background: #fff;
+}
+
+#categories-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 4px;
+}
+
+.column {
+    flex: 25%;
+    max-width: 25%;
+    padding: 0 7px;
+}
+
+.category {
+    margin-top: 8px;
+    vertical-align: middle;
+    background-color: #f0f0f0;
+    padding-bottom: 3px;
+    margin-bottom: 15px;
+    -moz-box-shadow: 0 0 10px #666;
+    -webkit-box-shadow: 0 0 10px #666;
+    box-shadow: 0 0 10px #666;
+}
+
+.category-name {
+    text-align: center;
+    background-color: #2d333c;
+    color: #fff;
+    font-family: Sinkin-Sans300Light;
+    font-size: 18px;
+}
+
+.category-task {
+    color: #000;
+    font-family: OpenSans-Regular;
+    font-size: 15px;
+    margin: 3px;
+    /*border-bottom: 1px solid #2d333c;*/
+}
+/* ~~~~~~~~~~~~~~~~~ */
