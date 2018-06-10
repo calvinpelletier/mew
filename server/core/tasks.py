@@ -24,5 +24,23 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
     tasks = c.fetchall()
     c.close()
 
-    print tasks
-    return tasks
+    ret = []
+    for task in tasks:
+        # TODO dont forget to change this if we add the option for monday week starts
+        dow = days.index(task[1])
+        print dow
+        ret.append({
+            'task': task[0],
+            'dow': dow,
+            'category': task[2],
+            'completed': task[3]
+        })
+    return ret
+
+def add_task_by_dow(db, uid, tz, task, dow):
+    unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
+
+    c = db.cursor()
+    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, unixdate, -1, 0))
+    db.commit()
+    c.close()

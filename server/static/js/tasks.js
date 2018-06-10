@@ -12,15 +12,20 @@ function onOAuthLoad() {
 }
 
 function requestTasksCurWeek() {
-    // Show the loader over card0 (the stats at the top of the page)
     $.post({
-		url: '/api/gettasks',
+		url: '/api/tasks/getbyweek',
 		contentType: 'application/json',
 		dataType: 'json',
 		data: JSON.stringify({
 			'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
 		}),
 		success: function(response) {
+            console.log(response);
+            if (response['success']) {
+                for (var task of response['tasks']) {
+                    $('#day' + task['dow']).append('<div class="item">' + task['task'] + '</div>');
+                }
+            }
 		},
 		statusCode: {
             500: function() {
@@ -37,6 +42,29 @@ function newTaskKeyPress(o, e, i) {
     if (e.keyCode == _ENTER) {
         var day = $('#day' + i);
         day.append('<div class="item">' + o.value + '</div>');
+
+        $.post({
+            url: '/api/tasks/add',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({
+                'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+                'task': o.value,
+                'dow': parseInt(i),
+            }),
+            success: function(response) {
+                // TODO maybe add some indication of a task being saved successfully
+            },
+            statusCode: {
+                500: function() {
+                    this.fail();
+                }
+            },
+            fail: function() {
+                // TODO
+            }
+        });
+
         o.value = '';
     }
 }

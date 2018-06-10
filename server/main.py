@@ -108,6 +108,7 @@ def graph():
         return make_response(redirect('/'))
 
 
+# ~~~~~ TASKS ~~~~~
 @app.route('/tasks/')
 def tasks_page():
     if 'uid' in session:
@@ -132,8 +133,8 @@ def tasks_page():
         return make_response(redirect('/'))
 
 
-@app.route('/api/gettasks', methods=['POST'])
-def get_tasks():
+@app.route('/api/tasks/getbyweek', methods=['POST'])
+def get_tasks_by_week():
     if 'uid' in session:
         uid = session['uid']
     else:
@@ -143,7 +144,20 @@ def get_tasks():
     timezone = req['timezone']
 
     week_tasks = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
+    return gen_resp(True, {'tasks': week_tasks})
+
+
+@app.route('/api/tasks/add', methods=['POST'])
+def add_task():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.add_task_by_dow(get_db(DATABASE_PATH), uid, req['timezone'], req['task'], req['dow'])
     return gen_resp(True, {})
+# ~~~~~~~~~~~~~~~~
 
 
 @app.route('/api/login', methods=['POST'])
