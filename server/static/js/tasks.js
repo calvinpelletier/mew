@@ -62,7 +62,7 @@ function requestTaskCategories() {
                         html += '<div class="category-task">' + task['task'] + '</div>'
                     }
                     html += '</div>';
-                    $('#col' + (i % 4).toString()).append(html);
+                    $('#col' + ((i+1) % 4).toString()).append(html);
                 }
 
                 TASKS_CARD2_DATA_ELEMENT.hideLoader();
