@@ -54,5 +54,5 @@ CREATE TABLE IF NOT EXISTS task_categories (
     /* ROWID (auto created by sqlite and used by us as category id) */
     uid INTEGER,
     name VARCHAR(255)
-)
+);
 /* ~~~~~~~~~~~~~~~~~~~~ */
