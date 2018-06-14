@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS quotas (
 /* ~~~ TASKS TABLES ~~~ */
 /* https://github.com/wilsonchaney/mew/wiki/Tasks-DB-Reference */
 CREATE TABLE IF NOT EXISTS tasks (
+    /* ROWID (auto created by sqlite and used by us as task id) */
     uid INTEGER,
     task VARCHAR(255),
     unixdate BIGINT, /* ts of day start aka unixdate or 0 */

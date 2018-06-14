@@ -29,7 +29,7 @@ function requestTasksCurWeek() {
                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
 
                 for (var task of resp['tasks']) {
-                    $('#day' + task['dow']).append('<div class="task dark">' + task['task'] + '</div>');
+                    $('#day' + task['dow']).append('<div class="task" id="' + task['task_id'] + '">' + task['task'] + '</div>');
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -61,7 +61,7 @@ function requestTaskCategories() {
                         + '<div class="category-name">' + category['category'] + '</div>'
                         + '<div id="cat' + category['cid'] + '">';
                     for (var task of category['tasks']) {
-                        html += '<div class="task">' + task['task'] + '</div>'
+                        html += '<div class="task" id="' + task['task_id'] + '">' + task['task'] + '</div>'
                     }
                     html += '</div>';
                     html += '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', ' + category['cid'] + ')">'

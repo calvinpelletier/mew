@@ -17,7 +17,7 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
         week_start = get_current_week(tz)
 
     days = [calendar.timegm((week_start + datetime.timedelta(days=i)).timetuple()) for i in range(7)]
-    select = 'SELECT task, unixdate, category, completed FROM tasks WHERE uid = ? AND ({})'.format(
+    select = 'SELECT task, unixdate, category, completed, ROWID FROM tasks WHERE uid = ? AND ({})'.format(
         ' OR '.join(['unixdate = ?'] * 7)
     )
 
@@ -33,7 +33,8 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
             'task': task[0],
             'dow': dow,
             'category': task[2],
-            'completed': task[3]
+            'completed': task[3],
+            'task_id': task[4]
         })
 
     cur_dow = datetime.datetime.now(pytz.timezone(tz)).date().isoweekday() % 7
@@ -46,7 +47,7 @@ def get_task_categories(db, uid):
     print uid
     c.execute('SELECT ROWID, name FROM task_categories WHERE uid = ?', (uid,))
     categories = c.fetchall()
-    c.execute('SELECT task, category, unixdate, completed FROM tasks WHERE uid = ? AND category != -1', (uid,))
+    c.execute('SELECT ROWID, task, category, unixdate, completed FROM tasks WHERE uid = ? AND category != -1', (uid,))
     tasks = c.fetchall()
     c.close()
 
@@ -60,8 +61,9 @@ def get_task_categories(db, uid):
             'tasks': []
         })
 
-    for task, cid, unixdate, completed in tasks:
+    for tid, task, cid, unixdate, completed in tasks:
         ret[cid_to_idx[cid]]['tasks'].append({
+            'task_id': tid,
             'task': task,
             'unixdate': unixdate,
             'completed': completed
@@ -82,5 +84,12 @@ def add_task_by_dow(db, uid, tz, task, dow):
 def add_task_by_category(db, uid, task, category):
     c = db.cursor()
     c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, 0, category, 0))
+    db.commit()
+    c.close()
+
+
+def remove_task(db, uid, task_id):
+    c = db.cursor()
+    c.execute('DELETE FROM tasks WHERE uid = ? AND ROWID = ?', (uid, task_id))
     db.commit()
     c.close()

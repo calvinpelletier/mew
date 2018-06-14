@@ -173,6 +173,16 @@ def add_task():
     else: # 'category' in req
         tasks.add_task_by_category(get_db(DATABASE_PATH), uid, req['task'], req['category'])
     return gen_resp(True, {})
+
+@app.route('/api/tasks/remove', methods=['POST'])
+def remove_task():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.remove_task(get_db(DATABASE_PATH), uid, req['task_id'])
 # ~~~~~~~~~~~~~~~~
 
 
