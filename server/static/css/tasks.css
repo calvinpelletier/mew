@@ -2,13 +2,18 @@
 #card1 {
     width: 100%;
     background-color: #F0F0F0;
+    /*background-color: #2d333c;*/
     padding: 20px 20px;
     display: inline-flex;
 }
 
 .day-container {
     flex-basis: 12.5%;
-    padding: 0 4px;
+    margin: 0 2px;
+    background-color: #fff;
+    -moz-box-shadow: 0 0 10px #666;
+    -webkit-box-shadow: 0 0 10px #666;
+    box-shadow: 0 0 10px #666;
 }
 
 .day-header {
@@ -35,18 +40,8 @@ hr {
     flex-basis: 25% !important;
 }
 
-.item {
-    width: 100%;
-    background-color: #fff;
-    font-family: OpenSans-Regular;
-    font-size: 15px;
-    color: #333;
-    margin: 0 0 5px 0;
-    padding: 3px;
-}
-
 .new-item {
-    padding: 3px;
+    padding: 8px;
     font-family: OpenSans-Regular;
     font-size: 15px;
     height: 27px;
@@ -64,6 +59,10 @@ hr {
 
 }
 
+.items {
+
+}
+
 #card1 .loader:before, #card1 .loader:after {
     background: #F0F0F0;
 }
@@ -73,6 +72,7 @@ hr {
 #card2 {
     width: 100%;
     padding: 20px 20px;
+    /*background-color: #F0F0F0;*/
     background-color: #fff;
 }
 
@@ -95,8 +95,7 @@ hr {
 .category {
     margin-top: 8px;
     vertical-align: middle;
-    background-color: #f0f0f0;
-    padding-bottom: 3px;
+    background-color: #fff;
     margin-bottom: 15px;
     -moz-box-shadow: 0 0 10px #666;
     -webkit-box-shadow: 0 0 10px #666;
@@ -111,12 +110,17 @@ hr {
     font-size: 18px;
 }
 
-.category-task {
+.task {
     color: #000;
     font-family: OpenSans-Regular;
     font-size: 15px;
-    margin: 3px;
+    padding: 8px;
+    line-height: 15px;
     /*border-bottom: 1px solid #2d333c;*/
+}
+
+.task:hover {
+    background-color: #f0f0f0;
 }
 
 .add-category {

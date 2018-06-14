@@ -29,7 +29,7 @@ function requestTasksCurWeek() {
                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
 
                 for (var task of resp['tasks']) {
-                    $('#day' + task['dow']).append('<div class="item">' + task['task'] + '</div>');
+                    $('#day' + task['dow']).append('<div class="task dark">' + task['task'] + '</div>');
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -54,16 +54,21 @@ function requestTaskCategories() {
 		data: JSON.stringify({}),
 		success: function(resp) {
             if (resp['success']) {
-                for (var i = 0; i < resp['categories'].length; i++) {
+                var i;
+                for (i = 0; i < resp['categories'].length; i++) {
                     var category = resp['categories'][i];
                     var html = '<div class="category" id="cat' + category['cid'] + '">'
                         + '<div class="category-name">' + category['category'] + '</div>';
                     for (var task of category['tasks']) {
-                        html += '<div class="category-task">' + task['task'] + '</div>'
+                        html += '<div class="task">' + task['task'] + '</div>'
                     }
+                    html += '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', ' + category['cid'] + ')">'
                     html += '</div>';
                     $('#col' + ((i+1) % 4).toString()).append(html);
                 }
+                var addCatHtml = '<div class="add-category"><div class="bar vertical"></div><div class="bar horizontal"></div></div>';
+                $('#col' + ((i+1) % 4).toString()).append(addCatHtml);
+
 
                 TASKS_CARD2_DATA_ELEMENT.hideLoader();
             }

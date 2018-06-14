@@ -113,7 +113,7 @@ lorem_ipsum = lorem_ipsum.replace(',', '')
 lorem_ipsum = lorem_ipsum.lower()
 
 def gen_task_name():
-    length = randint(5, 40)
+    length = randint(5, 80)
     start = randint(0, len(lorem_ipsum) - length)
     return lorem_ipsum[start:start+length]
 
