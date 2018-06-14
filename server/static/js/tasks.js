@@ -57,11 +57,13 @@ function requestTaskCategories() {
                 var i;
                 for (i = 0; i < resp['categories'].length; i++) {
                     var category = resp['categories'][i];
-                    var html = '<div class="category" id="cat' + category['cid'] + '">'
-                        + '<div class="category-name">' + category['category'] + '</div>';
+                    var html = '<div class="category">'
+                        + '<div class="category-name">' + category['category'] + '</div>'
+                        + '<div id="cat' + category['cid'] + '">';
                     for (var task of category['tasks']) {
                         html += '<div class="task">' + task['task'] + '</div>'
                     }
+                    html += '</div>';
                     html += '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', ' + category['cid'] + ')">'
                     html += '</div>';
                     $('#col' + ((i+1) % 4).toString()).append(html);
@@ -84,20 +86,26 @@ function requestTaskCategories() {
 	});
 }
 
-function newTaskKeyPress(o, e, i) {
+function newTaskKeyPress(o, e, type, i) {
     if (e.keyCode == _ENTER) {
-        var day = $('#day' + i);
-        day.append('<div class="item">' + o.value + '</div>');
+        var data = {
+            'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+            'task': o.value,
+        };
+        if (type == 'day') {
+            var container = $('#day' + i);
+            data['dow'] = i;
+        } else { // type == category
+            var container = $('#cat' + i);
+            data['category'] = i;
+        }
+        container.append('<div class="task">' + o.value + '</div>');
 
         $.post({
             url: '/api/tasks/add',
             contentType: 'application/json',
             dataType: 'json',
-            data: JSON.stringify({
-                'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-                'task': o.value,
-                'dow': parseInt(i),
-            }),
+            data: JSON.stringify(data),
             success: function(response) {
                 // TODO maybe add some indication of a task being saved successfully
             },

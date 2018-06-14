@@ -168,7 +168,10 @@ def add_task():
         return gen_fail('not authenticated')
 
     req = request.get_json()
-    tasks.add_task_by_dow(get_db(DATABASE_PATH), uid, req['timezone'], req['task'], req['dow'])
+    if 'dow' in req:
+        tasks.add_task_by_dow(get_db(DATABASE_PATH), uid, req['timezone'], req['task'], req['dow'])
+    else: # 'category' in req
+        tasks.add_task_by_category(get_db(DATABASE_PATH), uid, req['task'], req['category'])
     return gen_resp(True, {})
 # ~~~~~~~~~~~~~~~~
 

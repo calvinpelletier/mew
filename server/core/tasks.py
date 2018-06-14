@@ -5,9 +5,11 @@ import timezones
 import time
 import pytz
 
+
 def get_current_week(timezone_name):
     tz_obj = pytz.timezone(timezone_name)
     return timezones.local_current_week(tz_obj, int(time.time()))
+
 
 # week start is a datetime.date obj or None for current week
 def get_tasks_by_week(db, uid, tz, week_start=None):
@@ -38,6 +40,7 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
 
     return ret, cur_dow
 
+
 def get_task_categories(db, uid):
     c = db.cursor()
     print uid
@@ -66,10 +69,18 @@ def get_task_categories(db, uid):
 
     return ret
 
+
 def add_task_by_dow(db, uid, tz, task, dow):
     unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
 
     c = db.cursor()
     c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, unixdate, -1, 0))
+    db.commit()
+    c.close()
+
+
+def add_task_by_category(db, uid, task, category):
+    c = db.cursor()
+    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, 0, category, 0))
     db.commit()
     c.close()
