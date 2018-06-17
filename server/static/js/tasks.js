@@ -16,6 +16,10 @@ function onOAuthLoad() {
 	});
 }
 
+function addTaskToContainer(taskText, taskId, container) {
+    container.append('<div class="task" id="' + taskId + '">' + taskText + '</div>');
+}
+
 function requestTasksCurWeek() {
     $.post({
 		url: '/api/tasks/getbyweek',
@@ -29,7 +33,7 @@ function requestTasksCurWeek() {
                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
 
                 for (var task of resp['tasks']) {
-                    $('#day' + task['dow']).append('<div class="task" id="' + task['task_id'] + '">' + task['task'] + '</div>');
+                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']));
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -60,13 +64,14 @@ function requestTaskCategories() {
                     var html = '<div class="category">'
                         + '<div class="category-name">' + category['category'] + '</div>'
                         + '<div id="cat' + category['cid'] + '">';
-                    for (var task of category['tasks']) {
-                        html += '<div class="task" id="' + task['task_id'] + '">' + task['task'] + '</div>'
-                    }
                     html += '</div>';
                     html += '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', ' + category['cid'] + ')">'
                     html += '</div>';
                     $('#col' + ((i+1) % 4).toString()).append(html);
+                    var container = $('#cat' + category['cid']);
+                    for (var task of category['tasks']) {
+                        addTaskToContainer(task['task'], task['task_id'], container);
+                    }
                 }
                 var addCatHtml = '<div class="add-category"><div class="bar vertical"></div><div class="bar horizontal"></div></div>';
                 $('#col' + ((i+1) % 4).toString()).append(addCatHtml);
@@ -86,6 +91,7 @@ function requestTaskCategories() {
 	});
 }
 
+// TODO: add loader next to input field during post request
 function newTaskKeyPress(o, e, type, i) {
     if (e.keyCode == _ENTER) {
         var data = {
@@ -99,15 +105,15 @@ function newTaskKeyPress(o, e, type, i) {
             var container = $('#cat' + i);
             data['category'] = i;
         }
-        container.append('<div class="task">' + o.value + '</div>');
 
         $.post({
             url: '/api/tasks/add',
             contentType: 'application/json',
             dataType: 'json',
             data: JSON.stringify(data),
-            success: function(response) {
-                // TODO maybe add some indication of a task being saved successfully
+            success: function(resp) {
+                addTaskToContainer(resp['task'], resp['task_id'], container);
+                o.value = '';
             },
             statusCode: {
                 500: function() {
@@ -119,6 +125,5 @@ function newTaskKeyPress(o, e, type, i) {
             }
         });
 
-        o.value = '';
     }
 }

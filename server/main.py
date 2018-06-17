@@ -169,10 +169,14 @@ def add_task():
 
     req = request.get_json()
     if 'dow' in req:
-        tasks.add_task_by_dow(get_db(DATABASE_PATH), uid, req['timezone'], req['task'], req['dow'])
+        task_id = tasks.add_task_by_dow(get_db(DATABASE_PATH), uid, req['timezone'], req['task'], req['dow'])
     else: # 'category' in req
-        tasks.add_task_by_category(get_db(DATABASE_PATH), uid, req['task'], req['category'])
-    return gen_resp(True, {})
+        task_id = tasks.add_task_by_category(get_db(DATABASE_PATH), uid, req['task'], req['category'])
+
+    return gen_resp(True, {
+        'task': req['task'],
+        'task_id': task_id
+    })
 
 @app.route('/api/tasks/remove', methods=['POST'])
 def remove_task():

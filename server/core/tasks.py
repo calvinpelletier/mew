@@ -77,15 +77,19 @@ def add_task_by_dow(db, uid, tz, task, dow):
 
     c = db.cursor()
     c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, unixdate, -1, 0))
+    task_id = c.lastrowid
     db.commit()
     c.close()
+    return task_id
 
 
 def add_task_by_category(db, uid, task, category):
     c = db.cursor()
     c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, 0, category, 0))
+    task_id = c.lastrowid
     db.commit()
     c.close()
+    return task_id
 
 
 def remove_task(db, uid, task_id):
