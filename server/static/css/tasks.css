@@ -54,14 +54,6 @@ hr {
     font-size: 15px;
 }
 
-.new-item-container {
-
-}
-
-.items {
-
-}
-
 #card1 .loader:before, #card1 .loader:after {
     background: #F0F0F0;
 }
@@ -83,6 +75,23 @@ hr {
     display: flex;
     flex-wrap: wrap;
     padding: 0 4px;
+}
+
+.task-indicator-wrapper {
+    /*display: inline-block;*/
+    padding: 0px 0px 0px 5px;
+    flex: 15px 0 0;
+    height: 100%;
+}
+
+.task-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-wrapper:hover {
+    background-color: #f0f0f0;
 }
 
 .column {
@@ -115,11 +124,9 @@ hr {
     font-size: 15px;
     padding: 8px;
     line-height: 15px;
+    /*display: inline-block;*/
     /*border-bottom: 1px solid #2d333c;*/
-}
-
-.task:hover {
-    background-color: #f0f0f0;
+    flex-grow: 1;
 }
 
 .add-category {

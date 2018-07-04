@@ -16,8 +16,13 @@ function onOAuthLoad() {
 	});
 }
 
-function addTaskToContainer(taskText, taskId, container) {
-    container.append('<div class="task" id="' + taskId + '">' + taskText + '</div>');
+function addTaskToContainer(taskText, taskId, container, addIndicator) {
+    var html = '<div class="task" id="' + taskId + '">' + taskText + '</div>';
+    if (addIndicator) {
+        html = '<div class="task-indicator-wrapper"><img class="task-indicator" src="/static/img/task_empty.png" height="15" width="15"></div>' + html;
+    }
+    html = '<div class="task-wrapper">' + html + '</div>';
+    container.append(html);
 }
 
 function requestTasksCurWeek() {
@@ -33,7 +38,7 @@ function requestTasksCurWeek() {
                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
 
                 for (var task of resp['tasks']) {
-                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']));
+                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), false);
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -70,7 +75,7 @@ function requestTaskCategories() {
                     $('#col' + ((i+1) % 4).toString()).append(html);
                     var container = $('#cat' + category['cid']);
                     for (var task of category['tasks']) {
-                        addTaskToContainer(task['task'], task['task_id'], container);
+                        addTaskToContainer(task['task'], task['task_id'], container, true);
                     }
                 }
                 var addCatHtml = '<div class="add-category"><div class="bar vertical"></div><div class="bar horizontal"></div></div>';
@@ -112,7 +117,7 @@ function newTaskKeyPress(o, e, type, i) {
             dataType: 'json',
             data: JSON.stringify(data),
             success: function(resp) {
-                addTaskToContainer(resp['task'], resp['task_id'], container);
+                addTaskToContainer(resp['task'], resp['task_id'], container, type == 'category');
                 o.value = '';
             },
             statusCode: {
