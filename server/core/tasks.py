@@ -97,3 +97,16 @@ def remove_task(db, uid, task_id):
     c.execute('DELETE FROM tasks WHERE uid = ? AND ROWID = ?', (uid, task_id))
     db.commit()
     c.close()
+
+def finish_task(db, uid, tz, task_id):
+    unixdate = timezones.cur_unixdate_for_tz(pytz.timezone(tz))
+    c = db.cursor()
+    c.execute('UPDATE tasks SET completed = ? WHERE uid = ? AND ROWID = ?', (unixdate, uid, task_id))
+    db.commit()
+    c.close()
+
+def unfinish_task(db, uid, task_id):
+    c = db.cursor()
+    c.execute('UPDATE tasks SET completed = 0 WHERE uid = ? AND ROWID = ?', (uid, task_id))
+    db.commit()
+    c.close()

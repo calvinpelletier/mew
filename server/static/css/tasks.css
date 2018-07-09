@@ -94,6 +94,11 @@ hr {
     cursor: pointer;
 }
 
+.task-done {
+    text-decoration: line-through;
+    color: #999 !important;
+}
+
 .column {
     flex: 25%;
     max-width: 25%;
@@ -153,7 +158,7 @@ hr {
 }
 
 .indicator-popup {
-    position: fixed;
+    position: absolute;
     z-index: 1;
     background-color: #2d333c;
     display: inline-block;
@@ -165,7 +170,7 @@ hr {
 }
 
 .indicator-arrow {
-    position: fixed;
+    position: absolute;
     z-index: 1;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;

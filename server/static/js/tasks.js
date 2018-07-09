@@ -19,7 +19,16 @@ function onOAuthLoad() {
 
 function onClickNewIndicator(target) {
     var indicatorPath = target.getAttribute('src');
-    $('#indicator' + global_task_indicator_selected).attr('src', indicatorPath);
+    var oldIndicator = $('#indicator' + global_task_indicator_selected).attr('src');
+    if (indicatorPath != oldIndicator) {
+        if (oldIndicator == '/static/img/task_done.png') {
+            // indicator used to be done but now isnt
+            unfinishTask(global_task_indicator_selected);
+        } else if (indicatorPath == '/static/img/task_done.png') {
+            finishTask(global_task_indicator_selected);
+        }
+    }
+
     closeIndicatorPopup();
 }
 
@@ -27,15 +36,24 @@ function onClickIndicator(target, e) {
     var id = target.parentNode.parentNode.id.substring(7);
     global_task_indicator_selected = id;
     var popup = $('.indicator-popup');
-    var posLeft = target.offsetLeft - popup.outerWidth() / 2;
+    var posLeft = target.offsetLeft - popup.outerWidth() / 2 + 9;
     if (posLeft < 15) {
         posLeft = 15;
     }
-    popup.attr('style', 'display: none; left: ' + posLeft + 'px; top: ' + (target.offsetTop + 23) + 'px;');
+    popup.attr('style', 'display: none; left: ' + posLeft + 'px; top: ' + (target.offsetTop + 25) + 'px;');
     popup.fadeIn(200);
     var arrow = $('.indicator-arrow');
-    arrow.attr('style', 'display: none; left: ' + (target.offsetLeft - 3) + 'px; top: ' + (target.offsetTop + 13) + 'px;');
+    arrow.attr('style', 'display: none; left: ' + (target.offsetLeft) + 'px; top: ' + (target.offsetTop + 17) + 'px;');
     arrow.fadeIn(200);
+}
+
+function onClickTask(target) {
+    var id = target.id.substring(4);
+    if (target.classList.contains('task-done')) {
+        unfinishTask(id);
+    } else {
+        finishTask(id);
+    }
 }
 
 function closeIndicatorPopup() {
@@ -45,16 +63,69 @@ function closeIndicatorPopup() {
     arrow.attr('style', 'display: none;');
 }
 
-function addTaskToContainer(taskText, taskId, container, addIndicator) {
-    var html = '<div class="task" id="task' + taskId + '">' + taskText + '</div>';
+function addTaskToContainer(taskText, taskId, container, addIndicator, completed) {
+    var done = '';
+    var src = '/static/img/task_empty.png';
+    if (completed != 0) {
+        done = 'task-done';
+        src = '/static/img/task_done.png';
+    }
+    var html = '<div class="task ' + done + '" id="task' + taskId + '" onclick="onClickTask(this)">' + taskText + '</div>';
     if (addIndicator) {
         html = '<div class="task-indicator-wrapper"><img class="task-indicator" '
             + 'id="indicator' + taskId + '" '
-            + 'onclick="onClickIndicator(this, event)" src="/static/img/task_empty.png" height="20" width="20"></div>'
+            + 'onclick="onClickIndicator(this, event)" src="' + src + '" height="20" width="20"></div>'
             + html;
     }
     html = '<div class="task-wrapper" id="wrapper' + taskId + '">' + html + '</div>';
     container.append(html);
+}
+
+function finishTask(taskId) {
+    $.post({
+		url: '/api/tasks/finish',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify({
+			'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+            'task_id': taskId
+		}),
+		success: function(resp) {
+            $('#task' + taskId).addClass('task-done');
+            $('#indicator' + taskId).attr('src', '/static/img/task_done.png');
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+            // TODO
+		}
+	});
+}
+
+function unfinishTask(taskId) {
+    $.post({
+		url: '/api/tasks/unfinish',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify({
+            'task_id': taskId
+		}),
+		success: function(resp) {
+            $('#task' + taskId).removeClass('task-done');
+            $('#indicator' + taskId).attr('src', '/static/img/task_empty.png');
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+            // TODO
+		}
+	});
 }
 
 function requestTasksCurWeek() {
@@ -70,7 +141,7 @@ function requestTasksCurWeek() {
                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
 
                 for (var task of resp['tasks']) {
-                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), false);
+                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), false, task['completed']);
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -107,7 +178,7 @@ function requestTaskCategories() {
                     $('#col' + ((i+1) % 4).toString()).append(html);
                     var container = $('#cat' + category['cid']);
                     for (var task of category['tasks']) {
-                        addTaskToContainer(task['task'], task['task_id'], container, true);
+                        addTaskToContainer(task['task'], task['task_id'], container, true, task['completed']);
                     }
                 }
                 var addCatHtml = '<div class="add-category"><div class="bar vertical"></div><div class="bar horizontal"></div></div>';

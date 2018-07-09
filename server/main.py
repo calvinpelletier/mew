@@ -187,6 +187,29 @@ def remove_task():
 
     req = request.get_json()
     tasks.remove_task(get_db(DATABASE_PATH), uid, req['task_id'])
+    return gen_resp(True, {})
+
+@app.route('/api/tasks/finish', methods=['POST'])
+def finish_task():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.finish_task(get_db(DATABASE_PATH), uid, req['timezone'], req['task_id'])
+    return gen_resp(True, {})
+
+@app.route('/api/tasks/unfinish', methods=['POST'])
+def unfinish_task():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.unfinish_task(get_db(DATABASE_PATH), uid, req['task_id'])
+    return gen_resp(True, {})
 # ~~~~~~~~~~~~~~~~
 
 
