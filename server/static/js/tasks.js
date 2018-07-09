@@ -1,6 +1,7 @@
 var _ENTER = 13;
 var TASKS_CARD1_DATA_ELEMENT = new DataElement('#card1', ['.day-container']);
 var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper']);
+var global_task_indicator_selected = null;
 
 window.onload = function() {
     TASKS_CARD1_DATA_ELEMENT.showLoader();
@@ -16,8 +17,15 @@ function onOAuthLoad() {
 	});
 }
 
+function onClickNewIndicator(target) {
+    var indicatorPath = target.getAttribute('src');
+    $('#indicator' + global_task_indicator_selected).attr('src', indicatorPath);
+    closeIndicatorPopup();
+}
+
 function onClickIndicator(target, e) {
-    var id = target.parentNode.parentNode.id;
+    var id = target.parentNode.parentNode.id.substring(7);
+    global_task_indicator_selected = id;
     var popup = $('.indicator-popup');
     var posLeft = target.offsetLeft - popup.outerWidth() / 2;
     if (posLeft < 15) {
@@ -30,10 +38,20 @@ function onClickIndicator(target, e) {
     arrow.fadeIn(200);
 }
 
+function closeIndicatorPopup() {
+    var popup = $('.indicator-popup');
+    popup.attr('style', 'display: none;');
+    var arrow = $('.indicator-arrow');
+    arrow.attr('style', 'display: none;');
+}
+
 function addTaskToContainer(taskText, taskId, container, addIndicator) {
     var html = '<div class="task" id="task' + taskId + '">' + taskText + '</div>';
     if (addIndicator) {
-        html = '<div class="task-indicator-wrapper"><img class="task-indicator" onclick="onClickIndicator(this, event)" src="/static/img/task_empty.png" height="15" width="15"></div>' + html;
+        html = '<div class="task-indicator-wrapper"><img class="task-indicator" '
+            + 'id="indicator' + taskId + '" '
+            + 'onclick="onClickIndicator(this, event)" src="/static/img/task_empty.png" height="20" width="20"></div>'
+            + html;
     }
     html = '<div class="task-wrapper" id="wrapper' + taskId + '">' + html + '</div>';
     container.append(html);

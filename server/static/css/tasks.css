@@ -90,6 +90,10 @@ hr {
     background-color: #f0f0f0;
 }
 
+.task-indicator {
+    cursor: pointer;
+}
+
 .column {
     flex: 25%;
     max-width: 25%;
