@@ -1,4 +1,3 @@
-/* ~~~~~ CARD1 ~~~~~ */
 #card1 {
     width: 100%;
     background-color: #F0F0F0;
@@ -57,13 +56,10 @@ hr {
 #card1 .loader:before, #card1 .loader:after {
     background: #F0F0F0;
 }
-/* ~~~~~~~~~~~ */
 
-/* ~~~~~ CARD2 ~~~~~ */
 #card2 {
     width: 100%;
     padding: 20px 20px;
-    /*background-color: #F0F0F0;*/
     background-color: #fff;
 }
 
@@ -78,7 +74,6 @@ hr {
 }
 
 .task-indicator-wrapper {
-    /*display: inline-block;*/
     padding: 0px 0px 0px 5px;
     flex: 15px 0 0;
     height: 100%;
@@ -88,6 +83,7 @@ hr {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .task-wrapper:hover {
@@ -124,8 +120,6 @@ hr {
     font-size: 15px;
     padding: 8px;
     line-height: 15px;
-    /*display: inline-block;*/
-    /*border-bottom: 1px solid #2d333c;*/
     flex-grow: 1;
 }
 
@@ -153,7 +147,23 @@ hr {
   width: 7px;
   height: 40px;
 }
-/* ~~~~~~~~~~~~~~~~~ */
 
-/* ~~~~~ ETC ~~~~~ */
-/* ~~~~~~~~~~~~~~~ */
+.indicator-popup {
+    position: fixed;
+    z-index: 1;
+    background-color: #2d333c;
+    display: inline-block;
+    padding: 10px;
+    -moz-box-shadow: 0 0 10px #666;
+    -webkit-box-shadow: 0 0 10px #666;
+    box-shadow: 0 0 10px #666;
+    border-radius: 10px;
+}
+
+.indicator-arrow {
+    position: fixed;
+    z-index: 1;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #2d333c;
+}

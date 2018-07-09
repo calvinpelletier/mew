@@ -149,6 +149,10 @@ a h5 {
     color: red;
 }
 
+.strikethrough {
+    text-decoration: line-through;
+}
+
 /* switch from https://www.w3schools.com/howto/howto_css_switch.asp */
 .switch {
     position: relative;

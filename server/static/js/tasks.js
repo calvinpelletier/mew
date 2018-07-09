@@ -16,12 +16,22 @@ function onOAuthLoad() {
 	});
 }
 
+function onClickIndicator(target, e) {
+    var id = target.parentNode.parentNode.id;
+    var popup = $('.indicator-popup');
+    popup.removeClass('hidden');
+    popup.attr('style', 'left: ' + (target.offsetLeft - popup.outerWidth() / 2) + 'px; top: ' + (target.offsetTop + 23) + 'px;');
+    var arrow = $('.indicator-arrow');
+    arrow.removeClass('hidden');
+    arrow.attr('style', 'left: ' + (target.offsetLeft - 3) + 'px; top: ' + (target.offsetTop + 13) + 'px;');
+}
+
 function addTaskToContainer(taskText, taskId, container, addIndicator) {
-    var html = '<div class="task" id="' + taskId + '">' + taskText + '</div>';
+    var html = '<div class="task" id="task' + taskId + '">' + taskText + '</div>';
     if (addIndicator) {
-        html = '<div class="task-indicator-wrapper"><img class="task-indicator" src="/static/img/task_empty.png" height="15" width="15"></div>' + html;
+        html = '<div class="task-indicator-wrapper"><img class="task-indicator" onclick="onClickIndicator(this, event)" src="/static/img/task_empty.png" height="15" width="15"></div>' + html;
     }
-    html = '<div class="task-wrapper">' + html + '</div>';
+    html = '<div class="task-wrapper" id="wrapper' + taskId + '">' + html + '</div>';
     container.append(html);
 }
 
