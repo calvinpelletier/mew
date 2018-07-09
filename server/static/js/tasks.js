@@ -19,11 +19,15 @@ function onOAuthLoad() {
 function onClickIndicator(target, e) {
     var id = target.parentNode.parentNode.id;
     var popup = $('.indicator-popup');
-    popup.removeClass('hidden');
-    popup.attr('style', 'left: ' + (target.offsetLeft - popup.outerWidth() / 2) + 'px; top: ' + (target.offsetTop + 23) + 'px;');
+    var posLeft = target.offsetLeft - popup.outerWidth() / 2;
+    if (posLeft < 15) {
+        posLeft = 15;
+    }
+    popup.attr('style', 'display: none; left: ' + posLeft + 'px; top: ' + (target.offsetTop + 23) + 'px;');
+    popup.fadeIn(200);
     var arrow = $('.indicator-arrow');
-    arrow.removeClass('hidden');
-    arrow.attr('style', 'left: ' + (target.offsetLeft - 3) + 'px; top: ' + (target.offsetTop + 13) + 'px;');
+    arrow.attr('style', 'display: none; left: ' + (target.offsetLeft - 3) + 'px; top: ' + (target.offsetTop + 13) + 'px;');
+    arrow.fadeIn(200);
 }
 
 function addTaskToContainer(taskText, taskId, container, addIndicator) {
