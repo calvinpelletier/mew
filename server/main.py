@@ -156,7 +156,8 @@ def get_task_categories():
     else:
         return gen_fail('not authenticated')
 
-    categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid)
+    req = request.get_json()
+    categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid, req['timezone'])
     return gen_resp(True, {'categories': categories})
 
 
@@ -178,6 +179,7 @@ def add_task():
         'task_id': task_id
     })
 
+
 @app.route('/api/tasks/remove', methods=['POST'])
 def remove_task():
     if 'uid' in session:
@@ -189,6 +191,7 @@ def remove_task():
     tasks.remove_task(get_db(DATABASE_PATH), uid, req['task_id'])
     return gen_resp(True, {})
 
+
 @app.route('/api/tasks/finish', methods=['POST'])
 def finish_task():
     if 'uid' in session:
@@ -199,6 +202,7 @@ def finish_task():
     req = request.get_json()
     tasks.finish_task(get_db(DATABASE_PATH), uid, req['timezone'], req['task_id'])
     return gen_resp(True, {})
+
 
 @app.route('/api/tasks/unfinish', methods=['POST'])
 def unfinish_task():

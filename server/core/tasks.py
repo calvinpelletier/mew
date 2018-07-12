@@ -42,7 +42,7 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
     return ret, cur_dow
 
 
-def get_task_categories(db, uid):
+def get_task_categories(db, uid, tz):
     c = db.cursor()
     print uid
     c.execute('SELECT ROWID, name FROM task_categories WHERE uid = ?', (uid,))
@@ -50,6 +50,10 @@ def get_task_categories(db, uid):
     c.execute('SELECT ROWID, task, category, unixdate, completed FROM tasks WHERE uid = ? AND category != -1', (uid,))
     tasks = c.fetchall()
     c.close()
+
+    week_start = get_current_week(tz)
+    days = [calendar.timegm((week_start + datetime.timedelta(days=i)).timetuple()) for i in range(7)]
+
 
     ret = [] # list of dicts
     cid_to_idx = {} # category id to idx in ret of that category
@@ -62,10 +66,14 @@ def get_task_categories(db, uid):
         })
 
     for tid, task, cid, unixdate, completed in tasks:
+        try:
+            dow = days.index(unixdate)
+        except:
+            dow = -1
         ret[cid_to_idx[cid]]['tasks'].append({
             'task_id': tid,
             'task': task,
-            'unixdate': unixdate,
+            'dow': dow,
             'completed': completed
         })
 

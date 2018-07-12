@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     /* ROWID (auto created by sqlite and used by us as task id) */
     uid INTEGER,
     task VARCHAR(255),
-    unixdate BIGINT, /* ts of day start aka unixdate or 0 */
+    unixdate BIGINT, /* ts of day start aka unixdate or 0 if not assigned to a day*/
     category INTEGER, /* -1 for no category */
     completed BIGINT /* 0 or unixdate of completion */
 );

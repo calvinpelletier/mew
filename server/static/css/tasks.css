@@ -48,7 +48,7 @@ hr {
 }
 
 .new-item::placeholder {
-    color: #aaa;
+    color: #777;
     font-family: OpenSans-Regular;
     font-size: 15px;
 }

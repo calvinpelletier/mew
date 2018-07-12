@@ -2,6 +2,8 @@ var _ENTER = 13;
 var TASKS_CARD1_DATA_ELEMENT = new DataElement('#card1', ['.day-container']);
 var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper']);
 var global_task_indicator_selected = null;
+var DOW_TO_DOW_NUM = {'su': 0, 'm': 1, 'tu': 2, 'w': 3, 'th': 4, 'f': 5, 'sa': 6};
+var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
 
 window.onload = function() {
     TASKS_CARD1_DATA_ELEMENT.showLoader();
@@ -26,6 +28,13 @@ function onClickNewIndicator(target) {
             unfinishTask(global_task_indicator_selected);
         } else if (indicatorPath == '/static/img/task_done.png') {
             finishTask(global_task_indicator_selected);
+        } else {
+            if (indicatorPath == '/static/img/task_empty.png') {
+                var dow = 'empty';
+            } else {
+                var dow = indicatorPath.substring(indicatorPath.indexOf('_') + 1, indicatorPath.indexOf('.png'));
+            }
+            assignTaskToDay(global_task_indicator_selected, dow);
         }
     }
 
@@ -33,7 +42,7 @@ function onClickNewIndicator(target) {
 }
 
 function onClickIndicator(target, e) {
-    var id = target.parentNode.parentNode.id.substring(7);
+    var id = target.parentNode.parentNode.id.substring(16);
     global_task_indicator_selected = id;
     var popup = $('.indicator-popup');
     var posLeft = target.offsetLeft - popup.outerWidth() / 2 + 9;
@@ -48,7 +57,7 @@ function onClickIndicator(target, e) {
 }
 
 function onClickTask(target) {
-    var id = target.id.substring(4);
+    var id = target.id.substring(8);
     if (target.classList.contains('task-done')) {
         unfinishTask(id);
     } else {
@@ -63,25 +72,44 @@ function closeIndicatorPopup() {
     arrow.attr('style', 'display: none;');
 }
 
-function addTaskToContainer(taskText, taskId, container, addIndicator, completed) {
-    var done = '';
-    var src = '/static/img/task_empty.png';
+function addTaskToContainer(taskText, taskId, container, completed, indicator='none') {
+    var isDayTask = container.attr('id').startsWith('day');
+
     if (completed != 0) {
-        done = 'task-done';
-        src = '/static/img/task_done.png';
+        var done = 'task-done ';
+        if (!isDayTask) {
+            indicator = 'done';
+        }
+    } else {
+        var done = '';
     }
-    var html = '<div class="task ' + done + '" id="task' + taskId + '" onclick="onClickTask(this)">' + taskText + '</div>';
-    if (addIndicator) {
+
+    if (isDayTask) {
+        var id = 'day-task' + taskId;
+        var wrapperId = 'day-task-wrapper' + taskId;
+    } else {
+        var id = 'cat-task' + taskId;
+        var wrapperId = 'cat-task-wrapper' + taskId;
+    }
+
+    var html = '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' + taskText + '</div>';
+    if (indicator != 'none') {
+        var src = '/static/img/task_' + indicator + '.png';
         html = '<div class="task-indicator-wrapper"><img class="task-indicator" '
             + 'id="indicator' + taskId + '" '
             + 'onclick="onClickIndicator(this, event)" src="' + src + '" height="20" width="20"></div>'
             + html;
     }
-    html = '<div class="task-wrapper" id="wrapper' + taskId + '">' + html + '</div>';
+    html = '<div class="task-wrapper" id="' + wrapperId + '">' + html + '</div>';
+
     container.append(html);
 }
 
 function finishTask(taskId) {
+    $('#day-task' + taskId).addClass('task-done');
+    $('#cat-task' + taskId).addClass('task-done');
+    $('#indicator' + taskId).attr('src', '/static/img/task_done.png');
+
     $.post({
 		url: '/api/tasks/finish',
 		contentType: 'application/json',
@@ -91,8 +119,7 @@ function finishTask(taskId) {
             'task_id': taskId
 		}),
 		success: function(resp) {
-            $('#task' + taskId).addClass('task-done');
-            $('#indicator' + taskId).attr('src', '/static/img/task_done.png');
+
 		},
 		statusCode: {
             500: function() {
@@ -106,6 +133,17 @@ function finishTask(taskId) {
 }
 
 function unfinishTask(taskId) {
+    $('#cat-task' + taskId).removeClass('task-done');
+
+    var dayTask = $('#day-task' + taskId);
+    if (dayTask.length != 0) {
+        dayTask.removeClass('task-done');
+        var dow = dayTask.parent().parent().attr('id').substring(3);
+        $('#indicator' + taskId).attr('src', '/static/img/task_' + DOW_NUM_TO_DOW[dow] + '.png');
+    } else {
+        $('#indicator' + taskId).attr('src', '/static/img/task_empty.png');
+    }
+
     $.post({
 		url: '/api/tasks/unfinish',
 		contentType: 'application/json',
@@ -114,8 +152,7 @@ function unfinishTask(taskId) {
             'task_id': taskId
 		}),
 		success: function(resp) {
-            $('#task' + taskId).removeClass('task-done');
-            $('#indicator' + taskId).attr('src', '/static/img/task_empty.png');
+
 		},
 		statusCode: {
             500: function() {
@@ -126,6 +163,39 @@ function unfinishTask(taskId) {
             // TODO
 		}
 	});
+}
+
+function assignTaskToDay(taskId, dow) {
+    console.log(taskId);
+    console.log(dow);
+    $('#indicator' + taskId).attr('src', '/static/img/task_' + dow + '.png');
+    var dow_num = DOW_TO_DOW_NUM[dow];
+    var task_content = '';
+    // remove the task from its previously assigned day
+    $('#day-task-wrapper' + taskId).remove();
+    // add task to new day
+    addTaskToContainer($('#cat-task' + taskId).text(), taskId, $('#day' + dow_num), 0);
+
+    $.post({
+        url: '/api/tasks/assign',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({
+            'timezone': Intl.DateTimeFormat().resolvedOptions.timeZone,
+            'task_id': taskId,
+            'dow': dow_num,
+        }),
+        success: function(resp) {
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+            // TODO
+		}
+    })
 }
 
 function requestTasksCurWeek() {
@@ -141,7 +211,7 @@ function requestTasksCurWeek() {
                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
 
                 for (var task of resp['tasks']) {
-                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), false, task['completed']);
+                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed']);
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -163,7 +233,9 @@ function requestTaskCategories() {
 		url: '/api/tasks/getcategories',
 		contentType: 'application/json',
 		dataType: 'json',
-		data: JSON.stringify({}),
+		data: JSON.stringify({
+            'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
 		success: function(resp) {
             if (resp['success']) {
                 var i;
@@ -178,7 +250,12 @@ function requestTaskCategories() {
                     $('#col' + ((i+1) % 4).toString()).append(html);
                     var container = $('#cat' + category['cid']);
                     for (var task of category['tasks']) {
-                        addTaskToContainer(task['task'], task['task_id'], container, true, task['completed']);
+                        if (task['dow'] == -1) {
+                            var indicator = 'empty'
+                        } else {
+                            var indicator = DOW_NUM_TO_DOW[parseInt(task['dow'])];
+                        }
+                        addTaskToContainer(task['task'], task['task_id'], container, task['completed'], indicator);
                     }
                 }
                 var addCatHtml = '<div class="add-category"><div class="bar vertical"></div><div class="bar horizontal"></div></div>';
