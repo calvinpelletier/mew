@@ -214,6 +214,18 @@ def unfinish_task():
     req = request.get_json()
     tasks.unfinish_task(get_db(DATABASE_PATH), uid, req['task_id'])
     return gen_resp(True, {})
+
+
+@app.route('/api/tasks/assign', methods=['POST'])
+def assign_task_to_day():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.assign_task_to_day(get_db(DATABASE_PATH), uid, req['task_id'], req['timezone'], int(req['dow']))
+    return gen_resp(True, {})
 # ~~~~~~~~~~~~~~~~
 
 

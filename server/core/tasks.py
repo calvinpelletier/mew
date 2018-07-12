@@ -82,6 +82,7 @@ def get_task_categories(db, uid, tz):
 
 def add_task_by_dow(db, uid, tz, task, dow):
     unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
+    print unixdate
 
     c = db.cursor()
     c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, unixdate, -1, 0))
@@ -100,11 +101,21 @@ def add_task_by_category(db, uid, task, category):
     return task_id
 
 
+def assign_task_to_day(db, uid, task, tz, dow):
+    unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
+
+    c = db.cursor()
+    c.execute('UPDATE tasks SET unixdate = ? WHERE uid = ? AND ROWID = ?', (unixdate, uid, task))
+    db.commit()
+    c.close()
+
+
 def remove_task(db, uid, task_id):
     c = db.cursor()
     c.execute('DELETE FROM tasks WHERE uid = ? AND ROWID = ?', (uid, task_id))
     db.commit()
     c.close()
+
 
 def finish_task(db, uid, tz, task_id):
     unixdate = timezones.cur_unixdate_for_tz(pytz.timezone(tz))
@@ -112,6 +123,7 @@ def finish_task(db, uid, tz, task_id):
     c.execute('UPDATE tasks SET completed = ? WHERE uid = ? AND ROWID = ?', (unixdate, uid, task_id))
     db.commit()
     c.close()
+
 
 def unfinish_task(db, uid, task_id):
     c = db.cursor()

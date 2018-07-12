@@ -181,7 +181,7 @@ function assignTaskToDay(taskId, dow) {
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify({
-            'timezone': Intl.DateTimeFormat().resolvedOptions.timeZone,
+            'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
             'task_id': taskId,
             'dow': dow_num,
         }),
