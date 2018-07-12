@@ -81,8 +81,10 @@ def get_task_categories(db, uid, tz):
 
 
 def add_task_by_dow(db, uid, tz, task, dow):
-    unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
-    print unixdate
+    if dow == -1:
+        unixdate = 0
+    else:
+        unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
 
     c = db.cursor()
     c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, unixdate, -1, 0))

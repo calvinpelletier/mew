@@ -29,11 +29,8 @@ function onClickNewIndicator(target) {
         } else if (indicatorPath == '/static/img/task_done.png') {
             finishTask(global_task_indicator_selected);
         } else {
-            if (indicatorPath == '/static/img/task_empty.png') {
-                var dow = 'empty';
-            } else {
-                var dow = indicatorPath.substring(indicatorPath.indexOf('_') + 1, indicatorPath.indexOf('.png'));
-            }
+            // dow == 'empty' when removing task from a day
+            var dow = indicatorPath.substring(indicatorPath.indexOf('_') + 1, indicatorPath.indexOf('.png'));
             assignTaskToDay(global_task_indicator_selected, dow);
         }
     }
@@ -166,15 +163,19 @@ function unfinishTask(taskId) {
 }
 
 function assignTaskToDay(taskId, dow) {
-    console.log(taskId);
-    console.log(dow);
     $('#indicator' + taskId).attr('src', '/static/img/task_' + dow + '.png');
-    var dow_num = DOW_TO_DOW_NUM[dow];
-    var task_content = '';
+
     // remove the task from its previously assigned day
     $('#day-task-wrapper' + taskId).remove();
-    // add task to new day
-    addTaskToContainer($('#cat-task' + taskId).text(), taskId, $('#day' + dow_num), 0);
+
+    if (dow == 'empty') {
+        var dow_num = -1;
+    } else {
+        var dow_num = DOW_TO_DOW_NUM[dow];
+
+        // add task to new day
+        addTaskToContainer($('#cat-task' + taskId).text(), taskId, $('#day' + dow_num), 0);
+    }
 
     $.post({
         url: '/api/tasks/assign',

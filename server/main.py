@@ -224,7 +224,7 @@ def assign_task_to_day():
         return gen_fail('not authenticated')
 
     req = request.get_json()
-    tasks.assign_task_to_day(get_db(DATABASE_PATH), uid, req['task_id'], req['timezone'], int(req['dow']))
+    tasks.assign_task_to_day(get_db(DATABASE_PATH), uid, req['task_id'], req['timezone'], req['dow'])
     return gen_resp(True, {})
 # ~~~~~~~~~~~~~~~~
 
