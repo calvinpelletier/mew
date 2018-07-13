@@ -298,7 +298,12 @@ function newTaskKeyPress(o, e, type, i) {
             dataType: 'json',
             data: JSON.stringify(data),
             success: function(resp) {
-                addTaskToContainer(resp['task'], resp['task_id'], container, type == 'category');
+                if (type == 'category') {
+                    var indicator = 'empty';
+                } else {
+                    var indicator = 'none';
+                }
+                addTaskToContainer(resp['task'], resp['task_id'], container, 0, indicator);
                 o.value = '';
             },
             statusCode: {
