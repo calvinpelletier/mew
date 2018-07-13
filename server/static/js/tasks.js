@@ -12,6 +12,15 @@ window.onload = function() {
     requestTaskCategories();
 }
 
+window.onclick = function(event) {
+    if (global_task_indicator_selected != null
+        && !event.target.classList.contains('task-indicator')
+        && !event.target.classList.contains('indicator-popup')
+    ) {
+        closeIndicatorPopup();
+    }
+}
+
 function onOAuthLoad() {
     // init google auth
 	gapi.load('auth2', function() {
@@ -67,6 +76,7 @@ function closeIndicatorPopup() {
     popup.attr('style', 'display: none;');
     var arrow = $('.indicator-arrow');
     arrow.attr('style', 'display: none;');
+    global_task_indicator_selected = null;
 }
 
 function addTaskToContainer(taskText, taskId, container, completed, indicator='none') {
