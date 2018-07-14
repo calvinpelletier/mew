@@ -71,6 +71,37 @@ function onClickTask(target) {
     }
 }
 
+function clearFinishedTasks() {
+    // get all elements that start with 'cat-task'
+    var tasks = $('[id^=cat-task]');
+    tasks.each(function() {
+        if (this.classList.contains('task-done')) {
+            // parent is task wrapper
+            this.parentElement.remove();
+        }
+    });
+
+    $.post({
+		url: '/api/tasks/clear-finished',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify({
+            // leaving this in case we need it
+        }),
+		success: function(resp) {
+
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+            // TODO
+		}
+	});
+}
+
 function closeIndicatorPopup() {
     var popup = $('.indicator-popup');
     popup.attr('style', 'display: none;');
@@ -261,6 +292,9 @@ function requestTaskCategories() {
                     $('#col' + ((i+1) % 4).toString()).append(html);
                     var container = $('#cat' + category['cid']);
                     for (var task of category['tasks']) {
+                        // dont show if task was cleared
+                        if (task['cleared']) {continue;}
+
                         if (task['dow'] == -1) {
                             var indicator = 'empty'
                         } else {

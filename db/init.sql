@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS tasks (
     task VARCHAR(255),
     unixdate BIGINT, /* ts of day start aka unixdate or 0 if not assigned to a day*/
     category INTEGER, /* -1 for no category */
-    completed BIGINT /* 0 or unixdate of completion */
+    completed BIGINT, /* 0 or unixdate of completion */
+    cleared TINYINT /* 0/1 for if the user cleared the task (only applies to finished tasks in the category section) */
 );
 
 CREATE TABLE IF NOT EXISTS task_categories (

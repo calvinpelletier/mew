@@ -141,11 +141,11 @@ c.execute('INSERT INTO task_categories VALUES (?, ?)', (1, 'unnamed6'))
 for i in range(10):
     category = choice([-1, randint(1, 10)])
     completed = choice([0, 1])
-    c.execute('INSERT INTO tasks VALUES (?, ?, ?, ?, ?)', (1, gen_task_name(), choice(days), category, completed))
+    c.execute('INSERT INTO tasks VALUES (?, ?, ?, ?, ?, ?)', (1, gen_task_name(), choice(days), category, completed, 0))
 
 # create tasks not assigned to days
 for i in range(50):
-    c.execute('INSERT INTO tasks VALUES (?, ?, ?, ?, ?)', (1, gen_task_name(), 0, randint(1, 10), 0))
+    c.execute('INSERT INTO tasks VALUES (?, ?, ?, ?, ?, ?)', (1, gen_task_name(), 0, randint(1, 10), 0, 0))
 
 db.commit()
 c.close()

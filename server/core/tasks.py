@@ -47,7 +47,7 @@ def get_task_categories(db, uid, tz):
     print uid
     c.execute('SELECT ROWID, name FROM task_categories WHERE uid = ?', (uid,))
     categories = c.fetchall()
-    c.execute('SELECT ROWID, task, category, unixdate, completed FROM tasks WHERE uid = ? AND category != -1', (uid,))
+    c.execute('SELECT ROWID, task, category, unixdate, completed, cleared FROM tasks WHERE uid = ? AND category != -1', (uid,))
     tasks = c.fetchall()
     c.close()
 
@@ -65,7 +65,7 @@ def get_task_categories(db, uid, tz):
             'tasks': []
         })
 
-    for tid, task, cid, unixdate, completed in tasks:
+    for tid, task, cid, unixdate, completed, cleared in tasks:
         try:
             dow = days.index(unixdate)
         except:
@@ -74,7 +74,8 @@ def get_task_categories(db, uid, tz):
             'task_id': tid,
             'task': task,
             'dow': dow,
-            'completed': completed
+            'completed': completed,
+            'cleared': cleared,
         })
 
     return ret
@@ -87,7 +88,7 @@ def add_task_by_dow(db, uid, tz, task, dow):
         unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
 
     c = db.cursor()
-    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, unixdate, -1, 0))
+    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?)', (uid, task, unixdate, -1, 0, 0))
     task_id = c.lastrowid
     db.commit()
     c.close()
@@ -96,7 +97,7 @@ def add_task_by_dow(db, uid, tz, task, dow):
 
 def add_task_by_category(db, uid, task, category):
     c = db.cursor()
-    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?)', (uid, task, 0, category, 0))
+    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?)', (uid, task, 0, category, 0, 0))
     task_id = c.lastrowid
     db.commit()
     c.close()
@@ -130,5 +131,12 @@ def finish_task(db, uid, tz, task_id):
 def unfinish_task(db, uid, task_id):
     c = db.cursor()
     c.execute('UPDATE tasks SET completed = 0 WHERE uid = ? AND ROWID = ?', (uid, task_id))
+    db.commit()
+    c.close()
+
+
+def clear_finished(db, uid):
+    c = db.cursor()
+    c.execute('UPDATE tasks SET cleared = 1 WHERE uid = ? AND completed != 0 AND category != -1', (uid,))
     db.commit()
     c.close()
