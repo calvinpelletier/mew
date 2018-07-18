@@ -178,10 +178,14 @@ hr {
     border-bottom: 10px solid #2d333c;
 }
 
-.clear-finished {
+.card2-links {
     float: right;
     clear: both;
     font-family: OpenSans-Regular;
+}
+
+.card2-link {
+    display: inline-block;
     cursor: pointer;
     text-decoration: underline;
     color: #4286f4;
