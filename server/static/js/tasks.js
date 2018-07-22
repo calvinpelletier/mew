@@ -4,7 +4,20 @@ var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper',
 var global_task_indicator_selected = null;
 var DOW_TO_DOW_NUM = {'su': 0, 'm': 1, 'tu': 2, 'w': 3, 'th': 4, 'f': 5, 'sa': 6};
 var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
-
+var CATEGORY_COLORS = [
+    {'color': '336359', 'text': 'fff'},
+    {'color': 'a5f9a2', 'text': '000'},
+    {'color': '001b47', 'text': 'fff'},
+    {'color': '58e5f4', 'text': '000'},
+    {'color': '561377', 'text': 'fff'},
+    {'color': 'f7be99', 'text': '000'},
+    {'color': '820f1e', 'text': 'fff'},
+    {'color': 'a9b1f9', 'text': '000'},
+    {'color': 'c44400', 'text': 'fff'},
+    {'color': 'f9a9cf', 'text': '000'},
+    {'color': '2a5e00', 'text': 'fff'},
+    {'color': 'e6ea77', 'text': '000'}
+];
 
 window.onload = function() {
     TASKS_CARD1_DATA_ELEMENT.showLoader();
@@ -173,7 +186,9 @@ function requestTaskCategories() {
                 for (i = 0; i < resp['categories'].length; i++) {
                     var category = resp['categories'][i];
                     var html = '<div class="category">'
-                        + '<div class="category-name">' + category['category'] + '</div>'
+                        + '<div class="category-name" style="background-color: #' + CATEGORY_COLORS[i % CATEGORY_COLORS.length]['color']
+                        + '; color: #' + CATEGORY_COLORS[i % CATEGORY_COLORS.length]['text']
+                        + '">' + category['category'] + '</div>'
                         + '<div id="cat' + category['cid'] + '">';
                     html += '</div>';
                     html += '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', ' + category['cid'] + ')">'

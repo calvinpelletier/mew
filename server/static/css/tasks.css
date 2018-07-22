@@ -118,10 +118,11 @@ hr {
 
 .category-name {
     text-align: center;
-    background-color: #2d333c;
+    /*background-color: #2d333c;*/
     color: #fff;
     font-family: Sinkin-Sans300Light;
     font-size: 18px;
+    /*text-shadow: 0px 0px 2px #000000;*/
 }
 
 .task {
