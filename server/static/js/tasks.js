@@ -404,8 +404,16 @@ function assignTaskToDay(taskId, dow) {
     } else {
         var dow_num = DOW_TO_DOW_NUM[dow];
 
+        var category = parseInt($('#cat-task' + taskId).parent().parent().attr('id').substring(3));
+
         // add task to new day
-        addTaskToContainer($('#cat-task' + taskId).text(), taskId, $('#day' + dow_num), 0);
+        addTaskToContainer(
+            $('#cat-task' + taskId).text(),
+            taskId,
+            $('#day' + dow_num),
+            0,
+            'none',
+            CATEGORY_COLORS[category % CATEGORY_COLORS.length]['color']);
     }
 
     $.post({
