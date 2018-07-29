@@ -191,3 +191,13 @@ hr {
     text-decoration: underline;
     color: #4286f4;
 }
+
+.color-strip-wrapper {
+    flex: 7px 0 0;
+}
+
+.color-strip {
+    height: 100%;
+    /*position: absolute;*/
+    /*flex: 1;*/
+}

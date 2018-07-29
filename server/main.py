@@ -135,7 +135,7 @@ def tasks_page():
         return make_response(redirect('/'))
 
 
-@app.route('/api/tasks/getbyweek', methods=['POST'])
+@app.route('/api/tasks/get', methods=['POST'])
 def get_tasks_by_week():
     if 'uid' in session:
         uid = session['uid']
@@ -146,19 +146,34 @@ def get_tasks_by_week():
     timezone = req['timezone']
 
     week_tasks, cur_dow = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
-    return gen_resp(True, {'tasks': week_tasks, 'cur_dow': cur_dow})
-
-
-@app.route('/api/tasks/getcategories', methods=['POST'])
-def get_task_categories():
-    if 'uid' in session:
-        uid = session['uid']
-    else:
-        return gen_fail('not authenticated')
-
-    req = request.get_json()
     categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid, req['timezone'])
-    return gen_resp(True, {'categories': categories})
+    return gen_resp(True, {'week_tasks': week_tasks, 'cur_dow': cur_dow, 'categories': categories})
+
+
+# @app.route('/api/tasks/getbyweek', methods=['POST'])
+# def get_tasks_by_week():
+#     if 'uid' in session:
+#         uid = session['uid']
+#     else:
+#         return gen_fail('not authenticated')
+#
+#     req = request.get_json()
+#     timezone = req['timezone']
+#
+#     week_tasks, cur_dow = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
+#     return gen_resp(True, {'tasks': week_tasks, 'cur_dow': cur_dow})
+#
+#
+# @app.route('/api/tasks/getcategories', methods=['POST'])
+# def get_task_categories():
+#     if 'uid' in session:
+#         uid = session['uid']
+#     else:
+#         return gen_fail('not authenticated')
+#
+#     req = request.get_json()
+#     categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid, req['timezone'])
+#     return gen_resp(True, {'categories': categories})
 
 
 @app.route('/api/tasks/add', methods=['POST'])

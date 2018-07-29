@@ -22,8 +22,7 @@ var CATEGORY_COLORS = [
 window.onload = function() {
     TASKS_CARD1_DATA_ELEMENT.showLoader();
     TASKS_CARD2_DATA_ELEMENT.showLoader();
-    requestTasksCurWeek();
-    requestTaskCategories();
+    requestTasks();
 }
 
 
@@ -141,9 +140,9 @@ function newTaskKeyPress(o, e, type, i) {
 // ~~~~~~~~~~~~~
 // FROM SERVER
 // ~~~~~~~~~~~~~
-function requestTasksCurWeek() {
+function requestTasks() {
     $.post({
-		url: '/api/tasks/getbyweek',
+        url: '/api/tasks/get',
 		contentType: 'application/json',
 		dataType: 'json',
 		data: JSON.stringify({
@@ -151,43 +150,13 @@ function requestTasksCurWeek() {
 		}),
 		success: function(resp) {
             if (resp['success']) {
-                $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
-
-                for (var task of resp['tasks']) {
-                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed']);
-                }
-
-                TASKS_CARD1_DATA_ELEMENT.hideLoader();
-            }
-		},
-		statusCode: {
-            500: function() {
-              this.fail();
-            }
-        },
-		fail: function() {
-            // TODO
-		}
-	});
-}
-
-
-function requestTaskCategories() {
-    $.post({
-		url: '/api/tasks/getcategories',
-		contentType: 'application/json',
-		dataType: 'json',
-		data: JSON.stringify({
-            'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-        }),
-		success: function(resp) {
-            if (resp['success']) {
+                // task categories
                 var i;
                 for (i = 0; i < resp['categories'].length; i++) {
                     var category = resp['categories'][i];
                     var html = '<div class="category">'
-                        + '<div class="category-name" style="background-color: #' + CATEGORY_COLORS[i % CATEGORY_COLORS.length]['color']
-                        + '; color: #' + CATEGORY_COLORS[i % CATEGORY_COLORS.length]['text']
+                        + '<div class="category-name" style="background-color: #' + CATEGORY_COLORS[category['cid'] % CATEGORY_COLORS.length]['color']
+                        + '; color: #' + CATEGORY_COLORS[category['cid'] % CATEGORY_COLORS.length]['text']
                         + '">' + category['category'] + '</div>'
                         + '<div id="cat' + category['cid'] + '">';
                     html += '</div>';
@@ -213,6 +182,20 @@ function requestTaskCategories() {
                 // $('#col' + ((i+1) % 4).toString()).append(addCatHtml);
 
                 TASKS_CARD2_DATA_ELEMENT.hideLoader();
+
+                // week tasks
+                $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
+
+                for (var task of resp['week_tasks']) {
+                    if (task['category'] == -1) {
+                        var color = 'none';
+                    } else {
+                        var color = CATEGORY_COLORS[task['category'] % CATEGORY_COLORS.length]['color'];
+                    }
+                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed'], 'none', color);
+                }
+
+                TASKS_CARD1_DATA_ELEMENT.hideLoader();
             }
 		},
 		statusCode: {
@@ -225,6 +208,91 @@ function requestTaskCategories() {
 		}
 	});
 }
+
+// function requestTasksCurWeek() {
+//     $.post({
+// 		url: '/api/tasks/getbyweek',
+// 		contentType: 'application/json',
+// 		dataType: 'json',
+// 		data: JSON.stringify({
+// 			'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+// 		}),
+// 		success: function(resp) {
+//             if (resp['success']) {
+//                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
+//
+//                 for (var task of resp['tasks']) {
+//                     addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed']);
+//                 }
+//
+//                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
+//             }
+// 		},
+// 		statusCode: {
+//             500: function() {
+//               this.fail();
+//             }
+//         },
+// 		fail: function() {
+//             // TODO
+// 		}
+// 	});
+// }
+//
+//
+// function requestTaskCategories() {
+//     $.post({
+// 		url: '/api/tasks/getcategories',
+// 		contentType: 'application/json',
+// 		dataType: 'json',
+// 		data: JSON.stringify({
+//             'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+//         }),
+// 		success: function(resp) {
+//             if (resp['success']) {
+//                 var i;
+//                 for (i = 0; i < resp['categories'].length; i++) {
+//                     var category = resp['categories'][i];
+//                     var html = '<div class="category">'
+//                         + '<div class="category-name" style="background-color: #' + CATEGORY_COLORS[i % CATEGORY_COLORS.length]['color']
+//                         + '; color: #' + CATEGORY_COLORS[i % CATEGORY_COLORS.length]['text']
+//                         + '">' + category['category'] + '</div>'
+//                         + '<div id="cat' + category['cid'] + '">';
+//                     html += '</div>';
+//                     html += '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', ' + category['cid'] + ')">'
+//                     html += '</div>';
+//                     $('#col' + ((i+1) % 4).toString()).append(html);
+//                     var container = $('#cat' + category['cid']);
+//                     for (var task of category['tasks']) {
+//                         // dont show if task was cleared
+//                         if (task['cleared']) {continue;}
+//
+//                         if (task['dow'] == -1) {
+//                             var indicator = 'empty'
+//                         } else {
+//                             var indicator = DOW_NUM_TO_DOW[parseInt(task['dow'])];
+//                         }
+//                         addTaskToContainer(task['task'], task['task_id'], container, task['completed'], indicator);
+//                     }
+//                 }
+//
+//                 // add category
+//                 // var addCatHtml = '<div class="add-category"><div class="bar vertical"></div><div class="bar horizontal"></div></div>';
+//                 // $('#col' + ((i+1) % 4).toString()).append(addCatHtml);
+//
+//                 TASKS_CARD2_DATA_ELEMENT.hideLoader();
+//             }
+// 		},
+// 		statusCode: {
+//             500: function() {
+//               this.fail();
+//             }
+//         },
+// 		fail: function() {
+//             // TODO
+// 		}
+// 	});
+// }
 // ~~~~~~~~~~~~~
 
 
@@ -376,7 +444,7 @@ function closeIndicatorPopup() {
 }
 
 
-function addTaskToContainer(taskText, taskId, container, completed, indicator='none') {
+function addTaskToContainer(taskText, taskId, container, completed, indicator='none', color='none') {
     var isDayTask = container.attr('id').startsWith('day');
 
     if (completed != 0) {
@@ -404,7 +472,13 @@ function addTaskToContainer(taskText, taskId, container, completed, indicator='n
             + 'onclick="onClickIndicator(this, event)" src="' + src + '" height="20" width="20"></div>'
             + html;
     }
-    html = '<div class="task-wrapper" id="' + wrapperId + '">' + html + '</div>';
+    if (color != 'none') {
+        html = '<div class="color-strip-wrapper"><div class="color-strip" style="background-color: #' + color + '"></div></div>' + html;
+        var stretch = ' style="align-items: stretch"';
+    } else {
+        var stretch = '';
+    }
+    html = '<div class="task-wrapper" id="' + wrapperId + '"' + stretch + '>' + html + '</div>';
 
     container.append(html);
 }
