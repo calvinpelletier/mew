@@ -150,32 +150,6 @@ def get_tasks_by_week():
     return gen_resp(True, {'week_tasks': week_tasks, 'cur_dow': cur_dow, 'categories': categories})
 
 
-# @app.route('/api/tasks/getbyweek', methods=['POST'])
-# def get_tasks_by_week():
-#     if 'uid' in session:
-#         uid = session['uid']
-#     else:
-#         return gen_fail('not authenticated')
-#
-#     req = request.get_json()
-#     timezone = req['timezone']
-#
-#     week_tasks, cur_dow = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
-#     return gen_resp(True, {'tasks': week_tasks, 'cur_dow': cur_dow})
-#
-#
-# @app.route('/api/tasks/getcategories', methods=['POST'])
-# def get_task_categories():
-#     if 'uid' in session:
-#         uid = session['uid']
-#     else:
-#         return gen_fail('not authenticated')
-#
-#     req = request.get_json()
-#     categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid, req['timezone'])
-#     return gen_resp(True, {'categories': categories})
-
-
 @app.route('/api/tasks/add', methods=['POST'])
 def add_task():
     if 'uid' in session:
@@ -252,6 +226,18 @@ def clear_finished():
 
     tasks.clear_finished(get_db(DATABASE_PATH), uid)
     return gen_resp(True, {})
+
+
+@app.route('/api/tasks/add-category', methods=['POST'])
+def add_task_category():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    resp = tasks.add_category(get_db(DATABASE_PATH), uid, req['name'])
+    return gen_resp(True, resp)
 # ~~~~~~~~~~~~~~~~
 
 

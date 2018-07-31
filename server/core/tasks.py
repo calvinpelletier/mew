@@ -44,8 +44,7 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
 
 def get_task_categories(db, uid, tz):
     c = db.cursor()
-    print uid
-    c.execute('SELECT ROWID, name FROM task_categories WHERE uid = ?', (uid,))
+    c.execute('SELECT ROWID, name, column, row, color FROM task_categories WHERE uid = ?', (uid,))
     categories = c.fetchall()
     c.execute('SELECT ROWID, task, category, unixdate, completed, cleared FROM tasks WHERE uid = ? AND category != -1', (uid,))
     tasks = c.fetchall()
@@ -54,14 +53,16 @@ def get_task_categories(db, uid, tz):
     week_start = get_current_week(tz)
     days = [calendar.timegm((week_start + datetime.timedelta(days=i)).timetuple()) for i in range(7)]
 
-
     ret = [] # list of dicts
     cid_to_idx = {} # category id to idx in ret of that category
-    for cid, category in categories:
+    for cid, name, column, row, color in categories:
         cid_to_idx[cid] = len(ret)
         ret.append({
             'cid': cid,
-            'category': category,
+            'name': name,
+            'color': color,
+            'column': column,
+            'row': row,
             'tasks': []
         })
 
@@ -79,6 +80,47 @@ def get_task_categories(db, uid, tz):
         })
 
     return ret
+
+
+def add_category(db, uid, name):
+    N_COLUMNS = 4
+    CATEGORY_COLORS = [
+        '336359',
+        'a5f9a2',
+        '001b47',
+        '58e5f4',
+        '561377',
+        'f7be99',
+        '820f1e',
+        'a9b1f9',
+        'c44400',
+        'f9a9cf',
+        '2a5e00',
+        'e6ea77',
+    ]
+
+    c = db.cursor()
+    c.execute('SELECT column, row FROM task_categories WHERE uid = ?', (uid,))
+    categories = c.fetchall()
+    n_categories = len(categories)
+    c.close()
+
+    rows_per_column = [0] * N_COLUMNS
+    for col, row in categories:
+        if rows_per_column[col] < row:
+            rows_per_column[col] = row
+
+    color = CATEGORY_COLORS[n_categories % len(CATEGORY_COLORS)]
+    column = n_categories % N_COLUMNS
+    row = rows_per_column[column]
+
+    c = db.cursor()
+    c.execute('INSERT INTO task_categories VALUES (?,?,?,?,?)', (uid, name, column, row, color))
+    cid = c.lastrowid
+    db.commit()
+    c.close()
+
+    return {'cid': cid, 'column': column, 'color': color}
 
 
 def add_task_by_dow(db, uid, tz, task, dow):

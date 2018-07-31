@@ -4,20 +4,7 @@ var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper',
 var global_task_indicator_selected = null;
 var DOW_TO_DOW_NUM = {'su': 0, 'm': 1, 'tu': 2, 'w': 3, 'th': 4, 'f': 5, 'sa': 6};
 var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
-var CATEGORY_COLORS = [
-    {'color': '336359', 'text': 'fff'},
-    {'color': 'a5f9a2', 'text': '000'},
-    {'color': '001b47', 'text': 'fff'},
-    {'color': '58e5f4', 'text': '000'},
-    {'color': '561377', 'text': 'fff'},
-    {'color': 'f7be99', 'text': '000'},
-    {'color': '820f1e', 'text': 'fff'},
-    {'color': 'a9b1f9', 'text': '000'},
-    {'color': 'c44400', 'text': 'fff'},
-    {'color': 'f9a9cf', 'text': '000'},
-    {'color': '2a5e00', 'text': 'fff'},
-    {'color': 'e6ea77', 'text': '000'}
-];
+var global_category_colors = {};
 
 window.onload = function() {
     TASKS_CARD1_DATA_ELEMENT.showLoader();
@@ -108,6 +95,7 @@ function newTaskKeyPress(o, e, type, i) {
             data['category'] = i;
         }
 
+
         $.post({
             url: '/api/tasks/add',
             contentType: 'application/json',
@@ -134,6 +122,30 @@ function newTaskKeyPress(o, e, type, i) {
 
     }
 }
+
+function onClickAddCategory() {
+    // send category to server with 'unnamed' as title
+    $.post({
+        url: '/api/tasks/add-category',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({'name': 'unnamed'}),
+        success: function(resp) {
+            if (resp['success']) {
+                console.log(resp);
+                addCategoryToCol(resp['cid'], 'unnamed', resp['color'], resp['column']);
+            }
+        },
+        statusCode: {
+            500: function() {
+                this.fail();
+            }
+        },
+        fail: function() {
+            // TODO
+        }
+    });
+}
 // ~~~~~~~~~~~~~
 
 
@@ -150,20 +162,17 @@ function requestTasks() {
 		}),
 		success: function(resp) {
             if (resp['success']) {
-                // task categories
-                var i;
-                for (i = 0; i < resp['categories'].length; i++) {
-                    var category = resp['categories'][i];
-                    var html = '<div class="category">'
-                        + '<div class="category-name" style="background-color: #' + CATEGORY_COLORS[category['cid'] % CATEGORY_COLORS.length]['color']
-                        + '; color: #' + CATEGORY_COLORS[category['cid'] % CATEGORY_COLORS.length]['text']
-                        + '">' + category['category'] + '</div>'
-                        + '<div id="cat' + category['cid'] + '">';
-                    html += '</div>';
-                    html += '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', ' + category['cid'] + ')">'
-                    html += '</div>';
-                    $('#col' + ((i+1) % 4).toString()).append(html);
-                    var container = $('#cat' + category['cid']);
+                // TASK CATEGORIES
+                // sort by row before adding to columns sequentially
+                resp['categories'].sort(function(a,b) {
+                    return (a['row'] > b['row']) ? 1 : ((b['row'] > a['row']) ? -1 : 0);
+                });
+
+                for (var category of resp['categories']) {
+                    global_category_colors[category['cid']] = category['color'];
+                    console.log(category);
+                    addCategoryToCol(category['cid'], category['name'], category['color'], category['column']);
+
                     for (var task of category['tasks']) {
                         // dont show if task was cleared
                         if (task['cleared']) {continue;}
@@ -173,24 +182,19 @@ function requestTasks() {
                         } else {
                             var indicator = DOW_NUM_TO_DOW[parseInt(task['dow'])];
                         }
-                        addTaskToContainer(task['task'], task['task_id'], container, task['completed'], indicator);
+                        addTaskToContainer(task['task'], task['task_id'], $('#cat' + category['cid']), task['completed'], indicator);
                     }
                 }
 
-                // add category
-                // var addCatHtml = '<div class="add-category"><div class="bar vertical"></div><div class="bar horizontal"></div></div>';
-                // $('#col' + ((i+1) % 4).toString()).append(addCatHtml);
-
                 TASKS_CARD2_DATA_ELEMENT.hideLoader();
 
-                // week tasks
+                // WEEK TASKS
                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
-
                 for (var task of resp['week_tasks']) {
                     if (task['category'] == -1) {
                         var color = 'none';
                     } else {
-                        var color = CATEGORY_COLORS[task['category'] % CATEGORY_COLORS.length]['color'];
+                        var color = global_category_colors[task['category']];
                     }
                     addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed'], 'none', color);
                 }
@@ -208,91 +212,6 @@ function requestTasks() {
 		}
 	});
 }
-
-// function requestTasksCurWeek() {
-//     $.post({
-// 		url: '/api/tasks/getbyweek',
-// 		contentType: 'application/json',
-// 		dataType: 'json',
-// 		data: JSON.stringify({
-// 			'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-// 		}),
-// 		success: function(resp) {
-//             if (resp['success']) {
-//                 $('#day' + resp['cur_dow'] + '-container').addClass('today-container');
-//
-//                 for (var task of resp['tasks']) {
-//                     addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed']);
-//                 }
-//
-//                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
-//             }
-// 		},
-// 		statusCode: {
-//             500: function() {
-//               this.fail();
-//             }
-//         },
-// 		fail: function() {
-//             // TODO
-// 		}
-// 	});
-// }
-//
-//
-// function requestTaskCategories() {
-//     $.post({
-// 		url: '/api/tasks/getcategories',
-// 		contentType: 'application/json',
-// 		dataType: 'json',
-// 		data: JSON.stringify({
-//             'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-//         }),
-// 		success: function(resp) {
-//             if (resp['success']) {
-//                 var i;
-//                 for (i = 0; i < resp['categories'].length; i++) {
-//                     var category = resp['categories'][i];
-//                     var html = '<div class="category">'
-//                         + '<div class="category-name" style="background-color: #' + CATEGORY_COLORS[i % CATEGORY_COLORS.length]['color']
-//                         + '; color: #' + CATEGORY_COLORS[i % CATEGORY_COLORS.length]['text']
-//                         + '">' + category['category'] + '</div>'
-//                         + '<div id="cat' + category['cid'] + '">';
-//                     html += '</div>';
-//                     html += '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', ' + category['cid'] + ')">'
-//                     html += '</div>';
-//                     $('#col' + ((i+1) % 4).toString()).append(html);
-//                     var container = $('#cat' + category['cid']);
-//                     for (var task of category['tasks']) {
-//                         // dont show if task was cleared
-//                         if (task['cleared']) {continue;}
-//
-//                         if (task['dow'] == -1) {
-//                             var indicator = 'empty'
-//                         } else {
-//                             var indicator = DOW_NUM_TO_DOW[parseInt(task['dow'])];
-//                         }
-//                         addTaskToContainer(task['task'], task['task_id'], container, task['completed'], indicator);
-//                     }
-//                 }
-//
-//                 // add category
-//                 // var addCatHtml = '<div class="add-category"><div class="bar vertical"></div><div class="bar horizontal"></div></div>';
-//                 // $('#col' + ((i+1) % 4).toString()).append(addCatHtml);
-//
-//                 TASKS_CARD2_DATA_ELEMENT.hideLoader();
-//             }
-// 		},
-// 		statusCode: {
-//             500: function() {
-//               this.fail();
-//             }
-//         },
-// 		fail: function() {
-//             // TODO
-// 		}
-// 	});
-// }
 // ~~~~~~~~~~~~~
 
 
@@ -413,7 +332,8 @@ function assignTaskToDay(taskId, dow) {
             $('#day' + dow_num),
             0,
             'none',
-            CATEGORY_COLORS[category % CATEGORY_COLORS.length]['color']);
+            global_category_colors[category]
+        );
     }
 
     $.post({
@@ -437,6 +357,9 @@ function assignTaskToDay(taskId, dow) {
 		}
     })
 }
+
+// there's also code to server in newTaskKeyPress and onClickAddCategory in input section
+
 // ~~~~~~~~~~~~~
 
 
@@ -489,5 +412,24 @@ function addTaskToContainer(taskText, taskId, container, completed, indicator='n
     html = '<div class="task-wrapper" id="' + wrapperId + '"' + stretch + '>' + html + '</div>';
 
     container.append(html);
+}
+
+function addCategoryToCol(cid, name, color, column) {
+    var html = '<div class="category">'
+        + '<div class="category-name" style="background-color: #' + color
+        + '; color: #' + bgColorToTextColor(color) + '">' + name
+        + '</div>' + '<div id="cat' + cid + '">' + '</div>'
+        + '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', '
+        + cid + ')">' + '</div>';
+    $('#col' + column.toString()).append(html);
+}
+
+// returns white if average rgb value is <128 and black otherwise
+function bgColorToTextColor(bg) {
+    if ((parseInt(bg.substring(0,2), 16) + parseInt(bg.substring(2,4), 16) + parseInt(bg.substring(4,6), 16)) < 128 * 3) {
+        return 'ffffff';
+    } else {
+        return '000000';
+    }
 }
 // ~~~~~~~~~~~~~
