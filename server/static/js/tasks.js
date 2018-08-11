@@ -20,7 +20,6 @@ function onOAuthLoad() {
 	});
 }
 
-
 // ~~~~~~~~~~~~~
 // INPUT FUNCTIONS
 // ~~~~~~~~~~~~~
@@ -132,7 +131,6 @@ function onClickAddCategory() {
         data: JSON.stringify({'name': 'unnamed'}),
         success: function(resp) {
             if (resp['success']) {
-                console.log(resp);
                 addCategoryToCol(resp['cid'], 'unnamed', resp['color'], resp['column']);
             }
         },
@@ -145,6 +143,36 @@ function onClickAddCategory() {
             // TODO
         }
     });
+}
+
+
+function onMouseOverCatTitle(o) {
+    var parent = $(o);
+    var pencil = parent.find('img');
+    if (parent.find('.rename-cat').hasClass('hidden')) {
+        // if we're not in edit mode
+        pencil.removeClass('hidden');
+    }
+}
+
+function onMouseOutCatTitle(o) {
+    var pencil = o.getElementsByTagName('img')[0];
+    pencil.classList.add('hidden');
+}
+
+
+function onClickEditCat(o) {
+    var pencil = $(o);
+    var parent = pencil.parent();
+    var input = parent.find('.rename-cat');
+    parent.find('.category-name-text').addClass('hidden');
+    input.removeClass('hidden');
+    pencil.addClass('hidden');
+    input.select();
+}
+
+function renameCatKeyPress(o, e, cid) {
+    // TODO
 }
 // ~~~~~~~~~~~~~
 
@@ -170,7 +198,6 @@ function requestTasks() {
 
                 for (var category of resp['categories']) {
                     global_category_colors[category['cid']] = category['color'];
-                    console.log(category);
                     addCategoryToCol(category['cid'], category['name'], category['color'], category['column']);
 
                     for (var task of category['tasks']) {
@@ -398,7 +425,7 @@ function addTaskToContainer(taskText, taskId, container, completed, indicator='n
     var html = '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' + taskText + '</div>';
     if (indicator != 'none') {
         var src = '/static/img/task_' + indicator + '.png';
-        html = '<div class="task-indicator-wrapper"><img class="task-indicator" '
+        html = '<div class="task-indicator-wrapper"><img class="clickable" '
             + 'id="indicator' + taskId + '" '
             + 'onclick="onClickIndicator(this, event)" src="' + src + '" height="20" width="20"></div>'
             + html;
@@ -415,9 +442,19 @@ function addTaskToContainer(taskText, taskId, container, completed, indicator='n
 }
 
 function addCategoryToCol(cid, name, color, column) {
+    var textColor = bgColorToTextColor(color);
+    if (textColor == 'ffffff') {
+        var pencil = '/static/img/pencil_white.png';
+    } else { // text color is black
+        var pencil = '/static/img/pencil_black.png';
+    }
+
     var html = '<div class="category">'
-        + '<div class="category-name" style="background-color: #' + color
-        + '; color: #' + bgColorToTextColor(color) + '">' + name
+        + '<div class="category-name" style="background-color: #' + color + '; color: #' + textColor + '"'
+        + 'onmouseover="onMouseOverCatTitle(this)" onmouseout="onMouseOutCatTitle(this)">'
+        + '<span class="category-name-text">' + name + '</span>'
+        + '<input class="rename-cat hidden" type="text" style="color: #' + textColor + '" onkeypress="renameCatKeyPress(this, event, ' + cid + ')" value="' + name + '">'
+        + '<img class="clickable edit-cat hidden" onclick="onClickEditCat(this, event)" height="20" width="20" src="' + pencil + '">'
         + '</div>' + '<div id="cat' + cid + '">' + '</div>'
         + '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', '
         + cid + ')">' + '</div>';

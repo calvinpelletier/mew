@@ -53,6 +53,19 @@ hr {
     font-size: 15px;
 }
 
+.rename-cat {
+    background: transparent;
+    height: 100%;
+    border: 0px;
+    width: 80%;
+}
+
+.rename-cat::placeholder {
+    color: #777;
+    /*font-family: OpenSans-Regular;
+    font-size: 15px;*/
+}
+
 #card1 .loader:before, #card1 .loader:after {
     background: #F0F0F0;
 }
@@ -89,10 +102,6 @@ hr {
 
 .task-wrapper:hover {
     background-color: #f0f0f0;
-}
-
-.task-indicator {
-    cursor: pointer;
 }
 
 .task-done {
@@ -200,4 +209,9 @@ hr {
     height: 100%;
     /*position: absolute;*/
     /*flex: 1;*/
+}
+
+.edit-cat {
+    float: right;
+    padding: 2px 2px 0 0;
 }

@@ -125,6 +125,10 @@ a h5 {
     display: none;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 #toast-container > div {
     opacity:1;
 }
