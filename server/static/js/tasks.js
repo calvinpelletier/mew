@@ -172,7 +172,11 @@ function onClickEditCat(o) {
 }
 
 function renameCatKeyPress(o, e, cid) {
-    // TODO
+    if (e.keyCode == _ENTER) {
+        var newName = o.value;
+        uneditCategory(cid);
+        renameCategory(cid, newName);
+    }
 }
 // ~~~~~~~~~~~~~
 
