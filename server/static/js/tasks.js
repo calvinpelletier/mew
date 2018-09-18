@@ -386,7 +386,29 @@ function assignTaskToDay(taskId, dow) {
 		fail: function() {
             // TODO
 		}
-    })
+    });
+}
+
+function renameCategory(cid, newName) {
+    $.post({
+        url: '/api/tasks/rename-category',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({
+            'cid': cid,
+            'new_name': newName,
+        }),
+        success: function(resp) {
+        },
+        statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+        fail: function() {
+            // TODO
+        }
+    });
 }
 
 // there's also code to server in newTaskKeyPress and onClickAddCategory in input section
@@ -472,5 +494,14 @@ function bgColorToTextColor(bg) {
     } else {
         return '000000';
     }
+}
+
+function uneditCategory(cid) {
+    var cat = $('#cat' + cid).parent();
+    var label = cat.find('span');
+    var input = cat.find('.rename-cat');
+    label.html(input.val());
+    label.removeClass('hidden');
+    input.addClass('hidden');
 }
 // ~~~~~~~~~~~~~

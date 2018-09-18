@@ -182,3 +182,10 @@ def clear_finished(db, uid):
     c.execute('UPDATE tasks SET cleared = 1 WHERE uid = ? AND completed != 0 AND category != -1', (uid,))
     db.commit()
     c.close()
+
+
+def rename_category(db, uid, cid, new_name):
+    c = db.cursor()
+    c.execute('UPDATE task_categories SET name = ? WHERE uid = ? AND ROWID = ?', (new_name, uid, cid))
+    db.commit()
+    c.close()

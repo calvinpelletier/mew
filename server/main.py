@@ -238,6 +238,18 @@ def add_task_category():
     req = request.get_json()
     resp = tasks.add_category(get_db(DATABASE_PATH), uid, req['name'])
     return gen_resp(True, resp)
+
+
+@app.route('/api/tasks/rename-category', methods=['POST'])
+def rename_task_category():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    resp = tasks.rename_category(get_db(DATABASE_PATH), uid, req['cid'], req['new_name'])
+    return gen_resp(True, resp)
 # ~~~~~~~~~~~~~~~~
 
 
