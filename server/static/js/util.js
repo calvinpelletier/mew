@@ -36,6 +36,15 @@ Number.prototype.pad = function(size) {
     return s;
 }
 
+function randomString(len) {
+    var str = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < len; i++) {
+        str += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return str;
+}
+
 function formatTime(value, allowBeyondHours) {
   if (allowBeyondHours == null) {
       allowBeyondHours = false;
@@ -108,8 +117,3 @@ var DataElement = (function() {
 
     return DataElement;
 })();
-
-var CARD0_DATA_ELEMENT = new DataElement('#card0', ['#today']);
-var CARD1_DATA_ELEMENT = new DataElement('#card1', ['#chart0']);
-var CARD2_DATA_ELEMENT = new DataElement('#card2', ['#chart1']);
-var SETTINGS_DATA_ELEMENT = new DataElement('div#settings-content', ['.settings-section-a', '.settings-section-b']);

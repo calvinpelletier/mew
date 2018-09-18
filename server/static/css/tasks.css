@@ -1,0 +1,217 @@
+#card1 {
+    width: 100%;
+    background-color: #F0F0F0;
+    /*background-color: #2d333c;*/
+    padding: 20px 20px;
+    display: inline-flex;
+}
+
+.day-container {
+    flex-basis: 12.5%;
+    margin: 0 2px;
+    background-color: #fff;
+    -moz-box-shadow: 0 0 10px #666;
+    -webkit-box-shadow: 0 0 10px #666;
+    box-shadow: 0 0 10px #666;
+}
+
+.day-header {
+    text-align: center;
+    font-family: Sinkin-Sans200XLight;
+    font-size: 20px;
+    color: #fff;
+    background-color: #2d333c;
+}
+
+.today-container > .day-header {
+    background-color: #31c4e9;
+    color: #000;
+}
+
+hr {
+    width: 50%;
+    margin: 0px auto;
+    border-top: 1px solid #999;
+}
+
+.today-container {
+    flex-basis: 25% !important;
+}
+
+.new-item {
+    padding: 8px;
+    font-family: OpenSans-Regular;
+    font-size: 15px;
+    height: 27px;
+    border: 0px;
+    width: 100%;
+}
+
+.new-item::placeholder {
+    color: #777;
+    font-family: OpenSans-Regular;
+    font-size: 15px;
+}
+
+.rename-cat {
+    background: transparent;
+    height: 100%;
+    border: 0px;
+    width: 80%;
+}
+
+.rename-cat::placeholder {
+    color: #777;
+    /*font-family: OpenSans-Regular;
+    font-size: 15px;*/
+}
+
+#card1 .loader:before, #card1 .loader:after {
+    background: #F0F0F0;
+}
+
+#card2 {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #fff;
+}
+
+#card2 .loader:before, #card2 .loader:after {
+    background: #fff;
+}
+
+#categories-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 4px;
+    width: 100%;
+}
+
+.task-indicator-wrapper {
+    padding: 0px 0px 0px 5px;
+    flex: 15px 0 0;
+    height: 100%;
+}
+
+.task-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.task-wrapper:hover {
+    background-color: #f0f0f0;
+}
+
+.task-done {
+    text-decoration: line-through;
+    color: #999 !important;
+}
+
+.column {
+    flex: 25%;
+    max-width: 25%;
+    padding: 0 7px;
+}
+
+.category {
+    margin-top: 8px;
+    vertical-align: middle;
+    background-color: #fff;
+    margin-bottom: 15px;
+    -moz-box-shadow: 0 0 10px #666;
+    -webkit-box-shadow: 0 0 10px #666;
+    box-shadow: 0 0 10px #666;
+}
+
+.category-name {
+    text-align: center;
+    /*background-color: #2d333c;*/
+    color: #fff;
+    font-family: Sinkin-Sans300Light;
+    font-size: 18px;
+    /*text-shadow: 0px 0px 2px #000000;*/
+}
+
+.task {
+    color: #000;
+    font-family: OpenSans-Regular;
+    font-size: 15px;
+    padding: 8px;
+    line-height: 15px;
+    flex-grow: 1;
+}
+
+.add-category {
+    margin-top: 8px;
+    height: 100px;
+    border: 3px dashed #2d333c;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bar {
+  margin: 0 auto;
+  position: absolute;
+  background-color: #2d333c;
+}
+
+.horizontal {
+    width: 40px;
+    height: 7px;
+}
+
+.vertical {
+  width: 7px;
+  height: 40px;
+}
+
+.indicator-popup {
+    position: absolute;
+    z-index: 1;
+    background-color: #2d333c;
+    display: inline-block;
+    padding: 10px;
+    -moz-box-shadow: 0 0 10px #666;
+    -webkit-box-shadow: 0 0 10px #666;
+    box-shadow: 0 0 10px #666;
+    border-radius: 10px;
+}
+
+.indicator-arrow {
+    position: absolute;
+    z-index: 1;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #2d333c;
+}
+
+.card2-links {
+    float: right;
+    clear: both;
+    font-family: OpenSans-Regular;
+}
+
+.card2-link {
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: underline;
+    color: #4286f4;
+}
+
+.color-strip-wrapper {
+    flex: 7px 0 0;
+}
+
+.color-strip {
+    height: 100%;
+    /*position: absolute;*/
+    /*flex: 1;*/
+}
+
+.edit-cat {
+    float: right;
+    padding: 2px 2px 0 0;
+}

@@ -7,9 +7,11 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 
 from core import *
-from core import authentication, concurrency, event_analysis, event_storage, log, ping, quota, unproductive
+from core import authentication, concurrency, event_analysis, event_storage, log, ping, quota, unproductive, tasks
 from core.log import *
 from core.util import *
+
+from time import sleep # for testing only
 
 OAUTH_URL = '385569473349-1192ich7o73apbpmu48c4lc32soqgqjk.apps.googleusercontent.com'
 
@@ -106,6 +108,149 @@ def graph():
     else:
         warn("uid cookie is None when requesting graph page...")
         return make_response(redirect('/'))
+
+
+# ~~~~~ TASKS ~~~~~
+@app.route('/tasks/')
+def tasks_page():
+    if 'uid' in session:
+        uid = session['uid']
+        try:
+            user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+        except:
+            # the user somehow got deleted from the db
+            session.pop('uid')
+            return make_response(redirect('/'))
+
+        if is_mobile():
+            template = 'm_tasks.html'
+        else:
+            template = 'tasks.html'
+
+        return render_template(
+            template,
+            email=user_email)
+    else:
+        warn("uid cookie is None when requesting graph page...")
+        return make_response(redirect('/'))
+
+
+@app.route('/api/tasks/get', methods=['POST'])
+def get_tasks_by_week():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    timezone = req['timezone']
+
+    week_tasks, cur_dow = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
+    categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid, req['timezone'])
+    return gen_resp(True, {'week_tasks': week_tasks, 'cur_dow': cur_dow, 'categories': categories})
+
+
+@app.route('/api/tasks/add', methods=['POST'])
+def add_task():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    if 'dow' in req:
+        task_id = tasks.add_task_by_dow(get_db(DATABASE_PATH), uid, req['timezone'], req['task'], req['dow'])
+    else: # 'category' in req
+        task_id = tasks.add_task_by_category(get_db(DATABASE_PATH), uid, req['task'], req['category'])
+
+    return gen_resp(True, {
+        'task': req['task'],
+        'task_id': task_id
+    })
+
+
+@app.route('/api/tasks/remove', methods=['POST'])
+def remove_task():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.remove_task(get_db(DATABASE_PATH), uid, req['task_id'])
+    return gen_resp(True, {})
+
+
+@app.route('/api/tasks/finish', methods=['POST'])
+def finish_task():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.finish_task(get_db(DATABASE_PATH), uid, req['timezone'], req['task_id'])
+    return gen_resp(True, {})
+
+
+@app.route('/api/tasks/unfinish', methods=['POST'])
+def unfinish_task():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.unfinish_task(get_db(DATABASE_PATH), uid, req['task_id'])
+    return gen_resp(True, {})
+
+
+@app.route('/api/tasks/assign', methods=['POST'])
+def assign_task_to_day():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.assign_task_to_day(get_db(DATABASE_PATH), uid, req['task_id'], req['timezone'], req['dow'])
+    return gen_resp(True, {})
+
+
+@app.route('/api/tasks/clear-finished', methods=['POST'])
+def clear_finished():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    tasks.clear_finished(get_db(DATABASE_PATH), uid)
+    return gen_resp(True, {})
+
+
+@app.route('/api/tasks/add-category', methods=['POST'])
+def add_task_category():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    resp = tasks.add_category(get_db(DATABASE_PATH), uid, req['name'])
+    return gen_resp(True, resp)
+
+
+@app.route('/api/tasks/rename-category', methods=['POST'])
+def rename_task_category():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    resp = tasks.rename_category(get_db(DATABASE_PATH), uid, req['cid'], req['new_name'])
+    return gen_resp(True, resp)
+# ~~~~~~~~~~~~~~~~
 
 
 @app.route('/api/login', methods=['POST'])

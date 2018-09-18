@@ -23,42 +23,12 @@ h4 {
     color: #999;
 }
 
-h5 {
-    font-family: Sinkin-Sans300Light;
-    font-size: 15px;
-    color: #fff;
-}
-
-a h5 {
-    text-decoration: underline;
-}
-
 body {
     background-color: #000;
     height: 100%;
 }
 
-#body-container {
-    width: 100%;
-}
 
-/* ~~~ FIRST CARD ~~~ */
-#card0 {
-    background-color: #2d333c;
-    width: 100%;
-}
-
-#header {
-    padding: 10px 20px 20px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-#nav {
-    display: flex;
-    align-items: center;
-}
 
 .today-wrapper {
     width: 960px;
@@ -80,10 +50,7 @@ body {
     padding: 10px 180px 20px;
 }
 
-.nav-part {
-    display: inline;
-    margin: 0px 20px;
-}
+
 
 .sub-today {
 }
@@ -138,21 +105,6 @@ body {
     font-size: 30px;
 }
 
-.nav-divider {
-    display: inline;
-    width: 2px;
-    height: 20px;
-    border-width: 0px 1px 0px 0px;
-    border-color: #fff;
-    border-style: solid;
-
-}
-
-.settings-icon {
-    height: 24px;
-    cursor: pointer;
-}
-
 /* ~~~ SECOND CARD ~~~ */
 #card1 {
   width: 100%;
@@ -191,7 +143,8 @@ body {
   width: 100%;
   text-align: center;
   padding: 50px 5% 100px 5%;
-  background-color: #F0F0EA;
+  /*background-color: #F0F0EA;*/
+  background-color: #F0F0F0;
 }
 
 #card2-title {

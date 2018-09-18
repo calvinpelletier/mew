@@ -39,3 +39,25 @@ CREATE TABLE IF NOT EXISTS quotas (
     quota_type TINYINT, /* 0 for none, 1 for all web usage, 2 for unproductive web usage only */
     quota_unit TINYINT /* 0 for minutes, 1 for hours */
 );
+
+/* ~~~ TASKS TABLES ~~~ */
+/* https://github.com/wilsonchaney/mew/wiki/Tasks-DB-Reference */
+CREATE TABLE IF NOT EXISTS tasks (
+    /* ROWID (auto created by sqlite and used by us as task id) */
+    uid INTEGER,
+    task VARCHAR(255),
+    unixdate BIGINT, /* ts of day start aka unixdate or 0 if not assigned to a day*/
+    category INTEGER, /* -1 for no category */
+    completed BIGINT, /* 0 or unixdate of completion */
+    cleared TINYINT /* 0/1 for if the user cleared the task (only applies to finished tasks in the category section) */
+);
+
+CREATE TABLE IF NOT EXISTS task_categories (
+    /* ROWID (auto created by sqlite and used by us as category id) */
+    uid INTEGER,
+    name VARCHAR(255),
+    column TINYINT, /* 0-3 */
+    row INTEGER,
+    color CHAR(6) /* html color code */
+);
+/* ~~~~~~~~~~~~~~~~~~~~ */
