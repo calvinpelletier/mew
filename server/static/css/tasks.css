@@ -29,8 +29,8 @@
 }
 
 hr {
-    width: 100%;
-    margin: 0px;
+    /*width: 100%;*/
+    margin: 0px 15px;
     border-top: 1px solid #ddd;
 }
 
@@ -39,7 +39,7 @@ hr {
 }
 
 .new-item {
-    padding: 20px 0px;
+    padding: 20px 15px;
     font-family: OpenSans-Regular;
     font-size: 15px;
     height: 27px;
@@ -90,10 +90,11 @@ hr {
 .category {
     margin-top: 8px;
     border: 1px solid #ddd;
-    padding: 0px 15px;
+    /*padding: 0px 15px;*/
 }
 
 .category-header {
+    margin: 0px 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;;
@@ -101,6 +102,7 @@ hr {
     font-family: AvenirNext-DemiBold;
     font-size: 14px;
     padding: 15px 0px 10px 0px;
+    border-bottom: 1px solid #ddd;
 }
 
 .cat-settings-wrapper {
@@ -117,6 +119,7 @@ hr {
 
 /* ~~~ TASKS ~~~ */
 .task-wrapper {
+    padding: 0px 15px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -133,11 +136,12 @@ hr {
 }
 
 .task {
+    border-bottom: 1px solid #ddd;
     color: #000;
     font-family: OpenSans-Regular;
     /*font-family: Sinkin-Sans300Light;*/
     font-size: 15px;
-    padding: 8px 0px;
+    padding: 15px 0px;
     line-height: 15px;
     flex-grow: 1;
 }

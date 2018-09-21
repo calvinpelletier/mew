@@ -462,7 +462,7 @@ function addTaskToContainer(taskText, taskId, container, completed, color='none'
             '<div class="task ' + done + '" id="task' + taskId + '" onclick="onClickTask(this)">' +
                 taskText +
             '</div>' +
-        '</div><hr>';
+        '</div>';
 
     container.append(html);
 }
@@ -487,7 +487,6 @@ function getCategoryHTML(cid, name, color, column) {
                         'height="25" width="25" src="' + GEAR_ICON + '">' +
                 '</div>' +
             '</div>' +
-            '<hr>' +
             '<div id="cat' + cid + '">' + '</div>' +
             '<input class="new-item" type="text" value="" placeholder="add task"' +
                 'onkeypress="newTaskKeyPress(this, event, \'category\', ' + cid + ')">' +
