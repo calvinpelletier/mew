@@ -4,6 +4,7 @@
     /*background-color: #2d333c;*/
     padding: 20px 20px;
     display: inline-flex;
+    align-items: flex-start;
 }
 
 .day-container {

@@ -253,7 +253,7 @@ function clearFinishedTasks() {
     // get all elements that start with 'cat-task'
     var tasks = $('[id^=task]');
     tasks.each(function() {
-        if (this.classList.contains('task-done')) {
+        if (this.classList.contains('task-done') && !this.classList.contains('day-task')) {
             // parent is task wrapper
             this.parentElement.remove();
         }
@@ -426,6 +426,7 @@ function closeIndicatorPopup() {
 
 function addTaskToContainer(taskText, taskId, container, completed, color='none') {
     var done = completed != 0 ? 'task-done ' : '';
+    var dayTask = container.attr('id').startsWith('day') ? 'day-task ' : '';
     if (color != 'none') {
         var stretch = 'style="align-items: stretch"';
         var colorStrip =
@@ -442,7 +443,7 @@ function addTaskToContainer(taskText, taskId, container, completed, color='none'
         '<div class="task-wrapper" ' + stretch + ' onmouseover="onMouseOverTask(this)" onmouseout="onMouseOutTask(this)">' +
             colorStrip +
             '<div class="task-subwrapper">' +
-                '<div class="task ' + done + '" id="task' + taskId + '" onclick="onClickTask(this)">' +
+                '<div class="task ' + done + dayTask + '" id="task' + taskId + '" onclick="onClickTask(this)">' +
                     taskText +
                 '</div>' +
                 '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
