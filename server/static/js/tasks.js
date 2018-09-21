@@ -469,7 +469,7 @@ function addTaskToContainer(taskText, taskId, container, completed, indicator='n
     var html = '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' + taskText + '</div>';
     if (indicator != 'none') {
         var src = '/static/img/task_' + indicator + '.png';
-        html = '<div class="task-indicator-wrapper"><img class="clickable" '
+        html = '<div class="task-indicator-wrapper"><img class="clickable task-indicator" '
             + 'id="indicator' + taskId + '" '
             + 'onclick="onClickIndicator(this, event)" src="' + src + '" height="20" width="20"></div>'
             + html;
