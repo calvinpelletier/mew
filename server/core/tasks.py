@@ -112,7 +112,7 @@ def add_category(db, uid, name):
 
     color = CATEGORY_COLORS[n_categories % len(CATEGORY_COLORS)]
     column = n_categories % N_COLUMNS
-    row = rows_per_column[column]
+    row = rows_per_column[column] + 1
 
     c = db.cursor()
     c.execute('INSERT INTO task_categories VALUES (?,?,?,?,?)', (uid, name, column, row, color))
