@@ -131,7 +131,9 @@ function onClickAddCategory() {
         data: JSON.stringify({'name': 'unnamed'}),
         success: function(resp) {
             if (resp['success']) {
-                addCategoryToCol(resp['cid'], 'unnamed', resp['color'], resp['column']);
+                $('#col' + resp['column'].toString()).append(
+                    getCategoryHTML(resp['cid'], 'unnamed', resp['color'])
+                );
             }
         },
         statusCode: {
@@ -200,10 +202,10 @@ function requestTasks() {
                     return (a['row'] > b['row']) ? 1 : ((b['row'] > a['row']) ? -1 : 0);
                 });
 
-                for (var category of resp['categories']) {
-                    global_category_colors[category['cid']] = category['color'];
-                    addCategoryToCol(category['cid'], category['name'], category['color'], category['column']);
+                renderCategories(resp['categories']);
 
+                // RENDER TASKS
+                for (var category of resp['categories']) {
                     for (var task of category['tasks']) {
                         // dont show if task was cleared
                         if (task['cleared']) {continue;}
@@ -419,6 +421,18 @@ function renameCategory(cid, newName) {
 // ~~~~~~~~~~~~~
 // HELPER FUNCTIONS
 // ~~~~~~~~~~~~~
+function renderCategories(categories) {
+    categories.sort(function (a, b) {
+        return a['row'] - b['row'];
+    });
+    for (var category of categories) {
+        global_category_colors[category['cid']] = category['color'];
+        $('#col' + category['column'].toString()).append(
+            getCategoryHTML(category['cid'], category['name'], category['color'])
+        );
+    }
+}
+
 function closeIndicatorPopup() {
     var popup = $('.indicator-popup');
     popup.attr('style', 'display: none;');
@@ -467,7 +481,7 @@ function addTaskToContainer(taskText, taskId, container, completed, indicator='n
     container.append(html);
 }
 
-function addCategoryToCol(cid, name, color, column) {
+function getCategoryHTML(cid, name, color, column) {
     var textColor = bgColorToTextColor(color);
     if (textColor == 'ffffff') {
         var pencil = '/static/img/pencil_white.png';
@@ -484,7 +498,7 @@ function addCategoryToCol(cid, name, color, column) {
         + '</div>' + '<div id="cat' + cid + '">' + '</div>'
         + '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', '
         + cid + ')">' + '</div>';
-    $('#col' + column.toString()).append(html);
+    return html;
 }
 
 // returns white if average rgb value is <128 and black otherwise
