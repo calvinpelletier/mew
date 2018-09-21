@@ -48,7 +48,7 @@ hr {
 }
 
 .new-item::placeholder {
-    color: #777;
+    color: #9cb6bc;
     font-family: OpenSans-Regular;
     font-size: 15px;
 }
@@ -88,7 +88,7 @@ hr {
 
 /* ~~~~~ CATEGORY ~~~~~ */
 .category {
-    margin-top: 8px;
+    margin: 8px 0px 16px;
     border: 1px solid #ddd;
     /*padding: 0px 15px;*/
 }
@@ -97,7 +97,7 @@ hr {
     margin: 0px 15px;
     display: flex;
     align-items: center;
-    justify-content: space-between;;
+    justify-content: space-between;
     text-transform: uppercase;
     font-family: AvenirNext-DemiBold;
     font-size: 14px;
@@ -120,9 +120,7 @@ hr {
 /* ~~~ TASKS ~~~ */
 .task-wrapper {
     padding: 0px 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
     cursor: pointer;
 }
 
@@ -135,8 +133,14 @@ hr {
     color: #999 !important;
 }
 
-.task {
+.task-subwrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     border-bottom: 1px solid #ddd;
+}
+
+.task {
     color: #000;
     font-family: OpenSans-Regular;
     /*font-family: Sinkin-Sans300Light;*/

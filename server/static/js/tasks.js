@@ -5,6 +5,7 @@ var global_task_indicator_selected = null;
 var DOW_TO_DOW_NUM = {'su': 0, 'm': 1, 'tu': 2, 'w': 3, 'th': 4, 'f': 5, 'sa': 6};
 var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
 var GEAR_ICON = '/static/img/gear.svg';
+var MORE_ICON = '/static/img/more_black.png';
 var global_category_colors = {};
 
 window.onload = function() {
@@ -71,7 +72,7 @@ function onClickIndicator(target, e) {
 
 
 function onClickTask(target) {
-    var id = target.id.substring(8);
+    var id = target.id.substring(4);
     if (target.classList.contains('task-done')) {
         unfinishTask(id);
     } else {
@@ -149,22 +150,14 @@ function onClickAddCategory() {
 }
 
 
-function onMouseOverCatTitle(o) {
-    var parent = $(o);
-    var icons = parent.find('img');
-    if (parent.find('.rename-cat').hasClass('hidden')) {
-        // if we're not in edit mode
-        icons.each(function (index) {
-            $(this).removeClass('hidden');
-        });
-    }
+function onMouseOverTask(o) {
+    var img = $(o).find('img');
+    img.removeClass('hidden');
 }
 
-function onMouseOutCatTitle(o) {
-    var icons = $(o).find('img');
-    icons.each(function (index) {
-        $(this).addClass('hidden');
-    });
+function onMouseOutTask(o) {
+    var img = $(o).find('img');
+    img.addClass('hidden');
 }
 
 
@@ -258,7 +251,7 @@ function requestTasks() {
 // ~~~~~~~~~~~~~
 function clearFinishedTasks() {
     // get all elements that start with 'cat-task'
-    var tasks = $('[id^=cat-task]');
+    var tasks = $('[id^=task]');
     tasks.each(function() {
         if (this.classList.contains('task-done')) {
             // parent is task wrapper
@@ -289,9 +282,7 @@ function clearFinishedTasks() {
 
 
 function finishTask(taskId) {
-    $('#day-task' + taskId).addClass('task-done');
-    $('#cat-task' + taskId).addClass('task-done');
-    $('#indicator' + taskId).attr('src', '/static/img/task_done.png');
+    $('#task' + taskId).addClass('task-done');
 
     $.post({
 		url: '/api/tasks/finish',
@@ -317,16 +308,7 @@ function finishTask(taskId) {
 
 
 function unfinishTask(taskId) {
-    $('#cat-task' + taskId).removeClass('task-done');
-
-    var dayTask = $('#day-task' + taskId);
-    if (dayTask.length != 0) {
-        dayTask.removeClass('task-done');
-        var dow = dayTask.parent().parent().attr('id').substring(3);
-        $('#indicator' + taskId).attr('src', '/static/img/task_' + DOW_NUM_TO_DOW[dow] + '.png');
-    } else {
-        $('#indicator' + taskId).attr('src', '/static/img/task_empty.png');
-    }
+    $('#task' + taskId).removeClass('task-done');
 
     $.post({
 		url: '/api/tasks/unfinish',
@@ -457,10 +439,14 @@ function addTaskToContainer(taskText, taskId, container, completed, color='none'
 
 
     var html =
-        '<div class="task-wrapper"' + stretch + '>' +
-             colorStrip +
-            '<div class="task ' + done + '" id="task' + taskId + '" onclick="onClickTask(this)">' +
-                taskText +
+        '<div class="task-wrapper" ' + stretch + ' onmouseover="onMouseOverTask(this)" onmouseout="onMouseOutTask(this)">' +
+            colorStrip +
+            '<div class="task-subwrapper">' +
+                '<div class="task ' + done + '" id="task' + taskId + '" onclick="onClickTask(this)">' +
+                    taskText +
+                '</div>' +
+                '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
+                    'height="25" width="25" src="' + MORE_ICON + '">' +
             '</div>' +
         '</div>';
 
