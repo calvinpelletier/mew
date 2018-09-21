@@ -29,9 +29,9 @@
 }
 
 hr {
-    width: 50%;
-    margin: 0px auto;
-    border-top: 1px solid #999;
+    width: 100%;
+    margin: 0px;
+    border-top: 1px solid #ddd;
 }
 
 .today-container {
@@ -39,7 +39,7 @@ hr {
 }
 
 .new-item {
-    padding: 8px;
+    padding: 20px 0px;
     font-family: OpenSans-Regular;
     font-size: 15px;
     height: 27px;
@@ -80,19 +80,42 @@ hr {
     background: #fff;
 }
 
+.column {
+    flex: 25%;
+    max-width: 25%;
+    padding: 0 7px;
+}
+
+/* ~~~~~ CATEGORY ~~~~~ */
+.category {
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    padding: 0px 15px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;;
+    text-transform: uppercase;
+    font-family: AvenirNext-DemiBold;
+    font-size: 14px;
+    padding: 15px 0px 10px 0px;
+}
+
+.cat-settings-wrapper {
+    padding-bottom: 2px;
+}
+
 #categories-wrapper {
     display: flex;
     flex-wrap: wrap;
     padding: 0 4px;
     width: 100%;
 }
+/* ~~~~~~~~~~ */
 
-.task-indicator-wrapper {
-    padding: 0px 0px 0px 5px;
-    flex: 15px 0 0;
-    height: 100%;
-}
-
+/* ~~~ TASKS ~~~ */
 .task-wrapper {
     display: flex;
     align-items: center;
@@ -109,39 +132,16 @@ hr {
     color: #999 !important;
 }
 
-.column {
-    flex: 25%;
-    max-width: 25%;
-    padding: 0 7px;
-}
-
-.category {
-    margin-top: 8px;
-    vertical-align: middle;
-    background-color: #fff;
-    margin-bottom: 15px;
-    -moz-box-shadow: 0 0 10px #666;
-    -webkit-box-shadow: 0 0 10px #666;
-    box-shadow: 0 0 10px #666;
-}
-
-.category-name {
-    text-align: center;
-    /*background-color: #2d333c;*/
-    color: #fff;
-    font-family: Sinkin-Sans300Light;
-    font-size: 18px;
-    /*text-shadow: 0px 0px 2px #000000;*/
-}
-
 .task {
     color: #000;
     font-family: OpenSans-Regular;
+    /*font-family: Sinkin-Sans300Light;*/
     font-size: 15px;
-    padding: 8px;
+    padding: 8px 0px;
     line-height: 15px;
     flex-grow: 1;
 }
+/* ~~~~~~~ */
 
 .add-category {
     margin-top: 8px;
@@ -209,14 +209,4 @@ hr {
     height: 100%;
     /*position: absolute;*/
     /*flex: 1;*/
-}
-
-.edit-cat {
-    float: right;
-    padding: 2px 5px 0 0;
-}
-
-.cat-menu {
-    float: right;
-    padding: 2px 2px 0 0;
 }

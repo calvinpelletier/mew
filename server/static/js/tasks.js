@@ -4,6 +4,7 @@ var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper',
 var global_task_indicator_selected = null;
 var DOW_TO_DOW_NUM = {'su': 0, 'm': 1, 'tu': 2, 'w': 3, 'th': 4, 'f': 5, 'sa': 6};
 var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
+var GEAR_ICON = '/static/img/gear.svg';
 var global_category_colors = {};
 
 window.onload = function() {
@@ -106,7 +107,7 @@ function newTaskKeyPress(o, e, type, i) {
                 } else {
                     var indicator = 'none';
                 }
-                addTaskToContainer(resp['task'], resp['task_id'], container, 0, indicator);
+                addTaskToContainer(resp['task'], resp['task_id'], container, 0);
                 o.value = '';
             },
             statusCode: {
@@ -219,7 +220,7 @@ function requestTasks() {
                         } else {
                             var indicator = DOW_NUM_TO_DOW[parseInt(task['dow'])];
                         }
-                        addTaskToContainer(task['task'], task['task_id'], $('#cat' + category['cid']), task['completed'], indicator);
+                        addTaskToContainer(task['task'], task['task_id'], $('#cat' + category['cid']), task['completed']);
                     }
                 }
 
@@ -233,7 +234,7 @@ function requestTasks() {
                     } else {
                         var color = global_category_colors[task['category']];
                     }
-                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed'], 'none', color);
+                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed']);
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -352,9 +353,6 @@ function unfinishTask(taskId) {
 function assignTaskToDay(taskId, dow) {
     $('#indicator' + taskId).attr('src', '/static/img/task_' + dow + '.png');
 
-    // remove the task from its previously assigned day
-    $('#day-task-wrapper' + taskId).remove();
-
     if (dow == 'empty') {
         var dow_num = -1;
     } else {
@@ -368,8 +366,6 @@ function assignTaskToDay(taskId, dow) {
             taskId,
             $('#day' + dow_num),
             0,
-            'none',
-            global_category_colors[category]
         );
     }
 
@@ -446,41 +442,27 @@ function closeIndicatorPopup() {
 }
 
 
-function addTaskToContainer(taskText, taskId, container, completed, indicator='none', color='none') {
-    var isDayTask = container.attr('id').startsWith('day');
-
-    if (completed != 0) {
-        var done = 'task-done ';
-        if (!isDayTask) {
-            indicator = 'done';
-        }
-    } else {
-        var done = '';
-    }
-
-    if (isDayTask) {
-        var id = 'day-task' + taskId;
-        var wrapperId = 'day-task-wrapper' + taskId;
-    } else {
-        var id = 'cat-task' + taskId;
-        var wrapperId = 'cat-task-wrapper' + taskId;
-    }
-
-    var html = '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' + taskText + '</div>';
-    if (indicator != 'none') {
-        var src = '/static/img/task_' + indicator + '.png';
-        html = '<div class="task-indicator-wrapper"><img class="clickable" '
-            + 'id="indicator' + taskId + '" '
-            + 'onclick="onClickIndicator(this, event)" src="' + src + '" height="20" width="20"></div>'
-            + html;
-    }
+function addTaskToContainer(taskText, taskId, container, completed, color='none') {
+    var done = completed != 0 ? 'task-done ' : '';
     if (color != 'none') {
-        html = '<div class="color-strip-wrapper"><div class="color-strip" style="background-color: #' + color + '"></div></div>' + html;
-        var stretch = ' style="align-items: stretch"';
+        var stretch = 'style="align-items: stretch"';
+        var colorStrip =
+            '<div class="color-strip-wrapper">' +
+                '<div class="color-strip" style="background-color: #' + color + '"></div>' +
+            '</div>';
     } else {
         var stretch = '';
+        var colorStrip = '';
     }
-    html = '<div class="task-wrapper" id="' + wrapperId + '"' + stretch + '>' + html + '</div>';
+
+
+    var html =
+        '<div class="task-wrapper"' + stretch + '>' +
+             colorStrip +
+            '<div class="task ' + done + '" id="task' + taskId + '" onclick="onClickTask(this)">' +
+                taskText +
+            '</div>' +
+        '</div><hr>';
 
     container.append(html);
 }
@@ -488,23 +470,28 @@ function addTaskToContainer(taskText, taskId, container, completed, indicator='n
 function getCategoryHTML(cid, name, color, column) {
     var textColor = bgColorToTextColor(color);
     if (textColor == 'ffffff') {
-        var pencil = '/static/img/pencil_white.png';
         var more = '/static/img/more_white.png';
     } else { // text color is black
         var pencil = '/static/img/pencil_black.png';
         var more = '/static/img/more_black.png';
     }
 
-    var html = '<div class="category">'
-        + '<div class="category-name" style="background-color: #' + color + '; color: #' + textColor + '"'
-        + 'onmouseover="onMouseOverCatTitle(this)" onmouseout="onMouseOutCatTitle(this)">'
-        + '<span class="category-name-text">' + name + '</span>'
-        + '<input class="rename-cat hidden" type="text" style="color: #' + textColor + '" onkeypress="renameCatKeyPress(this, event, ' + cid + ')" value="' + name + '">'
-        + '<img class="clickable cat-menu hidden" onclick="onClickCatMenu(this, event)" height="25" width="25" src="' + more + '">'
-        + '<img class="clickable edit-cat hidden" onclick="onClickEditCat(this, event)" height="20" width="20" src="' + pencil + '">'
-        + '</div>' + '<div id="cat' + cid + '">' + '</div>'
-        + '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', '
-        + cid + ')">' + '</div>';
+    var html =
+        '<div class="category">' +
+            '<div class="category-header">' +
+                '<span class="category-name-text">' + name + '</span>' +
+                '<input class="rename-cat hidden" type="text" style="color: #' + textColor +
+                    '" onkeypress="renameCatKeyPress(this, event, ' + cid + ')" value="' + name + '">' +
+                '<div class="cat-settings-wrapper">' +
+                    '<img class="clickable cat-settings-icon" onclick="onClickCatSettings(this, event)"' +
+                        'height="25" width="25" src="' + GEAR_ICON + '">' +
+                '</div>' +
+            '</div>' +
+            '<hr>' +
+            '<div id="cat' + cid + '">' + '</div>' +
+            '<input class="new-item" type="text" value="" placeholder="add task"' +
+                'onkeypress="newTaskKeyPress(this, event, \'category\', ' + cid + ')">' +
+        '</div>';
     return html;
 }
 
