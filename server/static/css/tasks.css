@@ -213,5 +213,10 @@ hr {
 
 .edit-cat {
     float: right;
+    padding: 2px 5px 0 0;
+}
+
+.cat-menu {
+    float: right;
     padding: 2px 2px 0 0;
 }

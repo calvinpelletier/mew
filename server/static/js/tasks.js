@@ -150,16 +150,20 @@ function onClickAddCategory() {
 
 function onMouseOverCatTitle(o) {
     var parent = $(o);
-    var pencil = parent.find('img');
+    var icons = parent.find('img');
     if (parent.find('.rename-cat').hasClass('hidden')) {
         // if we're not in edit mode
-        pencil.removeClass('hidden');
+        icons.each(function (index) {
+            $(this).removeClass('hidden');
+        });
     }
 }
 
 function onMouseOutCatTitle(o) {
-    var pencil = o.getElementsByTagName('img')[0];
-    pencil.classList.add('hidden');
+    var icons = $(o).find('img');
+    icons.each(function (index) {
+        $(this).addClass('hidden');
+    });
 }
 
 
@@ -485,8 +489,10 @@ function getCategoryHTML(cid, name, color, column) {
     var textColor = bgColorToTextColor(color);
     if (textColor == 'ffffff') {
         var pencil = '/static/img/pencil_white.png';
+        var more = '/static/img/more_white.png';
     } else { // text color is black
         var pencil = '/static/img/pencil_black.png';
+        var more = '/static/img/more_black.png';
     }
 
     var html = '<div class="category">'
@@ -494,6 +500,7 @@ function getCategoryHTML(cid, name, color, column) {
         + 'onmouseover="onMouseOverCatTitle(this)" onmouseout="onMouseOutCatTitle(this)">'
         + '<span class="category-name-text">' + name + '</span>'
         + '<input class="rename-cat hidden" type="text" style="color: #' + textColor + '" onkeypress="renameCatKeyPress(this, event, ' + cid + ')" value="' + name + '">'
+        + '<img class="clickable cat-menu hidden" onclick="onClickCatMenu(this, event)" height="25" width="25" src="' + more + '">'
         + '<img class="clickable edit-cat hidden" onclick="onClickEditCat(this, event)" height="20" width="20" src="' + pencil + '">'
         + '</div>' + '<div id="cat' + cid + '">' + '</div>'
         + '<input class="new-item" type="text" value="" placeholder="add task" onkeypress="newTaskKeyPress(this, event, \'category\', '
