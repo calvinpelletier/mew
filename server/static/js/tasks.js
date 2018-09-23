@@ -1,7 +1,7 @@
 var _ENTER = 13;
 var TASKS_CARD1_DATA_ELEMENT = new DataElement('#card1', ['.day-container']);
 var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper', '.card2-links']);
-var global_task_indicator_selected = null;
+var global_popup_active = null;
 var DOW_TO_DOW_NUM = {'su': 0, 'm': 1, 'tu': 2, 'w': 3, 'th': 4, 'f': 5, 'sa': 6};
 var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
 var GEAR_ICON = '/static/img/gear.svg';
@@ -25,16 +25,6 @@ function onOAuthLoad() {
 // ~~~~~~~~~~~~~
 // INPUT FUNCTIONS
 // ~~~~~~~~~~~~~
-window.onclick = function(event) {
-    if (global_task_indicator_selected != null
-        && !event.target.classList.contains('task-indicator')
-        && !event.target.classList.contains('indicator-popup')
-    ) {
-        closeIndicatorPopup();
-    }
-}
-
-
 function onClickNewIndicator(target) {
     var indicatorPath = target.getAttribute('src');
     var oldIndicator = $('#indicator' + global_task_indicator_selected).attr('src');
@@ -51,21 +41,25 @@ function onClickNewIndicator(target) {
         }
     }
 
-    closeIndicatorPopup();
+    closePopup();
 }
 
 
-function onClickIndicator(target, e) {
-    var id = target.parentNode.parentNode.id.substring(16);
-    global_task_indicator_selected = id;
-    var popup = $('.indicator-popup');
+function onClickTaskMenu(target, e) {
+    var id = $(target).parent().find('.task').attr('id');
+    global_popup_active = id;
+    $('.popup-container').removeClass('hidden');
+    var popup = $('#task-options-popup');
     var posLeft = target.offsetLeft - popup.outerWidth() / 2 + 9;
     if (posLeft < 15) {
         posLeft = 15;
     }
+    if (posLeft + popup.outerWidth() > $(window).width()) {
+        posLeft = $(window).width() - popup.outerWidth();
+    }
     popup.attr('style', 'display: none; left: ' + posLeft + 'px; top: ' + (target.offsetTop + 25) + 'px;');
     popup.fadeIn(200);
-    var arrow = $('.indicator-arrow');
+    var arrow = $('.options-arrow');
     arrow.attr('style', 'display: none; left: ' + (target.offsetLeft) + 'px; top: ' + (target.offsetTop + 17) + 'px;');
     arrow.fadeIn(200);
 }
@@ -415,12 +409,12 @@ function renderCategories(categories) {
     }
 }
 
-function closeIndicatorPopup() {
-    var popup = $('.indicator-popup');
-    popup.attr('style', 'display: none;');
-    var arrow = $('.indicator-arrow');
-    arrow.attr('style', 'display: none;');
-    global_task_indicator_selected = null;
+function closePopup() {
+    $('.popup-container').addClass('hidden');
+    $('#task-options-popup').attr('style', 'display: none;');
+    $('#cat-options-popup').attr('style', 'display: none;');
+    $('.options-arrow').attr('style', 'display: none;');
+    global_popup_active = null;
 }
 
 

@@ -152,6 +152,33 @@ hr {
 }
 /* ~~~~~~~ */
 
+/* ~~~ MENU POPUP ~~~ */
+.options-popup {
+    position: absolute;
+    z-index: 1;
+    background-color: #2d333c;
+    display: inline-block;
+    padding: 10px;
+    -moz-box-shadow: 0 0 10px #666;
+    -webkit-box-shadow: 0 0 10px #666;
+    box-shadow: 0 0 10px #666;
+    border-radius: 10px;
+}
+
+.options-arrow {
+    position: absolute;
+    z-index: 1;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #2d333c;
+}
+
+.popup-container {
+    /* rest is in style.css */
+    background-color: rgba(0,0,0,0);
+}
+/* ~~~~~~~~~ */
+
 .add-category {
     margin-top: 8px;
     height: 100px;
@@ -175,26 +202,6 @@ hr {
 .vertical {
   width: 7px;
   height: 40px;
-}
-
-.indicator-popup {
-    position: absolute;
-    z-index: 1;
-    background-color: #2d333c;
-    display: inline-block;
-    padding: 10px;
-    -moz-box-shadow: 0 0 10px #666;
-    -webkit-box-shadow: 0 0 10px #666;
-    box-shadow: 0 0 10px #666;
-    border-radius: 10px;
-}
-
-.indicator-arrow {
-    position: absolute;
-    z-index: 1;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid #2d333c;
 }
 
 .card2-links {
