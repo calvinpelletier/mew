@@ -27,27 +27,15 @@ function onOAuthLoad() {
 // ~~~~~~~~~~~~~
 function onClickNewIndicator(target) {
     var indicatorPath = target.getAttribute('src');
-    var oldIndicator = $('#indicator' + global_task_indicator_selected).attr('src');
-    if (indicatorPath != oldIndicator) {
-        if (oldIndicator == '/static/img/task_done.png') {
-            // indicator used to be done but now isnt
-            unfinishTask(global_task_indicator_selected);
-        } else if (indicatorPath == '/static/img/task_done.png') {
-            finishTask(global_task_indicator_selected);
-        } else {
-            // dow == 'empty' when removing task from a day
-            var dow = indicatorPath.substring(indicatorPath.indexOf('_') + 1, indicatorPath.indexOf('.png'));
-            assignTaskToDay(global_task_indicator_selected, dow);
-        }
-    }
-
+    var dow = indicatorPath.substring(indicatorPath.indexOf('_') + 1, indicatorPath.indexOf('.png'));
+    assignTaskToDay(global_popup_active, dow);
     closePopup();
 }
 
 
 function onClickTaskMenu(target, e) {
     var id = $(target).parent().find('.task').attr('id');
-    global_popup_active = id;
+    global_popup_active = id.substring(8);
     $('.popup-container').removeClass('hidden');
     var popup = $('#task-options-popup');
     var posLeft = target.offsetLeft - popup.outerWidth() / 2 + 9;
@@ -57,16 +45,16 @@ function onClickTaskMenu(target, e) {
     if (posLeft + popup.outerWidth() > $(window).width()) {
         posLeft = $(window).width() - popup.outerWidth();
     }
-    popup.attr('style', 'display: none; left: ' + posLeft + 'px; top: ' + (target.offsetTop + 25) + 'px;');
+    popup.attr('style', 'display: none; left: ' + posLeft + 'px; top: ' + ($(target).offset().top - $(document).scrollTop() + 25) + 'px;');
     popup.fadeIn(200);
     var arrow = $('.options-arrow');
-    arrow.attr('style', 'display: none; left: ' + (target.offsetLeft) + 'px; top: ' + (target.offsetTop + 17) + 'px;');
+    arrow.attr('style', 'display: none; left: ' + (target.offsetLeft) + 'px; top: ' + ($(target).offset().top - $(document).scrollTop() + 17) + 'px;');
     arrow.fadeIn(200);
 }
 
 
 function onClickTask(target) {
-    var id = target.id.substring(4);
+    var id = target.id.substring(8);
     if (target.classList.contains('task-done')) {
         unfinishTask(id);
     } else {
@@ -327,14 +315,12 @@ function unfinishTask(taskId) {
 
 
 function assignTaskToDay(taskId, dow) {
-    $('#indicator' + taskId).attr('src', '/static/img/task_' + dow + '.png');
-
     if (dow == 'empty') {
         var dow_num = -1;
     } else {
         var dow_num = DOW_TO_DOW_NUM[dow];
 
-        var category = parseInt($('#cat-task' + taskId).parent().parent().attr('id').substring(3));
+        var category = parseInt($('#cat-task' + taskId).parent().parent().parent().attr('id').substring(3));
 
         // add task to new day
         addTaskToContainer(
@@ -420,7 +406,13 @@ function closePopup() {
 
 function addTaskToContainer(taskText, taskId, container, completed, color='none') {
     var done = completed != 0 ? 'task-done ' : '';
-    var dayTask = container.attr('id').startsWith('day') ? 'day-task ' : '';
+
+    if (container.attr('id').startsWith('day')) {
+        var id = 'day-task' + taskId;
+    } else {
+        var id = 'cat-task' + taskId;
+    }
+
     if (color != 'none') {
         var stretch = 'style="align-items: stretch"';
         var colorStrip =
@@ -437,7 +429,7 @@ function addTaskToContainer(taskText, taskId, container, completed, color='none'
         '<div class="task-wrapper" ' + stretch + ' onmouseover="onMouseOverTask(this)" onmouseout="onMouseOutTask(this)">' +
             colorStrip +
             '<div class="task-subwrapper">' +
-                '<div class="task ' + done + dayTask + '" id="task' + taskId + '" onclick="onClickTask(this)">' +
+                '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' +
                     taskText +
                 '</div>' +
                 '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
