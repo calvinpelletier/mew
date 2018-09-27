@@ -121,7 +121,6 @@ hr {
 /* ~~~ TASKS ~~~ */
 .task-wrapper {
     padding: 0px 15px;
-
     cursor: pointer;
 }
 
@@ -136,12 +135,13 @@ hr {
 
 .task-subwrapper {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
     border-bottom: 1px solid #ddd;
 }
 
 .task {
+    display: flex;
     color: #000;
     font-family: OpenSans-Regular;
     /*font-family: Sinkin-Sans300Light;*/
@@ -149,6 +149,24 @@ hr {
     padding: 15px 0px;
     line-height: 15px;
     flex-grow: 1;
+}
+
+.task-dow-label {
+    display: flex;
+    background-color: #555;
+    font-family: OpenSans-Regular;
+    color: #fff;
+    font-size: 10px;
+    width: 12px;
+    margin-right: 5px;
+    align-items: center;
+    justify-content:center;
+}
+
+.task-menu-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content:center;
 }
 /* ~~~~~~~ */
 

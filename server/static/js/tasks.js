@@ -34,7 +34,7 @@ function onClickNewIndicator(target) {
 
 
 function onClickTaskMenu(target, e) {
-    var id = $(target).parent().find('.task').attr('id');
+    var id = $(target).parent().parent().find('.task').attr('id');
     global_popup_active = id.substring(8);
     $('.popup-container').removeClass('hidden');
     var popup = $('#task-options-popup');
@@ -191,11 +191,11 @@ function requestTasks() {
                         if (task['cleared']) {continue;}
 
                         if (task['dow'] == -1) {
-                            var indicator = 'empty'
+                            var dowLabel = 'none'
                         } else {
-                            var indicator = DOW_NUM_TO_DOW[parseInt(task['dow'])];
+                            var dowLabel = DOW_NUM_TO_DOW[parseInt(task['dow'])];
                         }
-                        addTaskToContainer(task['task'], task['task_id'], $('#cat' + category['cid']), task['completed']);
+                        addTaskToContainer(task['task'], task['task_id'], $('#cat' + category['cid']), task['completed'], dowLabel);
                     }
                 }
 
@@ -315,9 +315,18 @@ function unfinishTask(taskId) {
 
 
 function assignTaskToDay(taskId, dow) {
+    var dowLabel = $('#dow-label' + taskId);
+
+    // remove the task from its previously assigned day
+    $('#day-task' + taskId).parent().parent().remove();
+
     if (dow == 'empty') {
+        dowLabel.addClass('hidden');
         var dow_num = -1;
     } else {
+        dowLabel.removeClass('hidden');
+        dowLabel.html(dow);
+
         var dow_num = DOW_TO_DOW_NUM[dow];
 
         var category = parseInt($('#cat-task' + taskId).parent().parent().parent().attr('id').substring(3));
@@ -404,13 +413,19 @@ function closePopup() {
 }
 
 
-function addTaskToContainer(taskText, taskId, container, completed, color='none') {
+function addTaskToContainer(taskText, taskId, container, completed, dow='none', color='none') {
     var done = completed != 0 ? 'task-done ' : '';
 
     if (container.attr('id').startsWith('day')) {
         var id = 'day-task' + taskId;
+        var dowLabel = '';
     } else {
         var id = 'cat-task' + taskId;
+        if (dow == 'none') {
+            var dowLabel = '<div class="task-dow-label hidden" id="dow-label' + taskId + '"></div>';
+        } else {
+            var dowLabel = '<div class="task-dow-label" id="dow-label' + taskId + '">' + dow + '</div>'
+        }
     }
 
     if (color != 'none') {
@@ -429,11 +444,14 @@ function addTaskToContainer(taskText, taskId, container, completed, color='none'
         '<div class="task-wrapper" ' + stretch + ' onmouseover="onMouseOverTask(this)" onmouseout="onMouseOutTask(this)">' +
             colorStrip +
             '<div class="task-subwrapper">' +
+                dowLabel +
                 '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' +
                     taskText +
                 '</div>' +
-                '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
-                    'height="25" width="25" src="' + MORE_ICON + '">' +
+                '<div class="task-menu-wrapper">' +
+                    '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
+                        'height="25" width="25" src="' + MORE_ICON + '">' +
+                '</div>' +
             '</div>' +
         '</div>';
 
