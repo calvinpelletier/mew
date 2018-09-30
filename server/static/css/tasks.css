@@ -59,6 +59,7 @@ hr {
     height: 100%;
     border: 0px;
     width: 80%;
+    color: #000;
 }
 
 .rename-cat::placeholder {
@@ -176,11 +177,15 @@ hr {
     z-index: 1;
     background-color: #2d333c;
     display: inline-block;
-    padding: 10px;
+    padding: 10px 0px;
     -moz-box-shadow: 0 0 10px #666;
     -webkit-box-shadow: 0 0 10px #666;
     box-shadow: 0 0 10px #666;
     border-radius: 10px;
+}
+
+.dow-selection {
+    padding: 0px 10px 5px;
 }
 
 .options-arrow {
@@ -194,6 +199,17 @@ hr {
 .popup-container {
     /* rest is in style.css */
     background-color: rgba(0,0,0,0);
+}
+
+.option {
+    font-family: OpenSans-Regular;
+    color: #fff;
+    font-size: 15px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+}
+.option:hover {
+    background-color: #666;
 }
 /* ~~~~~~~~~ */
 

@@ -154,15 +154,27 @@
 
     <div class="popup-container hidden" onclick="closePopup();">
         <div id="task-options-popup" class="options-popup" style="display: none;">
-            <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_empty.png" height="20" width="20">
-            <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_su.png" height="20" width="20">
-            <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_m.png" height="20" width="20">
-            <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_tu.png" height="20" width="20">
-            <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_w.png" height="20" width="20">
-            <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_th.png" height="20" width="20">
-            <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_f.png" height="20" width="20">
-            <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_sa.png" height="20" width="20">
+            <div class="dow-selection">
+                <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_empty.png" height="20" width="20">
+                <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_su.png" height="20" width="20">
+                <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_m.png" height="20" width="20">
+                <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_tu.png" height="20" width="20">
+                <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_w.png" height="20" width="20">
+                <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_th.png" height="20" width="20">
+                <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_f.png" height="20" width="20">
+                <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_sa.png" height="20" width="20">
+            </div>
+            <div class="option clickable" onclick="">edit (todo)</div>
+            <div class="option clickable" onclick="">delete (todo)</div>
+            <div class="option clickable" onclick="">change category (todo)</div>
         </div>
+
+        <div id="cat-options-popup" class="options-popup" style="display: none;">
+            
+            <div class="option clickable" onclick="onClickEditCat(this)">rename</div>
+            <div class="option clickable" onclick="">delete (TODO)</div>
+        </div>
+
         <div class="options-arrow" style="display: none;"></div>
     </div>
 

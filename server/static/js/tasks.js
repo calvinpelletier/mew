@@ -34,22 +34,8 @@ function onClickNewIndicator(target) {
 
 
 function onClickTaskMenu(target, e) {
-    var id = $(target).parent().parent().find('.task').attr('id');
-    global_popup_active = id.substring(8);
-    $('.popup-container').removeClass('hidden');
-    var popup = $('#task-options-popup');
-    var posLeft = target.offsetLeft - popup.outerWidth() / 2 + 9;
-    if (posLeft < 15) {
-        posLeft = 15;
-    }
-    if (posLeft + popup.outerWidth() > $(window).width()) {
-        posLeft = $(window).width() - popup.outerWidth();
-    }
-    popup.attr('style', 'display: none; left: ' + posLeft + 'px; top: ' + ($(target).offset().top - $(document).scrollTop() + 25) + 'px;');
-    popup.fadeIn(200);
-    var arrow = $('.options-arrow');
-    arrow.attr('style', 'display: none; left: ' + (target.offsetLeft) + 'px; top: ' + ($(target).offset().top - $(document).scrollTop() + 17) + 'px;');
-    arrow.fadeIn(200);
+    var id = $(target).parent().parent().find('.task').attr('id').substring(8);
+    openPopup(target, id, 'task-options-popup');
 }
 
 
@@ -131,7 +117,6 @@ function onClickAddCategory() {
     });
 }
 
-
 function onMouseOverTask(o) {
     var img = $(o).find('img');
     img.removeClass('hidden');
@@ -142,14 +127,11 @@ function onMouseOutTask(o) {
     img.addClass('hidden');
 }
 
-
 function onClickEditCat(o) {
-    var pencil = $(o);
-    var parent = pencil.parent();
-    var input = parent.find('.rename-cat');
-    parent.find('.category-name-text').addClass('hidden');
+    var cat = $('#cat' + global_popup_active).parent();
+    var input = cat.find('.rename-cat');
+    cat.find('.category-name-text').addClass('hidden');
     input.removeClass('hidden');
-    pencil.addClass('hidden');
     input.select();
 }
 
@@ -159,6 +141,16 @@ function renameCatKeyPress(o, e, cid) {
         uneditCategory(cid);
         renameCategory(cid, newName);
     }
+}
+
+function renameCatBlur(o, cid) {
+    var newName = o.value;
+    uneditCategory(cid);
+    renameCategory(cid, newName);
+}
+
+function onClickCatSettings(target, id) {
+    openPopup(target, id, 'cat-options-popup');
 }
 // ~~~~~~~~~~~~~
 
@@ -419,6 +411,7 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
     if (container.attr('id').startsWith('day')) {
         var id = 'day-task' + taskId;
         var dowLabel = '';
+        var taskMenu = '';
     } else {
         var id = 'cat-task' + taskId;
         if (dow == 'none') {
@@ -426,6 +419,11 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
         } else {
             var dowLabel = '<div class="task-dow-label" id="dow-label' + taskId + '">' + dow + '</div>'
         }
+        var taskMenu =
+            '<div class="task-menu-wrapper">' +
+                '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
+                    'height="25" width="25" src="' + MORE_ICON + '">' +
+            '</div>';
     }
 
     if (color != 'none') {
@@ -448,10 +446,7 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
                 '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' +
                     taskText +
                 '</div>' +
-                '<div class="task-menu-wrapper">' +
-                    '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
-                        'height="25" width="25" src="' + MORE_ICON + '">' +
-                '</div>' +
+                 taskMenu +
             '</div>' +
         '</div>';
 
@@ -471,10 +466,10 @@ function getCategoryHTML(cid, name, color, column) {
         '<div class="category">' +
             '<div class="category-header">' +
                 '<span class="category-name-text">' + name + '</span>' +
-                '<input class="rename-cat hidden" type="text" style="color: #' + textColor +
+                '<input class="rename-cat hidden" type="text" onblur="renameCatBlur(this, ' + cid + ')"' +
                     '" onkeypress="renameCatKeyPress(this, event, ' + cid + ')" value="' + name + '">' +
                 '<div class="cat-settings-wrapper">' +
-                    '<img class="clickable cat-settings-icon" onclick="onClickCatSettings(this, event)"' +
+                    '<img class="clickable cat-settings-icon" onclick="onClickCatSettings(this, ' + cid + ')"' +
                         'height="25" width="25" src="' + GEAR_ICON + '">' +
                 '</div>' +
             '</div>' +
@@ -501,5 +496,23 @@ function uneditCategory(cid) {
     label.html(input.val());
     label.removeClass('hidden');
     input.addClass('hidden');
+}
+
+function openPopup(target, sourceId, popupType) {
+    global_popup_active = sourceId;
+    $('.popup-container').removeClass('hidden');
+    var popup = $('#' + popupType);
+    var posLeft = target.offsetLeft - popup.outerWidth() / 2 + 9;
+    if (posLeft < 15) {
+        posLeft = 15;
+    }
+    if (posLeft + popup.outerWidth() > $(window).width()) {
+        posLeft = $(window).width() - popup.outerWidth();
+    }
+    popup.attr('style', 'display: none; left: ' + posLeft + 'px; top: ' + ($(target).offset().top - $(document).scrollTop() + 25) + 'px;');
+    popup.fadeIn(200);
+    var arrow = $('.options-arrow');
+    arrow.attr('style', 'display: none; left: ' + (target.offsetLeft) + 'px; top: ' + ($(target).offset().top - $(document).scrollTop() + 17) + 'px;');
+    arrow.fadeIn(200);
 }
 // ~~~~~~~~~~~~~
