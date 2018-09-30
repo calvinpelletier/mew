@@ -110,7 +110,7 @@ def add_category(db, uid, name):
         if rows_per_column[col] < row:
             rows_per_column[col] = row
 
-    color = CATEGORY_COLORS[n_categories % len(CATEGORY_COLORS)]
+    color = 'dddddd'
     column = n_categories % N_COLUMNS
     row = rows_per_column[column] + 1
 

@@ -211,6 +211,19 @@ hr {
 .option:hover {
     background-color: #666;
 }
+
+.color-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 10px 5px
+}
+
+.color-option {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #fff;
+}
 /* ~~~~~~~~~ */
 
 .add-category {

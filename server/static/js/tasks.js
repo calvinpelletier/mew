@@ -225,7 +225,7 @@ function requestTasks() {
 // ~~~~~~~~~~~~~
 function clearFinishedTasks() {
     // get all elements that start with 'cat-task'
-    var tasks = $('[id^=task]');
+    var tasks = $('[id^=cat-task]');
     tasks.each(function() {
         if (this.classList.contains('task-done') && !this.classList.contains('day-task')) {
             // parent is task wrapper
@@ -256,7 +256,12 @@ function clearFinishedTasks() {
 
 
 function finishTask(taskId) {
-    $('#task' + taskId).addClass('task-done');
+    $('#cat-task' + taskId).addClass('task-done');
+
+    var dayTask = $('#day-task' + taskId);
+    if (dayTask.length != 0) {
+        dayTask.addClass('task-done');
+    }
 
     $.post({
 		url: '/api/tasks/finish',
@@ -282,7 +287,12 @@ function finishTask(taskId) {
 
 
 function unfinishTask(taskId) {
-    $('#task' + taskId).removeClass('task-done');
+    $('#cat-task' + taskId).removeClass('task-done');
+
+    var dayTask = $('#day-task' + taskId);
+    if (dayTask.length != 0) {
+        dayTask.removeClass('task-done');
+    }
 
     $.post({
 		url: '/api/tasks/unfinish',
@@ -407,7 +417,6 @@ function closePopup() {
 
 function addTaskToContainer(taskText, taskId, container, completed, dow='none', color='none') {
     var done = completed != 0 ? 'task-done ' : '';
-
     if (container.attr('id').startsWith('day')) {
         var id = 'day-task' + taskId;
         var dowLabel = '';
@@ -463,7 +472,7 @@ function getCategoryHTML(cid, name, color, column) {
     }
 
     var html =
-        '<div class="category">' +
+        '<div class="category" style="border-top: 3px solid #' + color + '">' +
             '<div class="category-header">' +
                 '<span class="category-name-text">' + name + '</span>' +
                 '<input class="rename-cat hidden" type="text" onblur="renameCatBlur(this, ' + cid + ')"' +
