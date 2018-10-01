@@ -158,6 +158,27 @@ function selectCatColor(o) {
     var color = style.substring(style.indexOf('#') + 1);
     var cat = $('#cat' + global_popup_active).parent();
     cat.attr('style', 'border-top: 3px solid #' + color);
+
+    $.post({
+		url: '/api/tasks/set-cat-color',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify({
+            'cid': global_popup_active,
+            'color': color
+        }),
+		success: function(resp) {
+
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+            // TODO
+		}
+	});
 }
 // ~~~~~~~~~~~~~
 

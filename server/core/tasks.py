@@ -189,3 +189,9 @@ def rename_category(db, uid, cid, new_name):
     c.execute('UPDATE task_categories SET name = ? WHERE uid = ? AND ROWID = ?', (new_name, uid, cid))
     db.commit()
     c.close()
+
+def set_cat_color(db, uid, cid, color):
+    c = db.cursor()
+    c.execute('UPDATE task_categories SET color = ? WHERE uid = ? AND ROWID = ?', (color, uid, cid))
+    db.commit()
+    c.close()

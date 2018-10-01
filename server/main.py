@@ -250,6 +250,18 @@ def rename_task_category():
     req = request.get_json()
     resp = tasks.rename_category(get_db(DATABASE_PATH), uid, req['cid'], req['new_name'])
     return gen_resp(True, resp)
+
+
+@app.route('/api/tasks/set-cat-color', methods=['POST'])
+def set_category_color():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    resp = tasks.set_cat_color(get_db(DATABASE_PATH), uid, req['cid'], req['color'])
+    return gen_resp(True, resp)
 # ~~~~~~~~~~~~~~~~
 
 

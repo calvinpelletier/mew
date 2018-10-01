@@ -216,7 +216,7 @@ hr {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 10px 5px
+    padding: 5px 10px 5px
 }
 
 .color-option {
