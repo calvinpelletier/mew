@@ -157,7 +157,7 @@ function selectCatColor(o) {
     var style = $(o).attr('style');
     var color = style.substring(style.indexOf('#') + 1);
     var cat = $('#cat' + global_popup_active).parent();
-    cat.attr('style', 'border-top: 3px solid #' + color);
+    cat.attr('style', 'border-top: 5px solid #' + color);
 
     $.post({
 		url: '/api/tasks/set-cat-color',
@@ -504,7 +504,7 @@ function getCategoryHTML(cid, name, color, column) {
     }
 
     var html =
-        '<div class="category" style="border-top: 3px solid #' + color + '">' +
+        '<div class="category" style="border-top: 5px solid #' + color + '">' +
             '<div class="category-header">' +
                 '<span class="category-name-text">' + name + '</span>' +
                 '<input class="rename-cat hidden" type="text" onblur="renameCatBlur(this, ' + cid + ')"' +
