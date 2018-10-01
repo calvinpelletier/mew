@@ -477,9 +477,6 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
         }
     }
 
-
-
-
     var html =
         '<div class="task-wrapper ' + noStrip + '" onmouseover="onMouseOverTask(this)" onmouseout="onMouseOutTask(this)">' +
             '<div class="task-subwrapper">' +
