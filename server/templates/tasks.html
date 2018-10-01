@@ -153,7 +153,7 @@
     {% endif %} -->
 
     <div class="popup-container hidden" onclick="closePopup();">
-        <div id="task-options-popup" class="options-popup" style="display: none;">
+        <div id="cat-task-options-popup" class="options-popup" style="display: none;">
             <div class="dow-selection">
                 <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_empty.png" height="20" width="20">
                 <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_su.png" height="20" width="20">
@@ -169,9 +169,14 @@
             <div class="option clickable" onclick="">change category (todo)</div>
         </div>
 
+        <div id="day-task-options-popup" class="options-popup" style="display: none;">
+            <div class="option clickable" onclick="">edit (todo)</div>
+            <div class="option clickable" onclick="onClickDeleteTask()">delete</div>
+        </div>
+
         <div id="cat-options-popup" class="options-popup" style="display: none;">
             <div class="option clickable" onclick="onClickEditCat(this)">rename</div>
-            <div class="option clickable" onclick="">delete (TODO)</div>
+            <div class="option clickable" onclick="onClickDeleteCat()">delete</div>
             <div class="color-selection">
                 <div class="color-row">
                     <div class="color-option clickable" style="background-color: #dddddd" onclick="selectCatColor(this)"></div>
@@ -225,7 +230,7 @@
                     <div class="nav-part">
                         <a href="javascript:logout();"><h5>log out<h5></a>
                     </div>
-                    {% if not email %}
+                    <!--{% if not email %}
                     <div class="nav-divider"></div>
                     <div class="nav-part">
                         <a href="javascript:openAttachAcc();"><h5>create/attach an account<h5></a>
@@ -234,7 +239,7 @@
                     <div class="nav-divider"></div>
                     <div class="nav-part">
                         <img id="settings-icon" class="settings-icon" src="{{ url_for('static', filename='img/settings.png') }}"/>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>
@@ -298,8 +303,7 @@
     <!-- <div id="settings-dialog" tabindex="-1">
     </div> -->
 
-    <!-- <script src="{{ url_for('static', filename='js/logout.js') }}"></script> -->
-    <!-- <script src="{{ url_for('static', filename='js/attach_acc.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/logout.js') }}"></script>
     <script src="{{ url_for('static', filename='js/util.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
     <script src="https://apis.google.com/js/platform.js?onload=onOAuthLoad" async defer></script>

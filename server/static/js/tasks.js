@@ -33,9 +33,14 @@ function onClickNewIndicator(target) {
 }
 
 
-function onClickTaskMenu(target, e) {
+function onClickDayTaskMenu(target, e) {
     var id = $(target).parent().parent().find('.task').attr('id').substring(8);
-    openPopup(target, id, 'task-options-popup');
+    openPopup(target, id, 'day-task-options-popup');
+}
+
+function onClickCatTaskMenu(target, e) {
+    var id = $(target).parent().parent().find('.task').attr('id').substring(8);
+    openPopup(target, id, 'cat-task-options-popup');
 }
 
 
@@ -205,6 +210,30 @@ function onClickDeleteTask() {
         }
     });
 }
+
+function onClickDeleteCat() {
+    $('#cat' + global_popup_active).parent().remove();
+
+    $.post({
+        url: '/api/tasks/delete-category',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({
+            'cid': global_popup_active
+        }),
+        success: function(resp) {
+
+        },
+        statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+        fail: function() {
+            // TODO
+        }
+    });
+}
 // ~~~~~~~~~~~~~
 
 
@@ -254,7 +283,6 @@ function requestTasks() {
                     } else {
                         var color = getCatColor(task['category']);
                     }
-                    console.log(color);
                     addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed'], 'none', color);
                 }
 
@@ -462,7 +490,8 @@ function renderCategories(categories) {
 
 function closePopup() {
     $('.popup-container').addClass('hidden');
-    $('#task-options-popup').attr('style', 'display: none;');
+    $('#cat-task-options-popup').attr('style', 'display: none;');
+    $('#day-task-options-popup').attr('style', 'display: none;');
     $('#cat-options-popup').attr('style', 'display: none;');
     $('.options-arrow').attr('style', 'display: none;');
     global_popup_active = null;
@@ -474,7 +503,7 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
     if (container.attr('id').startsWith('day')) {
         var id = 'day-task' + taskId;
         var dowLabel = '';
-        var taskMenu = '';
+        var taskMenuFunction = 'onClickDayTaskMenu';
         if (color != 'none') {
             var strip = '<div class="task-strip" style="background-color: #' + color + '"></div>';
             var noStrip = '';
@@ -484,11 +513,7 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
         }
     } else {
         var id = 'cat-task' + taskId;
-        var taskMenu =
-            '<div class="task-menu-wrapper">' +
-                '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
-                    'height="25" width="25" src="' + MORE_ICON + '">' +
-            '</div>';
+        var taskMenuFunction = 'onClickCatTaskMenu';
         if (dow == 'none') {
             var noStrip = 'no-strip';
             var strip = '<div class="task-strip hidden" id="dow-label' + taskId + '"></div>';
@@ -505,7 +530,10 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
                 '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' +
                     taskText +
                 '</div>' +
-                 taskMenu +
+                '<div class="task-menu-wrapper">' +
+                    '<img class="clickable task-menu hidden" onclick="' + taskMenuFunction + '(this, event)"' +
+                        'height="25" width="25" src="' + MORE_ICON + '">' +
+                '</div>' +
             '</div>' +
         '</div>';
 

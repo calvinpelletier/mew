@@ -17,7 +17,7 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
         week_start = get_current_week(tz)
 
     days = [calendar.timegm((week_start + datetime.timedelta(days=i)).timetuple()) for i in range(7)]
-    select = 'SELECT task, unixdate, category, completed, ROWID FROM tasks WHERE uid = ? AND ({})'.format(
+    select = 'SELECT task, unixdate, category, completed, ROWID FROM tasks WHERE uid = ? AND deleted = 0 AND ({})'.format(
         ' OR '.join(['unixdate = ?'] * 7)
     )
 
@@ -44,9 +44,9 @@ def get_tasks_by_week(db, uid, tz, week_start=None):
 
 def get_task_categories(db, uid, tz):
     c = db.cursor()
-    c.execute('SELECT ROWID, name, column, row, color FROM task_categories WHERE uid = ?', (uid,))
+    c.execute('SELECT ROWID, name, column, row, color FROM task_categories WHERE uid = ? AND deleted = 0', (uid,))
     categories = c.fetchall()
-    c.execute('SELECT ROWID, task, category, unixdate, completed, cleared FROM tasks WHERE uid = ? AND category != -1', (uid,))
+    c.execute('SELECT ROWID, task, category, unixdate, completed, cleared FROM tasks WHERE uid = ? AND deleted = 0 AND category != -1', (uid,))
     tasks = c.fetchall()
     c.close()
 
@@ -101,7 +101,7 @@ def add_category(db, uid, name):
     row = rows_per_column[column] + 1
 
     c = db.cursor()
-    c.execute('INSERT INTO task_categories VALUES (?,?,?,?,?)', (uid, name, column, row, color))
+    c.execute('INSERT INTO task_categories VALUES (?,?,?,?,?,?)', (uid, name, column, row, color, 0))
     cid = c.lastrowid
     db.commit()
     c.close()
@@ -116,7 +116,7 @@ def add_task_by_dow(db, uid, tz, task, dow):
         unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
 
     c = db.cursor()
-    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?)', (uid, task, unixdate, -1, 0, 0))
+    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?,?)', (uid, task, unixdate, -1, 0, 0, 0))
     task_id = c.lastrowid
     db.commit()
     c.close()
@@ -125,7 +125,7 @@ def add_task_by_dow(db, uid, tz, task, dow):
 
 def add_task_by_category(db, uid, task, category):
     c = db.cursor()
-    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?)', (uid, task, 0, category, 0, 0))
+    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?,?)', (uid, task, 0, category, 0, 0, 0))
     task_id = c.lastrowid
     db.commit()
     c.close()
@@ -143,7 +143,14 @@ def assign_task_to_day(db, uid, task, tz, dow):
 
 def remove_task(db, uid, task_id):
     c = db.cursor()
-    c.execute('DELETE FROM tasks WHERE uid = ? AND ROWID = ?', (uid, task_id))
+    c.execute('UPDATE tasks SET deleted = 1 WHERE uid = ? AND ROWID = ?', (uid, task_id))
+    db.commit()
+    c.close()
+
+
+def delete_category(db, uid, cid):
+    c = db.cursor()
+    c.execute('UPDATE task_categories SET deleted = 1 WHERE uid = ? AND ROWID = ?', (uid, cid))
     db.commit()
     c.close()
 

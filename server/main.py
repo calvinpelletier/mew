@@ -262,6 +262,18 @@ def set_category_color():
     req = request.get_json()
     resp = tasks.set_cat_color(get_db(DATABASE_PATH), uid, req['cid'], req['color'])
     return gen_resp(True, resp)
+
+
+@app.route('/api/tasks/delete-category', methods=['POST'])
+def delete_category():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.delete_category(get_db(DATABASE_PATH), uid, req['cid'])
+    return gen_resp(True, {})
 # ~~~~~~~~~~~~~~~~
 
 
