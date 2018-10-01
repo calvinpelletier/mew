@@ -180,6 +180,31 @@ function selectCatColor(o) {
 		}
 	});
 }
+
+function onClickDeleteTask() {
+    $('#cat-task' + global_popup_active).parent().parent().remove();
+    $('#day-task' + global_popup_active).parent().parent().remove();
+
+    $.post({
+        url: '/api/tasks/remove',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({
+            'task_id': global_popup_active
+        }),
+        success: function(resp) {
+
+        },
+        statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+        fail: function() {
+            // TODO
+        }
+    });
+}
 // ~~~~~~~~~~~~~
 
 
@@ -286,11 +311,7 @@ function clearFinishedTasks() {
 
 function finishTask(taskId) {
     $('#cat-task' + taskId).addClass('task-done');
-
-    var dayTask = $('#day-task' + taskId);
-    if (dayTask.length != 0) {
-        dayTask.addClass('task-done');
-    }
+    $('#day-task' + taskId).addClass('task-done');
 
     $.post({
 		url: '/api/tasks/finish',
