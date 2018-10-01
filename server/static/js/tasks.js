@@ -227,9 +227,10 @@ function requestTasks() {
                     if (task['category'] == -1) {
                         var color = 'none';
                     } else {
-                        var color = global_category_colors[task['category']];
+                        var color = getCatColor(task['category']);
                     }
-                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed']);
+                    console.log(color);
+                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed'], 'none', color);
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -353,9 +354,11 @@ function assignTaskToDay(taskId, dow) {
     if (dow == 'empty') {
         dowLabel.addClass('hidden');
         var dow_num = -1;
+        dowLabel.parent().parent().addClass('no-strip');
     } else {
         dowLabel.removeClass('hidden');
         dowLabel.html(dow);
+        dowLabel.parent().parent().removeClass('no-strip');
 
         var dow_num = DOW_TO_DOW_NUM[dow];
 
@@ -367,6 +370,8 @@ function assignTaskToDay(taskId, dow) {
             taskId,
             $('#day' + dow_num),
             0,
+            'none',
+            getCatColor(category)
         );
     }
 
@@ -449,37 +454,36 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
         var id = 'day-task' + taskId;
         var dowLabel = '';
         var taskMenu = '';
+        if (color != 'none') {
+            var strip = '<div class="task-strip" style="background-color: #' + color + '"></div>';
+            var noStrip = '';
+        } else {
+            var strip = '<div class="task-strip hidden" style="background-color: #fff"></div>';
+            var noStrip = 'no-strip';
+        }
     } else {
         var id = 'cat-task' + taskId;
-        if (dow == 'none') {
-            var dowLabel = '<div class="task-dow-label hidden" id="dow-label' + taskId + '"></div>';
-        } else {
-            var dowLabel = '<div class="task-dow-label" id="dow-label' + taskId + '">' + dow + '</div>'
-        }
         var taskMenu =
             '<div class="task-menu-wrapper">' +
                 '<img class="clickable task-menu hidden" onclick="onClickTaskMenu(this, event)"' +
                     'height="25" width="25" src="' + MORE_ICON + '">' +
             '</div>';
+        if (dow == 'none') {
+            var noStrip = 'no-strip';
+            var strip = '<div class="task-strip hidden" id="dow-label' + taskId + '"></div>';
+        } else {
+            var noStrip = '';
+            var strip = '<div class="task-strip" id="dow-label' + taskId + '">' + dow + '</div>'
+        }
     }
 
-    if (color != 'none') {
-        var stretch = 'style="align-items: stretch"';
-        var colorStrip =
-            '<div class="color-strip-wrapper">' +
-                '<div class="color-strip" style="background-color: #' + color + '"></div>' +
-            '</div>';
-    } else {
-        var stretch = '';
-        var colorStrip = '';
-    }
+
 
 
     var html =
-        '<div class="task-wrapper" ' + stretch + ' onmouseover="onMouseOverTask(this)" onmouseout="onMouseOutTask(this)">' +
-            colorStrip +
+        '<div class="task-wrapper ' + noStrip + '" onmouseover="onMouseOverTask(this)" onmouseout="onMouseOutTask(this)">' +
             '<div class="task-subwrapper">' +
-                dowLabel +
+                strip +
                 '<div class="task ' + done + '" id="' + id + '" onclick="onClickTask(this)">' +
                     taskText +
                 '</div>' +
@@ -551,5 +555,10 @@ function openPopup(target, sourceId, popupType) {
     var arrow = $('.options-arrow');
     arrow.attr('style', 'display: none; left: ' + (target.offsetLeft) + 'px; top: ' + ($(target).offset().top - $(document).scrollTop() + 17) + 'px;');
     arrow.fadeIn(200);
+}
+
+function getCatColor(cid) {
+    var style = $('#cat' + cid).parent().attr('style');
+    return style.substring(style.indexOf('#') + 1);
 }
 // ~~~~~~~~~~~~~

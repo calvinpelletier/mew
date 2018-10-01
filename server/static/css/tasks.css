@@ -121,7 +121,7 @@ hr {
 
 /* ~~~ TASKS ~~~ */
 .task-wrapper {
-    padding: 0px 15px;
+    padding: 0px 15px 0px 0px;
     cursor: pointer;
 }
 
@@ -152,16 +152,20 @@ hr {
     flex-grow: 1;
 }
 
-.task-dow-label {
+.task-strip {
     display: flex;
     background-color: #555;
     font-family: OpenSans-Regular;
     color: #fff;
     font-size: 10px;
     width: 12px;
-    margin-right: 5px;
+    margin-right: 3px;
     align-items: center;
     justify-content:center;
+}
+
+.no-strip {
+    padding-left: 15px;
 }
 
 .task-menu-wrapper {
@@ -262,14 +266,4 @@ hr {
     cursor: pointer;
     text-decoration: underline;
     color: #4286f4;
-}
-
-.color-strip-wrapper {
-    flex: 7px 0 0;
-}
-
-.color-strip {
-    height: 100%;
-    /*position: absolute;*/
-    /*flex: 1;*/
 }
