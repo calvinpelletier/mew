@@ -84,20 +84,6 @@ def get_task_categories(db, uid, tz):
 
 def add_category(db, uid, name):
     N_COLUMNS = 4
-    CATEGORY_COLORS = [
-        '336359',
-        'a5f9a2',
-        '001b47',
-        '58e5f4',
-        '561377',
-        'f7be99',
-        '820f1e',
-        'a9b1f9',
-        'c44400',
-        'f9a9cf',
-        '2a5e00',
-        'e6ea77',
-    ]
 
     c = db.cursor()
     c.execute('SELECT column, row FROM task_categories WHERE uid = ?', (uid,))
@@ -110,7 +96,7 @@ def add_category(db, uid, name):
         if rows_per_column[col] < row:
             rows_per_column[col] = row
 
-    color = CATEGORY_COLORS[n_categories % len(CATEGORY_COLORS)]
+    color = 'dddddd'
     column = n_categories % N_COLUMNS
     row = rows_per_column[column] + 1
 
@@ -187,5 +173,11 @@ def clear_finished(db, uid):
 def rename_category(db, uid, cid, new_name):
     c = db.cursor()
     c.execute('UPDATE task_categories SET name = ? WHERE uid = ? AND ROWID = ?', (new_name, uid, cid))
+    db.commit()
+    c.close()
+
+def set_cat_color(db, uid, cid, color):
+    c = db.cursor()
+    c.execute('UPDATE task_categories SET color = ? WHERE uid = ? AND ROWID = ?', (color, uid, cid))
     db.commit()
     c.close()
