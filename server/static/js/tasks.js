@@ -152,6 +152,13 @@ function renameCatBlur(o, cid) {
 function onClickCatSettings(target, id) {
     openPopup(target, id, 'cat-options-popup');
 }
+
+function selectCatColor(o) {
+    var style = $(o).attr('style');
+    var color = style.substring(style.indexOf('#') + 1);
+    var cat = $('#cat' + global_popup_active).parent();
+    cat.attr('style', 'border-top: 3px solid #' + color);
+}
 // ~~~~~~~~~~~~~
 
 
