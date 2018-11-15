@@ -1,6 +1,7 @@
 import argparse
 from collections import namedtuple
 from os import environ, path
+import json
 
 from flask import Flask, render_template, make_response, redirect, session
 from google.auth.transport import requests
@@ -275,6 +276,49 @@ def delete_category():
     tasks.delete_category(get_db(DATABASE_PATH), uid, req['cid'])
     return gen_resp(True, {})
 # ~~~~~~~~~~~~~~~~
+
+
+# ~~~~~ TIMESHEET ~~~~~
+@app.route('/timesheet/')
+def timesheet_page():
+    if 'uid' in session:
+        uid = session['uid']
+        try:
+            user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
+        except:
+            # the user somehow got deleted from the db
+            session.pop('uid')
+            return make_response(redirect('/'))
+
+        if is_mobile():
+            template = 'm_timesheet.html'
+        else:
+            template = 'timesheet.html'
+
+        return render_template(template)
+    else:
+        warn("uid cookie is None when requesting schedule page...")
+        return make_response(redirect('/'))
+
+
+@app.route('/api/timesheet/get', methods=['POST'])
+def timesheet_get():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    labels = [
+        [{'start': 1330, 'end': 1415, 'tag': 'sleep'}],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+    ]
+    return gen_resp(True, {'labels': json.dumps(labels)})
+# ~~~~~~~~~~~~~~~~~~~
 
 
 @app.route('/api/login', methods=['POST'])
