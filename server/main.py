@@ -317,7 +317,7 @@ def timesheet_get():
         [],
         [],
     ]
-    return gen_resp(True, {'labels': json.dumps(labels)})
+    return gen_resp(True, {'labels': labels})
 # ~~~~~~~~~~~~~~~~~~~
 
 
