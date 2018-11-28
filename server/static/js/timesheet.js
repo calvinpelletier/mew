@@ -1,7 +1,7 @@
 var CARD1_DATA_ELEMENT = new DataElement('#card1', ['#canvas']);
 var DAY_START_HOUR = 5;
 var TAG_TO_COLOR = {
-    'none': '#000000',
+    'none': '#88929b',
     'sleep': '#0000ff',
 }
 
@@ -18,17 +18,22 @@ var EXTERNAL_OFFSET_Y = null;
 H = HOUR_H * 24 + OFFSET_Y;
 W  = DAY_W * 7 + OFFSET_X;
 
-var global_schedule;
+var global_schedule; // day of week -> [{start, end, tag}]
 var global_labels;
 var global_candidate = {
     start: null,
     end: null,
-    min_end: null, // start + 15 minutes, calculated when start is calculated
+    min_end: null, // start + 15 minutes
+    max_end: null, // start of next label
     day: null,
     tag: 'none',
-}
+};
 var global_canvas;
 var global_mouse_down = false;
+var global_selected = {
+    day: null,
+    idx: null,
+};
 
 
 window.onload = function() {
@@ -63,6 +68,7 @@ function requestSchedule() {
 	});
 }
 
+
 function onClick(event) {
     if (EXTERNAL_OFFSET_X == null) {
         var rect = global_canvas.getBoundingClientRect();
@@ -86,17 +92,37 @@ function onClick(event) {
             // add one hour and zero the minutes
             end = (Math.floor(end / 100) + 1) * 100;
         }
+
+        // max end is min start of all labels that start after the candidate
+        var max_end = null;
+        for (var i in global_labels[day]) {
+            // sanity
+            if (global_labels[day][i].start == start) {
+                alert('theres a candidate with the same start as a label');
+            }
+
+            if (global_labels[day][i].start > start &&
+                (max_end == null || global_labels[day][i].start < max_end)
+            ) {
+                max_end = global_labels[day][i].start;
+            }
+        }
+
         global_candidate.start = start;
         global_candidate.end = end;
         global_candidate.min_end = end;
+        global_candidate.max_end = max_end;
         global_candidate.day = day;
         console.log(global_candidate);
     } else {
-        // TODO: select label and show options
+        global_selected.day = day;
+        global_selected.idx = idx;
     }
 
     draw();
-    global_mouse_down = true;
+    if (idx == null) {
+        global_mouse_down = true;
+    }
 }
 
 
@@ -109,6 +135,8 @@ function onMouseMove(event) {
     var end = yToTimeint(y, 'up');
     if (end < global_candidate.min_end) {
         global_candidate.end = global_candidate.min_end;
+    } else if (global_candidate.max_end != null && end > global_candidate.max_end) {
+        global_candidate.end = global_candidate.max_end;
     } else {
         global_candidate.end = end;
     }
@@ -152,9 +180,9 @@ function draw() {
         ctx.stroke();
     }
 
-    // hour labels
+    // hour text labels
     ctx.fillStyle = '#2d333c';
-    ctx.font = '15px "Courier New"';
+    ctx.font = '15px arial';
     for (var i = 0; i < 24; i++) {
         ctx.fillText(hourToText(i + DAY_START_HOUR), 0, OFFSET_Y + i * HOUR_H + 5);
     }
@@ -167,9 +195,9 @@ function draw() {
         ctx.strokeRect(x+i*DAY_W, OFFSET_Y, DAY_W, H - OFFSET_Y);
     }
 
-    // day labels
+    // day text labels
     ctx.fillStyle = '#2d333c';
-    ctx.font = '20px "Courier New"';
+    ctx.font = '20px arial';
     var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
     for (var i = 0; i < 7; i++) {
         ctx.fillText(daysOfWeek[i], OFFSET_X + Math.round((i + 0.5) * DAY_W), 15);
@@ -195,20 +223,26 @@ function drawTimesheet(ctx, which) {
     for (var day = 0; day < 7; day++) {
         for (var i in data[day]) {
             ctx.fillStyle = TAG_TO_COLOR[data[day][i].tag];
-            drawLabel(ctx, data[day][i].start, data[day][i].end, i);
+            drawLabel(ctx,
+                data[day][i].start,
+                data[day][i].end,
+                day,
+                global_selected.day == day && global_selected.idx == i
+            );
         }
     }
 }
 
 
-function drawLabel(ctx, start_timeint, end_timeint, day) {
+function drawLabel(ctx, start_timeint, end_timeint, day, selected) {
     y_start = timeintToYCoord(start_timeint);
     y_end = timeintToYCoord(end_timeint);
     roundRect(ctx,
         OFFSET_X + DAY_W * day + 2,
         y_start,
         DAY_W - 4,
-        y_end - y_start - 1
+        y_end - y_start - 1,
+        selected
     );
 }
 
@@ -264,7 +298,7 @@ function yToTimeint(y, round) {
 }
 
 
-function roundRect(ctx, x, y, width, height) {
+function roundRect(ctx, x, y, width, height, selected) {
     var r = 5;
     var radius = {tl: r, tr: r, br: r, bl: r};
     ctx.beginPath();
@@ -279,6 +313,14 @@ function roundRect(ctx, x, y, width, height) {
     ctx.quadraticCurveTo(x, y, x + radius.tl, y);
     ctx.closePath();
     ctx.fill();
+    if (selected) {
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#000000';
+    } else {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#000000';
+    }
+    ctx.stroke();
 }
 
 
