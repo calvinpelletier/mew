@@ -24,7 +24,9 @@ var global_candidate = {
     start: null,
     end: null,
     min_end: null, // start + 15 minutes
+    min_end_y: null,
     max_end: null, // start of next label
+    max_end_y: null,
     day: null,
     tag: 'none',
 };
@@ -111,7 +113,9 @@ function onClick(event) {
         global_candidate.start = start;
         global_candidate.end = end;
         global_candidate.min_end = end;
+        global_candidate.min_end_y = timeintToYCoord(end);
         global_candidate.max_end = max_end;
+        global_candidate.max_end_y = timeintToYCoord(max_end, true);
         global_candidate.day = day;
         console.log(global_candidate);
     } else {
@@ -132,13 +136,13 @@ function onMouseMove(event) {
     }
     var x = event.pageX - EXTERNAL_OFFSET_X;
     var y = event.pageY - EXTERNAL_OFFSET_Y;
-    var end = yToTimeint(y, 'up');
-    if (end < global_candidate.min_end) {
+    if (y < global_candidate.min_end_y) {
         global_candidate.end = global_candidate.min_end;
-    } else if (global_candidate.max_end != null && end > global_candidate.max_end) {
+    } else if (global_candidate.max_end != null && y > global_candidate.max_end_y) {
         global_candidate.end = global_candidate.max_end;
     } else {
-        global_candidate.end = end;
+        console.log(yToTimeint(y, 'up'));
+        global_candidate.end = yToTimeint(y, 'up');
     }
     draw();
 }
@@ -236,7 +240,7 @@ function drawTimesheet(ctx, which) {
 
 function drawLabel(ctx, start_timeint, end_timeint, day, selected) {
     y_start = timeintToYCoord(start_timeint);
-    y_end = timeintToYCoord(end_timeint);
+    y_end = timeintToYCoord(end_timeint, true);
     roundRect(ctx,
         OFFSET_X + DAY_W * day + 2,
         y_start,
@@ -250,7 +254,7 @@ function drawLabel(ctx, start_timeint, end_timeint, day, selected) {
 function labelIdxFromY(day, y) {
     for (var i in global_labels[day]) {
         if (y > timeintToYCoord(global_labels[day][i].start) &&
-            y < timeintToYCoord(global_labels[day][i].end))
+            y < timeintToYCoord(global_labels[day][i].end, true))
         {
             return i;
         }
@@ -264,7 +268,12 @@ function dayFromX(x) {
 }
 
 
-function timeintToYCoord(timeint) {
+function timeintToYCoord(timeint, isEnd=false) {
+    // special case to differentiate between end of day and start of day
+    if (isEnd && timeint == DAY_START_HOUR * 100) {
+        return OFFSET_Y + HOUR_H * 24;
+    }
+
     var minute = timeint % 100;
 
     // sanity
