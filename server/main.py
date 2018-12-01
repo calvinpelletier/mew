@@ -278,49 +278,6 @@ def delete_category():
 # ~~~~~~~~~~~~~~~~
 
 
-# ~~~~~ TIMESHEET ~~~~~
-@app.route('/timesheet/')
-def timesheet_page():
-    if 'uid' in session:
-        uid = session['uid']
-        try:
-            user_email = authentication.get_user_email(get_db(DATABASE_PATH), uid)
-        except:
-            # the user somehow got deleted from the db
-            session.pop('uid')
-            return make_response(redirect('/'))
-
-        if is_mobile():
-            template = 'm_timesheet.html'
-        else:
-            template = 'timesheet.html'
-
-        return render_template(template)
-    else:
-        warn("uid cookie is None when requesting schedule page...")
-        return make_response(redirect('/'))
-
-
-@app.route('/api/timesheet/get', methods=['POST'])
-def timesheet_get():
-    if 'uid' in session:
-        uid = session['uid']
-    else:
-        return gen_fail('not authenticated')
-
-    labels = [
-        [{'start': 1330, 'end': 1415, 'tag': 'sleep'}],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-    ]
-    return gen_resp(True, {'labels': labels})
-# ~~~~~~~~~~~~~~~~~~~
-
-
 @app.route('/api/login', methods=['POST'])
 def login():
     req_data = request.get_json()
