@@ -38,11 +38,14 @@ with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
 #########################################
 @app.route('/')
 def get_landing_page():
-    ignore_token = request.args.get('ignore_token')
-    if 'uid' in session and not ignore_token:
-        return make_response(redirect('/graph'))
+    if request.host_url == 'http://tasks.pelletier.io/':
+        return tasks_page()
     else:
-        return render_template('login.html')
+        ignore_token = request.args.get('ignore_token')
+        if 'uid' in session and not ignore_token:
+            return make_response(redirect('/graph'))
+        else:
+            return render_template('login.html')
 
 
 @app.route('/guest/<token>')
