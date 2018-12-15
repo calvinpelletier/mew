@@ -154,6 +154,23 @@ def get_tasks_by_week():
     return gen_resp(True, {'week_tasks': week_tasks, 'cur_dow': cur_dow, 'categories': categories})
 
 
+@app.route('/api/tasks/stats', methods=['POST'])
+def get_task_stats():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    timezone = req['timezone']
+
+    results = tasks.calc_task_stats(get_db(DATABASE_PATH), uid, timezone)
+    if results is None:
+        return gen_fail('task stats failed')
+    else:
+        return gen_resp(True, results)
+
+
 @app.route('/api/tasks/add', methods=['POST'])
 def add_task():
     if 'uid' in session:

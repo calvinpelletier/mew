@@ -82,6 +82,32 @@ def get_task_categories(db, uid, tz):
     return ret
 
 
+def calc_task_stats(db, uid, tz):
+    c = db.cursor()
+    c.execute('SELECT completed FROM tasks WHERE uid = ? AND deleted = 0 AND completed != 0 ORDER BY completed ASC', (uid,))
+    tasks = c.fetchall()
+    c.close()
+
+    if len(tasks) == 0:
+        return None
+
+    tasks_completed_over_time = []
+    start = tasks[0][0]
+    assert start % 86400 == 0
+
+    count = 0
+    for task in tasks:
+        finished = task[0]
+        assert finished % 86400 == 0
+        count += 1
+        if len(tasks_completed_over_time) == 0 or tasks_completed_over_time[-1][0] != finished:
+            tasks_completed_over_time.append([finished, count])
+        else:
+            tasks_completed_over_time[-1][1] = count
+
+    return {'tasks_completed_over_time': tasks_completed_over_time}
+
+
 def add_category(db, uid, name):
     N_COLUMNS = 4
 

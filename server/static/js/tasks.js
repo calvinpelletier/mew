@@ -1,6 +1,7 @@
 var _ENTER = 13;
 var TASKS_CARD1_DATA_ELEMENT = new DataElement('#card1', ['.day-container']);
 var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper', '.card2-links']);
+var TASKS_CARD3_DATA_ELEMENT = new DataElement('#card3', ['#tasks-completed-over-time']);
 var global_popup_active = null;
 var DOW_TO_DOW_NUM = {'su': 0, 'm': 1, 'tu': 2, 'w': 3, 'th': 4, 'f': 5, 'sa': 6};
 var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
@@ -12,8 +13,8 @@ window.onload = function() {
     TASKS_CARD1_DATA_ELEMENT.showLoader();
     TASKS_CARD2_DATA_ELEMENT.showLoader();
     requestTasks();
+    requestTaskStats();
 }
-
 
 // init google auth
 function onOAuthLoad() {
@@ -52,7 +53,6 @@ function onClickTask(target) {
         finishTask(id);
     }
 }
-
 
 // TODO: add loader next to input field during post request
 function newTaskKeyPress(o, e, type, i) {
@@ -287,6 +287,38 @@ function requestTasks() {
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
+            }
+		},
+		statusCode: {
+            500: function() {
+              this.fail();
+            }
+        },
+		fail: function() {
+            // TODO
+		}
+	});
+}
+
+function requestTaskStats() {
+    $.post({
+        url: '/api/tasks/stats',
+		contentType: 'application/json',
+		dataType: 'json',
+		data: JSON.stringify({
+			'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+		}),
+		success: function(resp) {
+            if (resp['success']) {
+                console.log(resp['tasks_completed_over_time']);
+                // console.log(resp['tasks_completed_per_week']);
+                // console.log(resp['tasks_completed_per_month']);
+                createLineGraph(
+                    resp['tasks_completed_over_time'],
+                    'tasks-completed-over-time',
+                    'Total Tasks Completed'
+                );
+                TASKS_CARD3_DATA_ELEMENT.hideLoader();
             }
 		},
 		statusCode: {
@@ -606,5 +638,44 @@ function openPopup(target, sourceId, popupType) {
 function getCatColor(cid) {
     var style = $('#cat' + cid).parent().attr('style');
     return style.substring(style.indexOf('#') + 1);
+}
+
+function createLineGraph(data, containerId, title) {
+    for (i in data) {
+        data[i][0] *= 1000;
+    }
+    Highcharts.chart(containerId, {
+        chart: {
+            type: 'line',
+            zoomType: 'xy'
+        },
+        title: {
+            text: title
+        },
+        xAxis: {
+            type: 'datetime',
+            labels: {
+                format: '{value:%Y-%m-%d}',
+                rotation: 45,
+                align: 'left',
+                style: {
+                    fontSize: '12px'
+                }
+            },
+            gridLineWidth: 1,
+        },
+        yAxis: {
+            title: {
+                text: ''
+            },
+        },
+        series: [{
+            name: 'tasks',
+            data: data
+        }],
+        credits: {
+            enabled: false
+        }
+    });
 }
 // ~~~~~~~~~~~~~
