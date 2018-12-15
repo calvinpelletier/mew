@@ -92,6 +92,7 @@ def calc_task_stats(db, uid, tz):
         return None
 
     tasks_completed_over_time = []
+    tasks_completed_per_month = []
     start = tasks[0][0]
     assert start % 86400 == 0
 
@@ -99,13 +100,23 @@ def calc_task_stats(db, uid, tz):
     for task in tasks:
         finished = task[0]
         assert finished % 86400 == 0
+
         count += 1
         if len(tasks_completed_over_time) == 0 or tasks_completed_over_time[-1][0] != finished:
             tasks_completed_over_time.append([finished, count])
         else:
             tasks_completed_over_time[-1][1] = count
 
-    return {'tasks_completed_over_time': tasks_completed_over_time}
+        month = calendar.timegm(datetime.date.fromtimestamp(finished).replace(day=1).timetuple())
+        if len(tasks_completed_per_month) == 0 or tasks_completed_per_month[-1][0] != month:
+            tasks_completed_per_month.append([month, 1])
+        else:
+            tasks_completed_per_month[-1][1] += 1
+
+    return {
+        'tasks_completed_over_time': tasks_completed_over_time,
+        'tasks_completed_per_month': tasks_completed_per_month,
+    }
 
 
 def add_category(db, uid, name):
