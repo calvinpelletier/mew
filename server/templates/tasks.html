@@ -12,7 +12,7 @@
     <meta name="msapplication-config" content="/static/favicon.ico/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
     <!-- END FAVICON SHIT -->
-    <title>See Progress - Tasks</title>
+    <title>Tasks</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tasks.css') }}">
@@ -213,8 +213,9 @@
         <div id="card0">
             <div id="header">
                 <div class="logo">
-                    <h1 class="logo1 inline">see</h1>
-                    <h1 class="logo2 inline">progress</h1>
+                    <h1 class="logo1 inline">&mu;</h1>
+                    <!-- <img class="inline" style="" src="{{ url_for('static', filename='img/mu.png') }}" width="42" height="59"/> -->
+                    <h1 class="logo2 inline">tasks</h1>
                 </div>
                 <div id="nav">
                     <div class="nav-part">
@@ -298,11 +299,18 @@
                 <div class="column" id="col3"></div>
             </div>
         </div>
+        <div id="card3">
+            <div class="loader">Loading...</div>
+            <div id="tasks-completed-over-time"></div>
+            <div id="tasks-completed-per-month"></div>
+        </div>
     </div>
 
     <!-- <div id="settings-dialog" tabindex="-1">
     </div> -->
 
+    <script src="{{ url_for('static', filename='js/highcharts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dark-unica.js') }}"></script>
     <script src="{{ url_for('static', filename='js/logout.js') }}"></script>
     <script src="{{ url_for('static', filename='js/util.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tasks.js') }}"></script>

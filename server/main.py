@@ -38,11 +38,14 @@ with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
 #########################################
 @app.route('/')
 def get_landing_page():
-    ignore_token = request.args.get('ignore_token')
-    if 'uid' in session and not ignore_token:
-        return make_response(redirect('/graph'))
-    else:
-        return render_template('login.html')
+        ignore_token = request.args.get('ignore_token')
+        if 'uid' in session and not ignore_token:
+            if request.host == 'tasks.pelletier.io':
+                return tasks_page()
+            else:
+                return make_response(redirect('/graph'))
+        else:
+            return render_template('login.html')
 
 
 @app.route('/guest/<token>')
@@ -149,6 +152,23 @@ def get_tasks_by_week():
     week_tasks, cur_dow = tasks.get_tasks_by_week(get_db(DATABASE_PATH), uid, timezone) # current week
     categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid, req['timezone'])
     return gen_resp(True, {'week_tasks': week_tasks, 'cur_dow': cur_dow, 'categories': categories})
+
+
+@app.route('/api/tasks/stats', methods=['POST'])
+def get_task_stats():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    timezone = req['timezone']
+
+    results = tasks.calc_task_stats(get_db(DATABASE_PATH), uid, timezone)
+    if results is None:
+        return gen_fail('task stats failed')
+    else:
+        return gen_resp(True, results)
 
 
 @app.route('/api/tasks/add', methods=['POST'])
