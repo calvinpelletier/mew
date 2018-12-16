@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS tasks (
     category INTEGER, /* -1 for no category */
     completed BIGINT, /* 0 or unixdate of completion */
     cleared TINYINT, /* 0/1 for if the user cleared the task (only applies to finished tasks in the category section) */
-    deleted TINYINT /* 0/1 */
+    deleted TINYINT, /* 0/1 */
+    created BIGINT /* unixdate of creation */
 );
 
 CREATE TABLE IF NOT EXISTS task_categories (

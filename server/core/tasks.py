@@ -116,16 +116,17 @@ def add_task_by_dow(db, uid, tz, task, dow):
         unixdate = calendar.timegm((get_current_week(tz) + datetime.timedelta(days=dow)).timetuple())
 
     c = db.cursor()
-    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?,?)', (uid, task, unixdate, -1, 0, 0, 0))
+    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?,?,?)', (uid, task, unixdate, -1, 0, 0, 0, unixdate))
     task_id = c.lastrowid
     db.commit()
     c.close()
     return task_id
 
 
-def add_task_by_category(db, uid, task, category):
+def add_task_by_category(db, uid, task, category, tz):
+    unixdate = timezones.cur_unixdate_for_tz(pytz.timezone(tz))
     c = db.cursor()
-    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?,?)', (uid, task, 0, category, 0, 0, 0))
+    c.execute('INSERT INTO tasks VALUES (?,?,?,?,?,?,?,?)', (uid, task, 0, category, 0, 0, 0, unixdate))
     task_id = c.lastrowid
     db.commit()
     c.close()
