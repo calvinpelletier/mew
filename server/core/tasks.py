@@ -101,12 +101,14 @@ def calc_task_stats(db, uid, tz):
         finished = task[0]
         assert finished % 86400 == 0
 
+        # tasks completed over time
         count += 1
         if len(tasks_completed_over_time) == 0 or tasks_completed_over_time[-1][0] != finished:
             tasks_completed_over_time.append([finished, count])
         else:
             tasks_completed_over_time[-1][1] = count
 
+        # tasks completed per month
         month = calendar.timegm(datetime.date.fromtimestamp(finished).replace(day=1).timetuple())
         if len(tasks_completed_per_month) == 0 or tasks_completed_per_month[-1][0] != month:
             tasks_completed_per_month.append([month, 1])
