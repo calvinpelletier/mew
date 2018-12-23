@@ -41,7 +41,6 @@ CREATE TABLE IF NOT EXISTS quotas (
 );
 
 /* ~~~ TASKS TABLES ~~~ */
-/* https://github.com/wilsonchaney/mew/wiki/Tasks-DB-Reference */
 CREATE TABLE IF NOT EXISTS tasks (
     /* ROWID (auto created by sqlite and used by us as task id) */
     uid INTEGER,

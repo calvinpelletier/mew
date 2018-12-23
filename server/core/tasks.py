@@ -191,6 +191,7 @@ def remove_task(db, uid, task_id):
 def delete_category(db, uid, cid):
     c = db.cursor()
     c.execute('UPDATE task_categories SET deleted = 1 WHERE uid = ? AND ROWID = ?', (uid, cid))
+    c.execute('UPDATE tasks SET deleted = 1 WHERE uid = ? AND category = ?', (uid, cid))
     db.commit()
     c.close()
 
