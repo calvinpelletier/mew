@@ -54,7 +54,7 @@ function onClickTask(target) {
 
 // TODO: add loader next to input field during post request
 function newTaskKeyPress(o, e, type, i) {
-    if (e.keyCode == _ENTER) {
+    if (e.keyCode == _ENTER && o.value) {
         var data = {
             'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
             'task': o.value,
