@@ -33,7 +33,6 @@ function onClickNewIndicator(target) {
     closePopup();
 }
 
-
 function onClickDayTaskMenu(target, e) {
     var id = $(target).parent().parent().find('.task').attr('id').substring(8);
     openPopup(target, id, 'day-task-options-popup');
@@ -43,7 +42,6 @@ function onClickCatTaskMenu(target, e) {
     var id = $(target).parent().parent().find('.task').attr('id').substring(8);
     openPopup(target, id, 'cat-task-options-popup');
 }
-
 
 function onClickTask(target) {
     var id = target.id.substring(8);
@@ -429,7 +427,6 @@ function unfinishTask(taskId) {
 	});
 }
 
-
 function assignTaskToDay(taskId, dow) {
     var dowLabel = $('#dow-label' + taskId);
 
@@ -532,7 +529,6 @@ function closePopup() {
     $('.options-arrow').attr('style', 'display: none;');
     global_popup_active = null;
 }
-
 
 function addTaskToContainer(taskText, taskId, container, completed, dow='none', color='none') {
     var done = completed != 0 ? 'task-done ' : '';

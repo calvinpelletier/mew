@@ -168,10 +168,11 @@ hr {
     font-family: OpenSans-Regular;
     color: #fff;
     font-size: 10px;
-    width: 12px;
+    /*width: 12px;*/
+    flex: 0 0 12px;
     margin-right: 3px;
     align-items: center;
-    justify-content:center;
+    justify-content: center;
 }
 
 .no-strip {
