@@ -73,7 +73,7 @@ function login() {
                 $('#login-password').val('');
                 $('#login-password').focus();
             } else {
-                window.location.href = '/graph';
+                window.location.reload();
             }
         },
         fail: function() {

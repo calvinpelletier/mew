@@ -152,7 +152,7 @@
     </div>
     {% endif %} -->
 
-    <div class="popup-container hidden" onclick="closePopup();">
+    <div class="popup-container hidden" onclick="onClickOffPopup(event);">
         <div id="cat-task-options-popup" class="options-popup" style="display: none;">
             <div class="dow-selection">
                 <img class="task-indicator clickable" onclick="onClickNewIndicator(this)" src="/static/img/task_empty.png" height="20" width="20">
@@ -174,11 +174,17 @@
             <div class="option clickable" onclick="onClickDeleteTask()">delete</div>
         </div>
 
-        <div id="cat-options-popup" class="options-popup" style="display: none;">
+        <div id="cat-options-popup" class="options-popup" style="display: none;" onblur="closePopup();">
             <div class="option clickable" onclick="onClickEditCat(this)">rename</div>
             <div class="option clickable" onclick="onClickDeleteCat()">delete</div>
             <div class="color-selection">
-                <div class="color-row">
+                <button
+                    id="jscolorButtonElem"
+                    class="jscolor {valueElement:jscolorValueElem,value:'66ccff'}">
+                    color
+                </button>
+                <input class="jscolor hidden" id="jscolorValueElem" onchange="updateCatColor(this)" value="cc66ff">
+                <!-- <div class="color-row">
                     <div class="color-option clickable" style="background-color: #dddddd" onclick="selectCatColor(this)"></div>
                     <div class="color-option clickable" style="background-color: #336359" onclick="selectCatColor(this)"></div>
                     <div class="color-option clickable" style="background-color: #a5f9a2" onclick="selectCatColor(this)"></div>
@@ -201,7 +207,7 @@
                     <div class="color-option clickable" style="background-color: #00ce1b" onclick="selectCatColor(this)"></div>
                     <div class="color-option clickable" style="background-color: #0077ff" onclick="selectCatColor(this)"></div>
                     <div class="color-option clickable" style="background-color: #fcc246" onclick="selectCatColor(this)"></div>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -311,6 +317,7 @@
 
     <script src="{{ url_for('static', filename='js/highcharts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dark-unica.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jscolor.js') }}"></script>
     <script src="{{ url_for('static', filename='js/logout.js') }}"></script>
     <script src="{{ url_for('static', filename='js/util.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tasks.js') }}"></script>

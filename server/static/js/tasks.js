@@ -23,6 +23,8 @@ function onOAuthLoad() {
 	});
 }
 
+function nullFunction() {}
+
 // ~~~~~~~~~~~~~
 // INPUT FUNCTIONS
 // ~~~~~~~~~~~~~
@@ -132,6 +134,7 @@ function onMouseOutTask(o) {
 
 function onClickEditCat(o) {
     var cat = $('#cat' + global_popup_active).parent();
+    closePopup();
     var input = cat.find('.rename-cat');
     cat.find('.category-name-text').addClass('hidden');
     input.removeClass('hidden');
@@ -156,9 +159,11 @@ function onClickCatSettings(target, id) {
     openPopup(target, id, 'cat-options-popup');
 }
 
-function selectCatColor(o) {
-    var style = $(o).attr('style');
-    var color = style.substring(style.indexOf('#') + 1);
+function updateCatColor(o) {
+    var color = o.value;
+    console.log(color);
+    // var style = $(o).attr('style');
+    // var color = style.substring(style.indexOf('#') + 1);
     var cat = $('#cat' + global_popup_active).parent();
     cat.attr('style', 'border-top: 5px solid #' + color);
 
@@ -207,6 +212,8 @@ function onClickDeleteTask() {
             // TODO
         }
     });
+
+    closePopup();
 }
 
 function onClickDeleteCat() {
@@ -231,6 +238,14 @@ function onClickDeleteCat() {
             // TODO
         }
     });
+
+    closePopup();
+}
+
+function onClickOffPopup(e) {
+    if (!$(e.target).closest('.options-popup').length) {
+        closePopup();
+    }
 }
 // ~~~~~~~~~~~~~
 
@@ -522,6 +537,7 @@ function renderCategories(categories) {
 }
 
 function closePopup() {
+    console.log('close');
     $('.popup-container').addClass('hidden');
     $('#cat-task-options-popup').attr('style', 'display: none;');
     $('#day-task-options-popup').attr('style', 'display: none;');
@@ -618,6 +634,11 @@ function uneditCategory(cid) {
 }
 
 function openPopup(target, sourceId, popupType) {
+    if (popupType == 'cat-options-popup') {
+        document.getElementById('jscolorValueElem').jscolor.fromString(getCatColor(sourceId));
+        document.getElementById('jscolorButtonElem').jscolor.fromString(getCatColor(sourceId));
+    }
+
     global_popup_active = sourceId;
     $('.popup-container').removeClass('hidden');
     var popup = $('#' + popupType);
@@ -633,6 +654,7 @@ function openPopup(target, sourceId, popupType) {
     var arrow = $('.options-arrow');
     arrow.attr('style', 'display: none; left: ' + (target.offsetLeft) + 'px; top: ' + ($(target).offset().top - $(document).scrollTop() + 17) + 'px;');
     arrow.fadeIn(200);
+    popup.focus();
 }
 
 function getCatColor(cid) {
