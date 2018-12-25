@@ -1,7 +1,11 @@
 var _ENTER = 13;
 var TASKS_CARD1_DATA_ELEMENT = new DataElement('#card1', ['.day-container']);
 var TASKS_CARD2_DATA_ELEMENT = new DataElement('#card2', ['#categories-wrapper', '.card2-links']);
-var TASKS_CARD3_DATA_ELEMENT = new DataElement('#card3', ['#tasks-completed-over-time', '#tasks-completed-per-month']);
+var TASKS_CARD3_DATA_ELEMENT = new DataElement('#card3', [
+    '#tasks-completed-over-time',
+    '#tasks-completed-per-month',
+    '#tasks-completed-per-week',
+]);
 var global_popup_active = null;
 var DOW_TO_DOW_NUM = {'su': 0, 'm': 1, 'tu': 2, 'w': 3, 'th': 4, 'f': 5, 'sa': 6};
 var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
@@ -494,8 +498,6 @@ function requestTaskStats() {
 		}),
 		success: function(resp) {
             if (resp['success']) {
-                console.log(resp['tasks_completed_over_time']);
-                console.log(resp['tasks_completed_per_month']);
                 createLineGraph(
                     resp['tasks_completed_over_time'],
                     'tasks-completed-over-time',
@@ -505,6 +507,11 @@ function requestTaskStats() {
                     resp['tasks_completed_per_month'],
                     'tasks-completed-per-month',
                     'Tasks Completed Per Month'
+                );
+                createLineGraph(
+                    resp['tasks_completed_per_week'],
+                    'tasks-completed-per-week',
+                    'Tasks Completed Per Week'
                 );
                 TASKS_CARD3_DATA_ELEMENT.hideLoader();
             }

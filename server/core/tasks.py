@@ -92,6 +92,7 @@ def calc_task_stats(db, uid, tz):
 
     tasks_completed_over_time = []
     tasks_completed_per_month = []
+    tasks_completed_per_week = []
     start = tasks[0][0]
     assert start % 86400 == 0
 
@@ -114,9 +115,18 @@ def calc_task_stats(db, uid, tz):
         else:
             tasks_completed_per_month[-1][1] += 1
 
+        day = datetime.date.fromtimestamp(finished)
+        dow = day.isoweekday() % 7
+        week = calendar.timegm((day - datetime.timedelta(days=dow)).timetuple())
+        if len(tasks_completed_per_week) == 0 or tasks_completed_per_week[-1][0] != week:
+            tasks_completed_per_week.append([week, 1])
+        else:
+            tasks_completed_per_week[-1][1] += 1
+
     return {
         'tasks_completed_over_time': tasks_completed_over_time,
         'tasks_completed_per_month': tasks_completed_per_month,
+        'tasks_completed_per_week': tasks_completed_per_week,
     }
 
 

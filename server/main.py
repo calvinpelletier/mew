@@ -126,14 +126,7 @@ def tasks_page():
             session.pop('uid')
             return make_response(redirect('/'))
 
-        if is_mobile():
-            template = 'm_tasks.html'
-        else:
-            template = 'tasks.html'
-
-        return render_template(
-            template,
-            email=user_email)
+        return render_template('tasks.html', email=user_email)
     else:
         warn("uid cookie is None when requesting graph page...")
         return make_response(redirect('/'))
