@@ -388,7 +388,7 @@ function onClickCatMove(o, dir, cid) {
                     return (a['row'] > b['row']) ? 1 : ((b['row'] > a['row']) ? -1 : 0);
                 });
 
-                renderCategories(resp['categories']);
+                renderCategories(resp['categories'], true);
 
                 // add tasks to dom but keep hidden
                 for (var category of resp['categories']) {
@@ -759,7 +759,7 @@ function addTaskToContainer(taskText, taskId, container, completed, dow='none', 
     container.append(html);
 }
 
-function getCategoryHTML(cid, name, color, column, moveMode) {
+function getCategoryHTML(cid, name, color, moveMode) {
     var textColor = bgColorToTextColor(color);
     if (textColor == 'ffffff') {
         var more = '/static/img/more_white.png';
