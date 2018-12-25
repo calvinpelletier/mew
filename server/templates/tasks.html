@@ -291,9 +291,16 @@
         <div id="card2">
             <div class="loader">Loading...</div>
             <div class="card2-links hidden">
-                <div class="card2-link" onclick="clearFinishedTasks();">clear finished tasks</div>
-                |
-                <div class="card2-link" onclick="onClickAddCategory();">add category</div>
+                <div id="card2-links-reorganizing" class="hidden">
+                    <div class="card2-link" onclick="onClickStopMovingCategories();">done</div>
+                </div>
+                <div id="card2-links-not-reorganizing">
+                    <div class="card2-link" onclick="onClickMoveCategories();">reorganize categories</div>
+                    |
+                    <div class="card2-link" onclick="clearFinishedTasks();">clear finished tasks</div>
+                    |
+                    <div class="card2-link" onclick="onClickAddCategory();">add category</div>
+                </div>
                 <!-- <div class="category-section-link" onclick="clearFinishedTasks();">clear finished tasks</div>
                 <div class=""
                 <div class="category-section-link" onclick="clearFinishedTasks();">clear finished tasks</div> -->

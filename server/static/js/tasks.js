@@ -8,6 +8,7 @@ var DOW_NUM_TO_DOW = ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'];
 var GEAR_ICON = '/static/img/gear.svg';
 var MORE_ICON = '/static/img/more_black.png';
 var global_category_colors = {};
+var global_category_order = null;
 
 window.onload = function() {
     TASKS_CARD1_DATA_ELEMENT.showLoader();
@@ -246,6 +247,54 @@ function onClickOffPopup(e) {
     if (!$(e.target).closest('.options-popup').length) {
         closePopup();
     }
+}
+
+function onClickMoveCategories() {
+    // store current order in global_category_order
+    global_category_order = [[], [], [], []];
+    for (var col = 0; col < 4; col++) {
+        $('#col' + col).children('.category').each(function(i) {
+            global_category_order[col].push(this.id.substring('cat-wrapper'.length));
+        });
+    }
+
+    // hide original card2 links
+    $('#card2-links-not-reorganizing').addClass('hidden');
+
+    // hide original category controls
+
+    // hide cat tasks
+    $('.task-wrapper').each(function(i) {
+        if (this.parentElement.id.startsWith('cat')) {
+            $(this).addClass('hidden');
+        }
+    });
+
+    // show new card2 links
+    $('#card2-links-reorganizing').removeClass('hidden');
+
+    // show new category controls
+}
+
+function onClickStopMovingCategories() {
+    // send new order to backend
+
+    // hide new card 2 links
+    $('#card2-links-reorganizing').addClass('hidden');
+
+    // hide new category controls
+
+    // show original card2 links
+    $('#card2-links-not-reorganizing').removeClass('hidden');
+
+    // show original category controls
+
+    // show cat tasks
+    $('.task-wrapper').each(function(i) {
+        if (this.parentElement.id.startsWith('cat')) {
+            $(this).removeClass('hidden');
+        }
+    });
 }
 // ~~~~~~~~~~~~~
 
@@ -598,7 +647,7 @@ function getCategoryHTML(cid, name, color, column) {
     }
 
     var html =
-        '<div class="category" style="border-top: 5px solid #' + color + '">' +
+        '<div id="cat-wrapper' + cid + '" class="category" style="border-top: 5px solid #' + color + '">' +
             '<div class="category-header">' +
                 '<span class="category-name-text">' + name + '</span>' +
                 '<input class="rename-cat hidden" type="text" onblur="renameCatBlur(this, ' + cid + ')"' +
