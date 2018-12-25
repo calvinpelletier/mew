@@ -46,7 +46,7 @@ def get_task_categories(db, uid, tz):
     c = db.cursor()
     c.execute('SELECT ROWID, name, column, row, color FROM task_categories WHERE uid = ? AND deleted = 0', (uid,))
     categories = c.fetchall()
-    c.execute('SELECT ROWID, task, category, unixdate, completed, cleared FROM tasks WHERE uid = ? AND deleted = 0 AND category != -1', (uid,))
+    c.execute('SELECT ROWID, task, category, unixdate, completed FROM tasks WHERE uid = ? AND deleted = 0 AND category != -1 AND cleared = 0', (uid,))
     tasks = c.fetchall()
     c.close()
 
@@ -66,7 +66,7 @@ def get_task_categories(db, uid, tz):
             'tasks': []
         })
 
-    for tid, task, cid, unixdate, completed, cleared in tasks:
+    for tid, task, cid, unixdate, completed in tasks:
         try:
             dow = days.index(unixdate)
         except:
@@ -76,7 +76,6 @@ def get_task_categories(db, uid, tz):
             'task': task,
             'dow': dow,
             'completed': completed,
-            'cleared': cleared,
         })
 
     return ret
@@ -224,8 +223,18 @@ def rename_category(db, uid, cid, new_name):
     db.commit()
     c.close()
 
+
 def set_cat_color(db, uid, cid, color):
     c = db.cursor()
     c.execute('UPDATE task_categories SET color = ? WHERE uid = ? AND ROWID = ?', (color, uid, cid))
+    db.commit()
+    c.close()
+
+
+def set_cat_order(db, uid, order):
+    c = db.cursor()
+    for col in range(len(order)):
+        for row, cid in enumerate(order[col]):
+            c.execute('UPDATE task_categories SET column = ?, row = ? WHERE uid = ? AND ROWID = ?', (col, row, uid, cid))
     db.commit()
     c.close()

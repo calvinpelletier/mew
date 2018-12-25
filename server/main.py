@@ -295,6 +295,20 @@ def delete_category():
     req = request.get_json()
     tasks.delete_category(get_db(DATABASE_PATH), uid, req['cid'])
     return gen_resp(True, {})
+
+
+@app.route('/api/tasks/set-cat-order', methods=['POST'])
+def set_category_order():
+    if 'uid' in session:
+        uid = session['uid']
+    else:
+        return gen_fail('not authenticated')
+
+    req = request.get_json()
+    tasks.set_cat_order(get_db(DATABASE_PATH), uid, req['order'])
+    # returning categories explained in frontend
+    categories = tasks.get_task_categories(get_db(DATABASE_PATH), uid, req['timezone'])
+    return gen_resp(True, {'categories': categories})
 # ~~~~~~~~~~~~~~~~
 
 
