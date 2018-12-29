@@ -527,6 +527,12 @@ function requestTaskStats() {
                     'Tasks Completed Per Week'
                 );
                 TASKS_CARD3_DATA_ELEMENT.hideLoader();
+            } else {
+                // probably just no data yet
+                console.log('check');
+                TASKS_CARD3_DATA_ELEMENT.hideLoader();
+                $('#card3').addClass('hidden');
+                $('body').attr('style', 'background-color: #fff');
             }
 		},
 		statusCode: {
