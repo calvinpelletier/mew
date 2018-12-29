@@ -291,3 +291,18 @@ hr {
 .cat-move-icon {
     margin: 0px 0px 0px 5px;
 }
+
+#fail-bar {
+    padding: 5px 15px;
+    text-align: center;
+    vertical-align: middle;
+    font-family: OpenSans-Regular;
+    font-size: 15px;
+    height: 32px;
+    width: 100%;
+    color: #fff;
+    background-color: #bc2b2b;
+    position: fixed;
+    left: 0;
+    top: 0;
+}

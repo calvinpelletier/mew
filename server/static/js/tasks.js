@@ -95,7 +95,7 @@ function newTaskKeyPress(o, e, type, i) {
                 }
             },
             fail: function() {
-                // TODO
+                showFailBar('new task request failed');
             }
         });
 
@@ -122,7 +122,7 @@ function onClickAddCategory() {
             }
         },
         fail: function() {
-            // TODO
+            showFailBar('new category request failed');
         }
     });
 }
@@ -189,7 +189,7 @@ function updateCatColor(o) {
             }
         },
 		fail: function() {
-            // TODO
+            showFailBar('update category color request failed');
 		}
 	});
 }
@@ -214,7 +214,7 @@ function onClickDeleteTask() {
             }
         },
         fail: function() {
-            // TODO
+            showFailBar('delete task request failed');
         }
     });
 
@@ -240,7 +240,7 @@ function onClickDeleteCat() {
             }
         },
         fail: function() {
-            // TODO
+            showFailBar('delete category request failed');
         }
     });
 
@@ -421,7 +421,7 @@ function onClickCatMove(o, dir, cid) {
             }
         },
 		fail: function() {
-            // TODO
+            showFailBar('reorganize categories request failed');
 		}
 	});
 }
@@ -496,7 +496,7 @@ function requestTasks() {
             }
         },
 		fail: function() {
-            // TODO
+            showFailBar('get data request failed');
 		}
 	});
 }
@@ -535,7 +535,7 @@ function requestTaskStats() {
             }
         },
 		fail: function() {
-            // TODO
+            showFailBar('get task stats request failed');
 		}
 	});
 }
@@ -571,7 +571,7 @@ function clearFinishedTasks() {
             }
         },
 		fail: function() {
-            // TODO
+            showFailBar('clear finished tasks request failed');
 		}
 	});
 }
@@ -598,7 +598,7 @@ function finishTask(taskId) {
             }
         },
 		fail: function() {
-            // TODO
+            showFailBar('finish task request failed');
 		}
 	});
 }
@@ -628,7 +628,7 @@ function unfinishTask(taskId) {
             }
         },
 		fail: function() {
-            // TODO
+            showFailBar('unfinish task request failed');
 		}
 	});
 }
@@ -681,7 +681,7 @@ function assignTaskToDay(taskId, dow) {
             }
         },
 		fail: function() {
-            // TODO
+            showFailBar('assign task to day request failed');
 		}
     });
 }
@@ -703,7 +703,7 @@ function renameCategory(cid, newName) {
             }
         },
         fail: function() {
-            // TODO
+            showFailBar('rename category request failed');
         }
     });
 }
@@ -716,6 +716,12 @@ function renameCategory(cid, newName) {
 // ~~~~~~~~~~~~~
 // HELPER FUNCTIONS
 // ~~~~~~~~~~~~~
+function showFailBar(reason) {
+    var failBar = $('#fail-bar');
+    failBar.removeClass('hidden');
+    failBar.html('Something went wrong (try refreshing): ' + reason);
+}
+
 function renderCategories(categories, moveMode=false) {
     categories.sort(function (a, b) {
         return a['row'] - b['row'];
