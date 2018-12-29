@@ -457,7 +457,13 @@ function requestTasks() {
                         } else {
                             var dowLabel = DOW_NUM_TO_DOW[parseInt(task['dow'])];
                         }
-                        addTaskToContainer(task['task'], task['task_id'], $('#cat' + category['cid']), task['completed'], dowLabel);
+                        addTaskToContainer(
+                            task['task'],
+                            task['task_id'],
+                            $('#cat' + category['cid']),
+                            task['completed'],
+                            dowLabel
+                        );
                     }
                 }
 
@@ -471,7 +477,14 @@ function requestTasks() {
                     } else {
                         var color = getCatColor(task['category']);
                     }
-                    addTaskToContainer(task['task'], task['task_id'], $('#day' + task['dow']), task['completed'], 'none', color);
+                    addTaskToContainer(
+                        task['task'],
+                        task['task_id'],
+                        $('#day' + task['dow']),
+                        task['completed'],
+                        'none',
+                        color
+                    );
                 }
 
                 TASKS_CARD1_DATA_ELEMENT.hideLoader();
@@ -637,7 +650,8 @@ function assignTaskToDay(taskId, dow) {
 
         var dow_num = DOW_TO_DOW_NUM[dow];
 
-        var category = parseInt($('#cat-task' + taskId).parent().parent().parent().attr('id').substring(3));
+        var category = parseInt(
+            $('#cat-task' + taskId).parent().parent().parent().attr('id').substring(3));
 
         // add task to new day
         addTaskToContainer(
