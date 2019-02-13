@@ -5,8 +5,10 @@ import sqlite3
 from os import environ
 import event_analysis
 import concurrency
+import log
 
 concurrency.init()
+log.init_loggers('/var/www/mew/')
 db = sqlite3.connect('/var/www/mew/db/prod.db')
 
 data = event_analysis.get_daily_summary(db, 4, 'America/Los_Angeles')['data']
