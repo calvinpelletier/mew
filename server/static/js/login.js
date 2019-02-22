@@ -99,10 +99,12 @@ function onGoogleSignIn(googleUser) {
         success: function(response) {
             $('#login-submit').prop('disabled', false);
             if (response.success == false) {
+                console.log('check0');
                 $('#login-error').removeClass('hidden');
                 $('#login-password').val('');
                 $('#login-password').focus();
             } else {
+                console.log('check1');
                 window.location.reload();
             }
         },

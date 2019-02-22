@@ -312,8 +312,11 @@ def login():
 
     prev_uid = None
     if 'uid' in session:
+        print 'check0'
         # The user is attaching an account
         prev_uid = session['uid']
+
+    print req_data
 
     if 'google_token' in req_data:
         token = req_data['google_token']
