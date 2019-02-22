@@ -370,7 +370,7 @@ def signup():
         pass
     else:
         session['uid'] = uid
-        return make_response(redirect('/graph'))
+        return make_response(redirect('/'))
 
 
 @app.route('/api/ping', methods=['POST'])
