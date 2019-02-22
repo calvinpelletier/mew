@@ -105,7 +105,7 @@ function onGoogleSignIn(googleUser) {
                 $('#login-password').focus();
             } else {
                 console.log('check1');
-                window.location.reload();
+                // window.location.reload();
             }
         },
         fail: function() {
