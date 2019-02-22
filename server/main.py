@@ -38,13 +38,17 @@ with open(path.join(MEW_PATH, "server/secret_key"), 'r') as secret_key_file:
 #########################################
 @app.route('/')
 def get_landing_page():
+        print 'check2'
+        print session['uid']
         ignore_token = request.args.get('ignore_token')
         if 'uid' in session and not ignore_token:
+            print 'check3'
             if request.host == 'tasks.pelletier.io':
                 return tasks_page()
             else:
                 return make_response(redirect('/graph'))
         else:
+            print 'check4'
             return render_template('login.html')
 
 
@@ -347,6 +351,9 @@ def login():
             event_storage.replace_events_with_uid(get_db(DATABASE_PATH), prev_uid, uid)
 
         return gen_resp(True)
+
+    print 'check1'
+    print session['uid']
 
 
 @app.route('/api/logout', methods=['GET', 'POST'])
