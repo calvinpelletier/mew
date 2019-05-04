@@ -7,11 +7,13 @@ import event_analysis
 import concurrency
 import log
 
+CALVINS_UID = 4
+
 concurrency.init()
 log.init_loggers('/var/www/mew/')
 db = sqlite3.connect('/var/www/mew/db/prod.db')
 
-data = event_analysis.get_daily_summary(db, 4, 'America/Los_Angeles')['data']
+data = event_analysis.get_daily_summary(db, CALVINS_UID, 'America/Los_Angeles')['data']
 with open('/tmp/calvin_reddit.csv', 'w') as f:
     for day in data:
         date = datetime.datetime.utcfromtimestamp(day['date']).date().isoformat()
